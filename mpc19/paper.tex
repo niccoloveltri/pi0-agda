@@ -1,0 +1,183 @@
+% This is samplepaper.tex, a sample chapter demonstrating the
+% LLNCS macro package for Springer Computer Science proceedings;
+% Version 2.20 of 2017/10/04
+%
+\documentclass[runningheads]{llncs}
+%
+\usepackage{graphicx}
+% Used for displaying a sample figure. If possible, figure files should
+% be included in EPS format.
+%
+% If you use the hyperref package, please uncomment the following line
+% to display URLs in blue roman font according to Springer's eBook style:
+% \renewcommand\UrlFont{\color{blue}\rmfamily}
+
+\usepackage{proof}
+\usepackage{amsmath}
+%\usepackage{amsthm}
+\usepackage{amssymb}
+\usepackage{mathtools}
+
+\newcommand{\N}{\mathbb{N}}
+\newcommand{\Pio}{$\Pi^{\mathsf{o}}$} 
+\newcommand{\Set}{\mathsf{Set}}
+\newcommand{\comp}{\circ}
+
+% Delay macros
+\newcommand{\Delay}{\mathsf{Delay}\,}
+\newcommand{\now}{\mathsf{now}}
+\newcommand{\later}{\mathsf{later}}
+\newcommand{\never}{\mathsf{never}}
+\newcommand{\dn}{\downarrow}
+\newcommand{\bind}{\mathsf{bind}}
+\newcommand{\str}{\mathsf{str}}
+\newcommand{\D}{\mathbb{D}}
+\newcommand{\Dapprox}{\mathbb{D}_{\approx}}
+
+\begin{document}
+%
+\title{Type-theoretic Semantics of \Pio\ via the Delay Monad \thanks{Supported by organization x.}}
+%
+%\titlerunning{Abbreviated paper title}
+% If the paper title is too long for the running head, you can set
+% an abbreviated paper title here
+%
+\author{Robin Kaarsgaard \inst{1}\orcidID{0000-0002-7672-799X} \and
+Niccol\`o Veltri\inst{2}\orcidID{0000-0002-7230-3436}}
+%
+\authorrunning{Kaarsgaard and Veltri}
+% First names are abbreviated in the running head.
+% If there are more than two authors, 'et al.' is used.
+%
+\institute{DIKU, Department of Computer Science, University of
+    Copenhagen\\ \email{robin@di.ku.dk} \and
+Department of Computer Science, IT University of
+    Copenhagen\\ \email{nive@itu.dk}}
+%
+\maketitle              % typeset the header of the contribution
+%
+\begin{abstract}
+The abstract should briefly summarize the contents of the paper in
+150--250 words.
+
+\keywords{First keyword  \and Second keyword \and Another keyword.}
+\end{abstract}
+
+\section{Introduction}\label{sec:intro}
+
+\section{Syntax of \Pio}\label{sec:syntax}
+
+\section{Delay Monad}\label{sec:delay}
+
+The coinductive delay datatype was first introduce by Capretta for
+representing general recursive functions in Martin-L\"of type theory
+\cite{Capretta05}.  Given a type $A$, elements of $\Delay A$ are
+possibly non-terminating ``computations'' returning a value of $A$
+whenever they terminate. Formally, $\Delay A$ is defined as a
+coinductive type with the following introduction rules:
+\[
+\infer={\now\,a : \Delay A}{x : A}
+\quad
+\infer={\later\,x : \Delay A}{x : \Delay A}
+\]
+(Here and in the following, single rule lines refer to an inductive
+definition, double rule lines to a coinductive definition.) The
+constructor $\now$ embeds $A$ into $\Delay A$, so $\now\,a$ represents
+the terminating computation returning the value $a$. The constructor
+$\later$ adds an additional unit of time delay to a computation. The
+non-terminating computation $\never$ is corecursively defined as
+$\never = \later \,\never$.
+
+The delay datatype is a monad. The unit is the constructor $\now$,
+while the Kleisli extension $\bind$ is corecursively defined as follows:
+\begin{align*}
+& \bind : (A \to \Delay B) \to \Delay A \to \Delay B \\
+& \bind \,f \, (\now\,a) = f\,a \\
+& \bind\,f\,(\later\,x) = \later\,(\bind\,f\,x)
+\end{align*}
+The delay monad, like any other monad on $\Set$, has a unique strength
+operation which we denote by $\str : A \times \Delay B \to \Delay (A
+\times B)$. Moreover, the delay datatype is a commutative monad.
+
+The Kleisli category of the delay monad, that we call $\D$, has types
+as objects and functions $f : A \to \Delay B$ as morphisms between $A$
+and $B$. In $\D$, the identity map on an object $A$ is the constructor
+$\now$, while the composition of morphisms $f : A \to \Delay B$ and $g
+: B \to \Delay C$ is given by $f \diamond g = \bind\,f \comp g$.
+
+The delay datatype allows us to program with partial functions, but
+the introduced notion of partiality is intensional, in the sense that
+computations terminating with the same value in a different number of
+steps are considered different. To obtain an extensional notion of
+partiality, which in particular allows the specification of a
+well-behaved trace operator, we need to quotient the delay datatype by
+weak bisimilarity.
+
+Weak bisimilarity is defined in terms of convergence. A computation
+$x : \Delay A$ converges to $a : A$ if it terminates in a finite
+number of steps returning the value $a$. When this happens, we write
+$x \dn a$. The relation $\dn$ is inductively defined by the rules:
+\[
+\infer{\now\,a \dn a}{}
+\quad
+\infer{\later\,x \dn a}{x \dn a}
+\]
+Two computations in $\Delay A$ are weakly bisimilar if they differ by
+a finite number of applications of the constructor $\later$. This
+informal statement can be formalized in several different but
+logically equivalent ways \cite{ChapmanUV19}. For this work we chose the
+following definition:
+\[
+x \approx y = (a : A) \to (x \dn a \to y \dn a) \times (y \dn a \to x \dn a) 
+\]
+The definition says that $x$ and $y$ are weakly bisimilar if, whenever
+$x$ terminates, then $y$ also terminates with the same value, and vice
+versa. Weak bisimilarity is an equivalence relation and it is a
+congrence with respect to the $\later$ operation.  We call $\Dapprox$
+the Kleisli category of $\Delay$ with homsets quotiented by pointwise
+weak bisimilarity. This means that in $\Dapprox$ two morphisms $f$ and
+$g$ are considered equal whenever $f \, a \approx g \, a$, for all
+inputs $a$. When this is the case, we also write $f \approx g$.  In
+this work we do not formally construct the quotients
+$(A \to \Delay B)/{\approx}$, since we work in a type theory without
+quotient types. Instead we require that every construction we perform
+on morphisms in $\Dapprox$ respects weak bisimilarity. Technically, we
+construct $\Dapprox$ as a category enriched in setoids CITE, where in
+particular all the reasoning on morphisms is performed up-to weak
+bisimilarity.
+
+In previous work \cite{ChapmanUV19} we showed that, when working in a
+type theory with quotient types a la Hofmann CITE, quotienting the
+delay monad by weak bisimilarity has problematic consequences. In
+fact, it does not seem possible to recover the monad structure on the
+quotiented datatype $\mathsf{DelayQuot}\,A = \Delay A/{\approx}$
+without assuming additional controversial principles
+such as the axiom of countable choice. In particolar, countable choice
+would be necessary for modelling the trace operator of \Pio. In
+loc.cit. we showed that a possible way to avoid these issues is
+forming the quotients of homsets, as in $(A \to \Delay B)/{\approx}$, instead of
+quotienting the delay datatype directly. We would still not be able to form
+
+
+
+
+\section{Elgot Iteration and Trace}\label{sec:elgot}
+
+\section{Interpretation}\label{sec:interpretation}
+
+\section{Conclusions}
+
+
+%
+%
+%
+%
+% ---- Bibliography ----
+%
+% BibTeX users should specify bibliography style 'splncs04'.
+% References will then be sorted and formatted in the correct style.
+%
+\bibliographystyle{splncs04}
+\bibliography{paper}
+
+\end{document}
