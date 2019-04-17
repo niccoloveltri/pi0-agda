@@ -55,6 +55,44 @@ cong-θ {x = x}{x'}{_}{y'} p q =
       (trans≈ (cong-bindD (cong-bindD p))
         (sym≈ (θ-eq (x' , y')))))  
 
+
+fun∙×D : {A B C D E F : Set}
+  → {f : A → Delay B} {g : B → Delay C}
+  → {h : D → Delay E} {k : E → Delay F}
+  → ((g ∙ f) ×D (k ∙ h)) ∼ (g ×D k) ∙ (f ×D h)
+fun∙×D {B = B}{F = F} {f = f}{g}{h}{k} (a , d) =
+  trans≈ (M3 (bindD k (h d)))
+    (trans≈ (M3 (h d))
+      (trans≈ (cong-app-bindD (h d)
+                              (λ e → trans≈ (≈-equiv₂ ((lem₁ (f a) (k e)) , (lem₂ (f a) (k e))))
+                                       (sym≈ (M3 (f a)))))
+        (trans≈ (sym≈ (M3 (h d)))
+          (trans≈ (cong-app-bindD (bindD (λ x → bindD (λ x₁ → now (x₁ , x)) (f a)) (h d))
+                                  (λ x → sym≈ (M3 (k (proj₂ x)))))
+            (sym≈ (cong-bindD (M3 (h d))))))))
+  where
+    lem₁ : ∀ {z} (u : Delay B) (v : Delay F)
+      → bindD (λ x → bindD (λ y → now (y , x)) (bindD g u)) v ↓ z
+      → bindD (λ x → bindD (λ y → bindD (λ z → now (z , y)) (g x)) v) u ↓ z
+    lem₁ u v p with bindD↓ (λ x → bindD (λ y → now (y , x)) (bindD g u)) v p
+    lem₁ u v p | (x , q , q') with bindD↓ (λ y → now (y , x)) (bindD g u) q'
+    lem₁ u v p | x , q , q' | c , r , now with bindD↓ g u r
+    ... | b , s , s' =
+      trans≈ (bindD-input↓ (λ x₁ → bindD (λ y → bindD (λ z → now (z , y)) (g x₁)) v) s)
+        (trans≈ (bindD-input↓ (λ y → bindD (λ z → now (z , y)) (g b)) q)
+          (bindD-input↓ (λ z → now (z , x)) s'))
+
+    lem₂ : ∀ {z} (u : Delay B) (v : Delay F)
+      → bindD (λ x → bindD (λ y → bindD (λ z → now (z , y)) (g x)) v) u ↓ z
+      → bindD (λ x → bindD (λ y → now (y , x)) (bindD g u)) v ↓ z
+    lem₂ u v p with bindD↓ (λ x → bindD (λ y → bindD (λ z₁ → now (z₁ , y)) (g x)) v) u p
+    ... | (b , q , q') with bindD↓ (λ y → bindD (λ z₁ → now (z₁ , y)) (g b)) v q'
+    ... | (x , r , r') with bindD↓ (λ z₁ → now (z₁ , x)) (g b) r'
+    lem₂ u v p | b , q , q' | x , r , r' | c , s , now =
+      trans≈ (bindD-input↓ (λ x₁ → bindD (λ y → now (y , x₁)) (bindD g u)) r)
+        (trans≈ (cong-bindD (bindD-input↓ g q))
+          (bindD-input↓ (λ y → now (y , x)) s))
+
 -- Coproducts
 
 copair∼ : {A B C : Set} {f f' : A → Delay C} {g g' : B → Delay C}

@@ -109,11 +109,11 @@ bind-mapD = M3
 
 -- Strength
 
-str : ∀ {i A B} → A × Delay' i B → Delay' i (A × B)
-str (x , y) = mapD < (λ _ → x) , id > y
-
 costr : ∀ {i A B} → Delay' i B × A → Delay' i (B × A)
 costr (x , y) = mapD < id , (λ _ → y) > x
+
+str : ∀ {i A B} → A × Delay' i B → Delay' i (A × B)
+str (x , y) = mapD < (λ _ → x) , id > y
 
 cong∙ : ∀ {A B C} {g g' : B → Delay C} {f f' : A → Delay B}
     → g ∼ g' → f ∼ f' → g ∙ f ∼ g' ∙ f'
