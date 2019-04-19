@@ -23,6 +23,16 @@
 \newcommand{\Set}{\mathsf{Set}}
 \newcommand{\comp}{\circ}
 
+% Syntax Pi0
+\newcommand{\Ty}{\mathsf{Ty}}
+\newcommand{\Var}{\mathsf{Var}}
+\newcommand{\id}{\mathsf{id}}
+\newcommand{\lr}{\longleftrightarrow}
+\newcommand{\fold}{\mathsf{fold}}
+\newcommand{\unfold}{\mathsf{unfold}}
+\newcommand{\sub}{\mathsf{sub}}
+\newcommand{\trace}{\mathsf{trace}}
+
 % Delay macros
 \newcommand{\Delay}{\mathsf{Delay}\,}
 \newcommand{\now}{\mathsf{now}}
@@ -66,6 +76,61 @@ The abstract should briefly summarize the contents of the paper in
 \section{Introduction}\label{sec:intro}
 
 \section{Syntax of \Pio}\label{sec:syntax}
+
+\subsection{Types}
+
+\begin{figure}
+\[
+\arraycolsep=8pt\def\arraystretch{2.8}
+\begin{array}{|ccc|}
+\hline 
+\infer{0 : \Ty_n}{} 
+& \infer{1 : \Ty_n}{}
+& \infer{\Var\,i : \Ty_n}{i \in [0..n)}  \\
+\infer{A + B : \Ty_n}{A : \Ty_n & B : \Ty_n}
+& \infer{A \times B : \Ty_n}{A : \Ty_n & B : \Ty_n}
+& \infer{\mu\,A : \Ty_n}{A : \Ty_{n+1}} \\
+\hline
+\end{array}
+\]
+\caption{Types of \Pio.}
+\label{fig:types}
+\end{figure}
+
+\subsection{Programs}
+
+\begin{figure}
+\[
+\arraycolsep=8pt\def\arraystretch{2.8}
+\begin{array}{|cc|}
+\hline
+\infer{\id : A \lr A}{}
+& \infer{g \cdot f : A \lr C}{g : B \lr C & f : A \lr B} \\
+\infer{f + g : A + B \lr C + D}{f : A \lr C & g : B \lr D} 
+& \infer{f \times g : A \times B \lr C \times D}{f : A \lr C & g : B \lr D} \\
+\infer{\lambda_{+} : 0 + A \lr A}{}
+& \infer{\lambda_{+}^{-1} : A \lr 0 + A}{} \\
+\infer{\lambda_{\times} : 1 \times A \lr A}{}
+& \infer{\lambda_{\times}^{-1} : A \lr 1 \times A}{} \\
+\infer{\alpha_{+} : (A + B) + C \lr A + (B + C)}{}
+& \infer{\alpha_{+}^{-1} : A + (B + C) \lr (A + B) + C}{} \\
+\infer{\alpha_{\times} : (A \times B) \times C \lr A \times (B \times C)}{}
+& \infer{\alpha_{\times}^{-1} : A \times (B \times C) \lr (A \times B) \times C}{} \\
+\infer{\sigma_{+} : A + B \lr B + A}{}
+& \infer{\sigma_{\times} : A \times B \lr B \times A}{} \\
+\infer{\kappa : 0 \times A \lr 0}{} 
+& \infer{\delta : (A + B) \times C \lr (A \times C) + (B \times C)}{} \\
+\infer{\kappa^{-1} : 0 \lr 0 \times A}{}
+& \infer{\delta^{-1} : (A \times C) + (B \times C)  \lr (A + B) \times C}{} \\
+\infer{\fold : \sub \, A \, (\mu \,A) \lr \mu \,A}{} 
+& \infer{\unfold : \mu\,A \lr \sub \, A \, (\mu \,A)}{} \\
+\multicolumn{2}{|c|}{\infer{\trace \,f: B \lr C}{f : A + B \lr A + C}} \\
+\hline
+\end{array}
+\]
+\caption{Programs of \Pio}
+\label{fig:programs}
+\end{figure}
 
 \section{Delay Monad}\label{sec:delay}
 
