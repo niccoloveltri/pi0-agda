@@ -17,11 +17,22 @@
 %\usepackage{amsthm}
 \usepackage{amssymb}
 \usepackage{mathtools}
+\usepackage{fancyvrb}
 
 \newcommand{\N}{\mathbb{N}}
-\newcommand{\Pio}{$\Pi^{\mathsf{o}}$} 
+\newcommand{\Pio}{$\mathsf{\Pi}^{\mathsf{o}}$} 
 \newcommand{\Set}{\mathsf{Set}}
 \newcommand{\comp}{\circ}
+\newcommand{\U}{\mathcal{U}}
+\newcommand{\copair}[2]{[#1,#2]}
+\newcommand{\pair}[2]{\left< #1,#2 \right>}
+\newcommand{\inl}{\mathsf{inl}}
+\newcommand{\inr}{\mathsf{inr}}
+\newcommand{\fst}{\mathsf{fst}}
+\newcommand{\snd}{\mathsf{snd}}
+\newcommand{\T}{\mathsf{T}}
+\newcommand{\Inv}{\mathsf{Inv}}
+\newcommand{\iter}{\mathsf{iter}}
 
 % Syntax Pi0
 \newcommand{\Ty}{\mathsf{Ty}}
@@ -32,6 +43,8 @@
 \newcommand{\unfold}{\mathsf{unfold}}
 \newcommand{\sub}{\mathsf{sub}}
 \newcommand{\trace}{\mathsf{trace}}
+\newcommand{\Z}{\mathsf{Z}}
+\newcommand{\I}{\mathsf{I}}
 
 % Delay macros
 \newcommand{\Delay}{\mathsf{Delay}\,}
@@ -41,12 +54,22 @@
 \newcommand{\dn}{\downarrow}
 \newcommand{\bind}{\mathsf{bind}}
 \newcommand{\str}{\mathsf{str}}
+\newcommand{\costr}{\mathsf{costr}}
 \newcommand{\D}{\mathbb{D}}
 \newcommand{\Dapprox}{\mathbb{D}_{\approx}}
+\newcommand{\copairD}[2]{[#1,#2]_{\D}}
+\newcommand{\pairD}[2]{\left< #1,#2 \right>_{\D}}
+\newcommand{\inlD}{\mathsf{inl}_{\D}}
+\newcommand{\inrD}{\mathsf{inr}_{\D}}
+\newcommand{\fstD}{\mathsf{fst}_{\D}}
+\newcommand{\sndD}{\mathsf{snd}_{\D}}
+\newcommand{\piso}{\mathsf{isPartialIso}}
+\newcommand{\pisoalt}{\mathsf{isPartialIso}_2}
+\newcommand{\iterD}{\mathsf{iter}_\D}
 
 \begin{document}
 %
-\title{Type-theoretic Semantics of \Pio\ via the Delay Monad \thanks{Supported by organization x.}}
+\title{Type-theoretical Semantics of \Pio\ via the Delay Monad \thanks{Supported by organization x.}}
 %
 %\titlerunning{Abbreviated paper title}
 % If the paper title is too long for the running head, you can set
@@ -75,6 +98,40 @@ The abstract should briefly summarize the contents of the paper in
 
 \section{Introduction}\label{sec:intro}
 
+\paragraph{The type-theoretical framework}
+
+Our work is settled in Martin-L\"of type theory with inductive and
+coinductive types. We write $(a : A) \to B \,a$ for dependent function
+spaces and $(a : A) \times B \,a$ for dependent products. We use the
+symbol $=$ for definitional equality of terms and $\equiv$ for
+propositional equality. Given $f : A \to C$ and
+$g : B \to C$, we write $\copair f g : A + B \to C$ for their
+copairing. The coproduct injections are denoted $\inl$ and $\inr$.
+Given $h : C \to A$ and $k : C \to B$, we write
+$\pair h k : C \to A \times B$ for their pairing. The product
+projections are denoted $\fst$ and $\snd$. The empty type is 0 and the
+empty type is 1. We write $\Set$ for the category of
+types and functions between them.
+We define $A \leftrightarrow B = (A \to B) \times (B \to A)$.
+%We write $\U$ for the universe of (small) types.
+
+We do not assume uniqueness of identity proofs
+(UIP), i.e. we do not consider two proofs of $x \equiv y$ necessarily
+equal. Agda natively supports UIP, so we have to manually switch it
+using the \verb|without-K| option.
+
+In Section \ref{sec:delay}, we will need to quotient a certain type by
+an equivalence relation. Martin-L\"of type theory does not support
+quotient types, but quotients can be simulated using setoids
+\cite{BartheCP03}. Alternatively, we can consider extensions of type theory with
+quotient types \`a la Hofmann \cite{Hofmann}, such as homotopy type
+theory \cite{Hott}. Setoids and quotient types \`a la
+Hofmann are not generally equivalent approaches, but they are indeed
+equivalent for the constructions we develop in this work. Therefore,
+in the rest of the paper we assume the existence of quotient types and
+we refrain from technical discussions on their implementation.
+
+
 \section{Syntax of \Pio}\label{sec:syntax}
 
 \subsection{Types}
@@ -84,11 +141,11 @@ The abstract should briefly summarize the contents of the paper in
 \arraycolsep=8pt\def\arraystretch{2.8}
 \begin{array}{|ccc|}
 \hline 
-\infer{0 : \Ty_n}{} 
-& \infer{1 : \Ty_n}{}
+\infer{\Z : \Ty_n}{} 
+& \infer{\I : \Ty_n}{}
 & \infer{\Var\,i : \Ty_n}{i \in [0..n)}  \\
-\infer{A + B : \Ty_n}{A : \Ty_n & B : \Ty_n}
-& \infer{A \times B : \Ty_n}{A : \Ty_n & B : \Ty_n}
+\infer{A \oplus B : \Ty_n}{A : \Ty_n & B : \Ty_n}
+& \infer{A \otimes B : \Ty_n}{A : \Ty_n & B : \Ty_n}
 & \infer{\mu\,A : \Ty_n}{A : \Ty_{n+1}} \\
 \hline
 \end{array}
@@ -105,26 +162,26 @@ The abstract should briefly summarize the contents of the paper in
 \begin{array}{|cc|}
 \hline
 \infer{\id : A \lr A}{}
-& \infer{g \cdot f : A \lr C}{g : B \lr C & f : A \lr B} \\
-\infer{f + g : A + B \lr C + D}{f : A \lr C & g : B \lr D} 
-& \infer{f \times g : A \times B \lr C \times D}{f : A \lr C & g : B \lr D} \\
-\infer{\lambda_{+} : 0 + A \lr A}{}
-& \infer{\lambda_{+}^{-1} : A \lr 0 + A}{} \\
-\infer{\lambda_{\times} : 1 \times A \lr A}{}
-& \infer{\lambda_{\times}^{-1} : A \lr 1 \times A}{} \\
-\infer{\alpha_{+} : (A + B) + C \lr A + (B + C)}{}
-& \infer{\alpha_{+}^{-1} : A + (B + C) \lr (A + B) + C}{} \\
-\infer{\alpha_{\times} : (A \times B) \times C \lr A \times (B \times C)}{}
-& \infer{\alpha_{\times}^{-1} : A \times (B \times C) \lr (A \times B) \times C}{} \\
-\infer{\sigma_{+} : A + B \lr B + A}{}
-& \infer{\sigma_{\times} : A \times B \lr B \times A}{} \\
-\infer{\kappa : 0 \times A \lr 0}{} 
-& \infer{\delta : (A + B) \times C \lr (A \times C) + (B \times C)}{} \\
-\infer{\kappa^{-1} : 0 \lr 0 \times A}{}
-& \infer{\delta^{-1} : (A \times C) + (B \times C)  \lr (A + B) \times C}{} \\
+& \infer{g \bullet f : A \lr C}{g : B \lr C & f : A \lr B} \\
+\infer{f \oplus g : A \oplus B \lr C \oplus D}{f : A \lr C & g : B \lr D} 
+& \infer{f \otimes g : A \otimes B \lr C \otimes D}{f : A \lr C & g : B \lr D} \\
+\infer{\lambda_{\oplus} : \Z \oplus A \lr A}{}
+& \infer{\lambda_{\oplus}^{-1} : A \lr \Z \oplus A}{} \\
+\infer{\lambda_{\otimes} : \I \otimes A \lr A}{}
+& \infer{\lambda_{\otimes}^{-1} : A \lr \I \otimes A}{} \\
+\infer{\alpha_{\oplus} : (A \oplus B) \oplus C \lr A \oplus (B \oplus C)}{}
+& \infer{\alpha_{\oplus}^{-1} : A \oplus (B \oplus C) \lr (A \oplus B) \oplus C}{} \\
+\infer{\alpha_{\otimes} : (A \otimes B) \otimes C \lr A \otimes (B \otimes C)}{}
+& \infer{\alpha_{\otimes}^{-1} : A \otimes (B \otimes C) \lr (A \otimes B) \otimes C}{} \\
+\infer{\sigma_{\oplus} : A \oplus B \lr B \oplus A}{}
+& \infer{\sigma_{\otimes} : A \otimes B \lr B \otimes A}{} \\
+\infer{\kappa : \Z \otimes A \lr \Z}{} 
+& \infer{\delta : (A \oplus B) \otimes C \lr (A \otimes C) \oplus (B \otimes C)}{} \\
+\infer{\kappa^{-1} : \Z \lr \Z \otimes A}{}
+& \infer{\delta^{-1} : (A \otimes C) \oplus (B \otimes C)  \lr (A \oplus B) \otimes C}{} \\
 \infer{\fold : \sub \, A \, (\mu \,A) \lr \mu \,A}{} 
 & \infer{\unfold : \mu\,A \lr \sub \, A \, (\mu \,A)}{} \\
-\multicolumn{2}{|c|}{\infer{\trace \,f: B \lr C}{f : A + B \lr A + C}} \\
+\multicolumn{2}{|c|}{\infer{\trace \,f: B \lr C}{f : A \oplus B \lr A \oplus C}} \\
 \hline
 \end{array}
 \]
@@ -141,12 +198,11 @@ possibly non-terminating ``computations'' returning a value of $A$
 whenever they terminate. Formally, $\Delay A$ is defined as a
 coinductive type with the following introduction rules:
 \[
-\infer={\now\,a : \Delay A}{x : A}
+\infer={\now\,a : \Delay A}{a : A}
 \quad
 \infer={\later\,x : \Delay A}{x : \Delay A}
 \]
-(Here and in the following, single rule lines refer to an inductive
-definition, double rule lines to a coinductive definition.) The
+(Double rule lines refer to a coinductive definition.) The
 constructor $\now$ embeds $A$ into $\Delay A$, so $\now\,a$ represents
 the terminating computation returning the value $a$. The constructor
 $\later$ adds an additional unit of time delay to a computation. The
@@ -162,7 +218,8 @@ while the Kleisli extension $\bind$ is corecursively defined as follows:
 \end{align*}
 The delay monad, like any other monad on $\Set$, has a unique strength
 operation which we denote by $\str : A \times \Delay B \to \Delay (A
-\times B)$. Moreover, the delay datatype is a commutative monad.
+\times B)$. Similarly, it has a unique costrength operation $\costr :
+\Delay A \times B \to \Delay (A \times B)$ definable using $\str$. Moreover, the delay datatype is a commutative monad.
 
 The Kleisli category of the delay monad, that we call $\D$, has types
 as objects and functions $f : A \to \Delay B$ as morphisms between $A$
@@ -175,7 +232,7 @@ the introduced notion of partiality is intensional, in the sense that
 computations terminating with the same value in a different number of
 steps are considered different. To obtain an extensional notion of
 partiality, which in particular allows the specification of a
-well-behaved trace operator, we need to quotient the delay datatype by
+well-behaved trace operator, we introduce the notion of termination-sensitive
 weak bisimilarity.
 
 Weak bisimilarity is defined in terms of convergence. A computation
@@ -190,43 +247,183 @@ $x \dn a$. The relation $\dn$ is inductively defined by the rules:
 Two computations in $\Delay A$ are weakly bisimilar if they differ by
 a finite number of applications of the constructor $\later$. This
 informal statement can be formalized in several different but
-logically equivalent ways \cite{ChapmanUV19}. For this work we chose the
+logically equivalent ways \cite{ChapmanUV19}. Here we consider the
 following definition:
 \[
 x \approx y = (a : A) \to (x \dn a \to y \dn a) \times (y \dn a \to x \dn a) 
 \]
 The definition says that $x$ and $y$ are weakly bisimilar if, whenever
-$x$ terminates, then $y$ also terminates with the same value, and vice
-versa. Weak bisimilarity is an equivalence relation and it is a
-congrence with respect to the $\later$ operation.  We call $\Dapprox$
-the Kleisli category of $\Delay$ with homsets quotiented by pointwise
-weak bisimilarity. This means that in $\Dapprox$ two morphisms $f$ and
-$g$ are considered equal whenever $f \, a \approx g \, a$, for all
-inputs $a$. When this is the case, we also write $f \approx g$.  In
-this work we do not formally construct the quotients
-$(A \to \Delay B)/{\approx}$, since we work in a type theory without
-quotient types. Instead we require that every construction we perform
-on morphisms in $\Dapprox$ respects weak bisimilarity. Technically, we
-construct $\Dapprox$ as a category enriched in setoids CITE, where in
-particular all the reasoning on morphisms is performed up-to weak
-bisimilarity.
+$x$ terminates returning a value $a$, then $y$ also terminates
+returning $a$, and vice versa. Weak bisimilarity is an equivalence
+relation and it is a congruence w.r.t. the $\later$ operation.
+We call $\Dapprox$ the category $\D$ with homsets
+quotiented by pointwise weak bisimilarity. This means that in
+$\Dapprox$ two morphisms $f$ and $g$ are considered equal whenever
+$f \, a \approx g \, a$, for all inputs $a$. When this is the case, we
+also write $f \approx g$. 
 
-In previous work \cite{ChapmanUV19} we showed that, when working in a
-type theory with quotient types a la Hofmann CITE, quotienting the
-delay monad by weak bisimilarity has problematic consequences. In
-fact, it does not seem possible to recover the monad structure on the
-quotiented datatype $\mathsf{DelayQuot}\,A = \Delay A/{\approx}$
-without assuming additional controversial principles
-such as the axiom of countable choice. In particolar, countable choice
-would be necessary for modelling the trace operator of \Pio. In
-loc.cit. we showed that a possible way to avoid these issues is
-forming the quotients of homsets, as in $(A \to \Delay B)/{\approx}$, instead of
-quotienting the delay datatype directly. We would still not be able to form
+As an alternative to quotienting the homsets of $\D$, we could have
+quotiented the delay datatype by weak bisimilarity:
+$\mathsf{DelayQuot}\,A = \Delay A/{\approx}$. In previous work
+\cite{ChapmanUV19}, we showed that this construction has problematic
+consequences if we employ Hofmann's approach to quotient types
+\cite{Hofmann}. For example, it does not seem possible to lift the
+monad structure of $\Delay$ to $\mathsf{DelayQuot}$ without
+postulating additional principles such as the axiom of countable
+choice. More fundamentally for this work, countable choice would be
+needed for modelling the trace operator of \Pio\ in the Kleisli
+category of $\mathsf{DelayQuot}$. Notice that, if the setoid approach
+to quotienting is employed, the latter constructions go through
+without the need for additional assumptions. In order to keep an
+agnostic perspective on quotient types and avoid the need for
+disputable semi-classical choice principles, we decided to quotient
+the homsets of $\D$ by (poitwise) weak bisimilarity instead of the
+delay datatype.
+
+\subsection{Finite Products and Coproducts}
+\label{sec:prod}
+
+Colimits in $\Dapprox$ are inherited from $\Set$. This means that 0 is
+also the initial object of $\Dapprox$, similarly $A + B$ is the
+binary coproduct of $A$ and $B$ in $\Dapprox$. Given $f : A \to
+\Delay C$ and $g : B \to \Delay C$, we define their copairing as
+$\copairD f g = \copair f g : A + B \to \Delay C$. The operation
+$\copairD - -$ is compatible with weak bisimilarity, in the sense that
+$\copairD{f_1}{g_1} \approx \copairD{f_2}{g_2}$ whenever $f_1 \approx f_2$
+and $g_1 \approx g_2$.
+The coproduct
+injections are given by $\inlD = \now \comp \inl : A \to \Delay (A +
+B)$ and $\inrD = \now \comp \inr : B \to \Delay (A + B)$.
 
 
+Limits in $\Set$ do not lift to $\Dapprox$. In particular, 1 is not
+terminal object and $A \times B$ is not the binary product of $A$ and
+$B$ in $\Dapprox$. In fact, 0 is the terminal object, with
+$\lambda \_.\, \never : A \to \Delay 0$ as the terminal morphism.  The
+binary product of $A$ and $B$ in $\Dapprox$ is given by
+$A + B + A \times B$. Nevertheless, it is possible to prove that 1 and
+$- \times -$ are partial terminal object and partial binary products
+respectively, in the sense of Cockett and Lack's restriction
+categories \cite{CockettL07}. Here we refrain from making the latter
+statement formal. We only show the construction of the partial pairing
+operation, which we employ in the interpretation of \Pio.  Given
+$f : C \to \Delay A$ and $g : C \to \Delay B$, we define:
+\begin{align*}
+& \pairD f g : C \to \Delay (A \times B) \\
+& \pairD f g = \costr \diamond (\str \comp \pair f g)
+\end{align*}
+Since the delay monad is commutative, the function $\pairD f g$ is
+equal to $\str \diamond (\costr \comp \pair f g)$. The operation
+$\pairD - -$ is compatible with weak bisimilarity.
+
+\subsection{Partial Isomorphisms}
+\label{sec:isos}
+
+In order to model the reversible programs of \Pio, we need to consider
+reversible computations in $\Dapprox$. Given a morphism $f : A \to
+\Delay B$, we say that it is a partial isomorphism if the following
+type is inhabited:
+\begin{align*}
+\piso \,f = (g : B \to \Delay A) \times \left( (a : A) (b : B) \to  f
+  \,a \dn b \leftrightarrow g \,b \dn a  \right)  
+\end{align*}
+In other words, $f$ is a partial isomorphism if there exists a
+morphism $g : B \to \Delay A$ such that, if $f\,a$ terminates
+returning a value $b$, then $g\,b$ terminates returning $a$, and vice
+versa. 
+Our definition of partial isomorhisms is equivalent to the standard
+categorical one CITATION, which translated in our type-theoretical
+setting becomes
+\begin{align*}
+\pisoalt \,f = (g : B \to \Delay A) \times f \diamond g \diamond
+  f \approx f \times g \diamond f \diamond g \approx g 
+\end{align*}
+
+
+
+We denote $A \simeq B$ the type of partial isomorphisms between
+$A$ and $B$:
+\[
+A \simeq B = (f : A \to \Delay B) \times \piso \,f
+\]
+We call $\Inv \Dapprox$ the subcategory of $\Dapprox$ consisting
+of (equivalence classes of) partial isomorphisms. The category
+$\Inv\Dapprox$ inherits partial finite products from $\Dapprox$, but
+not the coproducts. It is possible to prove though that, in the category
+$\Inv\Dapprox$, 0 is a partial zero and $A + B$ is the disjointness
+tensor of $A$ and $B$ \cite{Giles}. 
+
+%%  In this work we do not formally construct
+%% the quotients $(A \to \Delay B)/{\approx}$, since we work in a type
+%% theory without quotient types. 
+%% % Instead we require that every construction we perform on morphisms in
+%% % $\Dapprox$ respects weak bisimilarity.
+%% Instead, we represent the homsets of $\Dapprox$ as setoids.a category
+%% enriched in setoids \cite{BartheCP03}: $\Dapprox$ has the same objects
+%% of $\D$, but morphisms between $A$ and $B$ form a setoid $(A \to
+%% \Delay B, {\approx})$. This implies that every function we
+%% define out of the type $A \to \Delay B$ must respects weak
+%% bisimilarity. 
+
+
+%% In previous work \cite{ChapmanUV19} we showed that, when working in a
+%% type theory with quotient types a la Hofmann \cite{Hofmann}, quotienting the
+%% delay monad by weak bisimilarity has problematic consequences. For example,
+%% it does not seem possible to recover the monad structure on the
+%% quotiented datatype $\mathsf{DelayQuot}\,A = \Delay A/{\approx}$
+%% without assuming non-constructive principles
+%% such as the axiom of countable choice. More fundamentally for this
+%% work, countable choice would be needed for modelling the trace operator of \Pio. In
+%% loc.cit. we showed that a possible way to avoid these issues is
+%% forming the quotients of homsets, as in $(A \to \Delay B)/{\approx}$, instead of
+%% quotienting the delay datatype directly. 
 
 
 \section{Elgot Iteration and Trace}\label{sec:elgot}
+
+An Elgot monad is a monad $T$ whose Kleilsi category supports
+unguarded Elgot iteration. More precisely\footnote{Here we give the
+  definition of Elgot monad on $\Set$, but the definition of Elgot
+  monad makes sense in any category with binary coproducts.}, a monad
+$\T$ is Elgot if there exists an operation
+\[
+\iter_\T : (A \to \T \,(A + B)) \to A \to \T\,B
+\]
+satisfying a number of axioms, most notably the unfolding axiom:
+\[
+\iter_\T\,f \equiv \copair{\iter_\T \,f}{\eta_\T} \diamond_\T f
+\]
+where $\eta_\T$ is the unit of $\T$ and $\diamond_\T$ denotes morphism
+composition in the Kleisli category of $\T$.
+
+The delay monad is an Elgot monad up to weak bisimilarity. Its
+iteration operator relies on the definition of an auxiliary function
+$\iterD'$ corecursively defined as follows:
+\begin{align*}
+& \iterD' : (A \to \Delay (A + B)) \to \Delay (A + B) \to \Delay B \\
+& \iterD' \,f \,(\now \,(\inl\, a)) = \later \,(\iterD' \,f \,(f a)) \\
+& \iterD' \,f \,(\now \,(\inr\, b)) = \now \,b \\
+& \iterD' \,f \,(\later \,x) = \later \,(\iterD' \,f \,x) \\ 
+& \\
+& \iterD : (A \to \Delay (A + B)) \to A \to \Delay B \\
+& \iterD \,f \,a = \iterD' \,f \,(f \,a)
+\end{align*}
+The definition above can be given the following intuitive
+explaination. If $f\,a$ does not terminate, then $\iterD\,f\,a$ does
+not terminate as well. If $f\,a$ terminates, there are two
+possibilities: either $f\,a$ converges to $\inr\,b$, in which case
+$\iterD\,f\,a$ terminates returning the value $b$; or $f\,a$ converges
+to $\inl\,a'$, in which case we repeat the precedure by replacing $a$
+with $a'$. Notice that in the latter case we also add one occurrence
+of $\later$ to the total computation time. This addition is necessary
+achieving the productivity of the corecursively defined function
+$\iterD'$. In fact, by changing the first line of its specification to
+$\iterD' \,f \,(\now \,(\inl\, a)) = \iterD' \,f \,(f a)$
+and taking $f = \inlD$, we would have that $\iterD' \,f \,(\now
+\,(\inl\, a))$ unfolds indefinitely without producing any output. In
+Agda, such a definition would be rightfully rejected by the termination
+checker. 
+
 
 \section{Interpretation}\label{sec:interpretation}
 
