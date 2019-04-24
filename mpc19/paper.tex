@@ -265,12 +265,13 @@ coinductive type with the following introduction rules:
 \quad
 \infer={\later\,x : \Delay A}{x : \Delay A}
 \]
-(Double rule lines refer to a coinductive constructor.) The
-constructor $\now$ embeds $A$ into $\Delay A$, so $\now\,a$ represents
-the terminating computation returning the value $a$. The constructor
-$\later$ adds an additional unit of time delay to a computation. The
-non-terminating computation $\never$ is corecursively defined as
-$\never = \later \,\never$.
+The constructor $\now$ embeds $A$ into $\Delay A$, so $\now\,a$
+represents the terminating computation returning the value $a$. The
+constructor $\later$ adds an additional unit of time delay to a
+computation. Double rule lines refer to a coinductive constructor,
+which can be applied an infinite amount of times.
+The non-terminating computation $\never$
+is corecursively defined as $\never = \later \,\never$.
 
 The delay datatype is a monad. The unit is the constructor $\now$,
 while the Kleisli extension $\bind$ is corecursively defined as follows:
@@ -318,7 +319,7 @@ x \approx y = (a : A) \to x \dn a \leftrightarrow y \dn a
 The definition says that $x$ and $y$ are weakly bisimilar if, whenever
 $x$ terminates returning a value $a$, then $y$ also terminates
 returning $a$, and vice versa.
-Equivalently, weak bisimilarity can be coinductively formulated as follows:
+Alternatively, weak bisimilarity can be coinductively formulated as follows:
 \begin{equation}
 \label{eq:weak2}
 \arraycolsep=8pt\def\arraystretch{2.8}
@@ -332,6 +333,11 @@ Equivalently, weak bisimilarity can be coinductively formulated as follows:
 \infer{\laterR_{\approx} \, p: \now\,a \approx \later\,x}{p : \now\,a \approx x}
 \end{array}
 \end{equation}
+Notice that the constructor $\later_{\approx}$ is
+coinductive. Formulation (\ref{eq:weak1}) and (\ref{eq:weak2}) are
+logically equivalent, meaning that two computations are weakly
+bisimilar as in (\ref{eq:weak1}) if and only if they are weakly
+bisimilar as in (\ref{eq:weak2}).
 In the rest of the paper we will employ
 both encodings of weak bisimilarity, in each case explicitly stating
 if we are working with definition (\ref{eq:weak1}) or definition (\ref{eq:weak2}).
@@ -471,7 +477,7 @@ Giles~\cite{Giles}, as that would imply decidable equality on all objects).
 %% quotienting the delay datatype directly. 
 
 
-\section{Elgot Iteration and Trace}\label{sec:elgot}
+\section{Elgot Iteration}\label{sec:elgot}
 
 An Elgot monad is a monad $T$ whose Kleilsi category supports
 unguarded Elgot iteration. More precisely\footnote{Here we give the
@@ -551,6 +557,9 @@ bisimilarity. The proof relies on an auxiliary proof $\unfolding'$.
 \end{array}
 \]
 
+\subsection{Trace}\label{sec:trace}
+
+\subsection{Dagger Trace}\label{sec:daggertrace}
 
 \section{Interpretation}\label{sec:interpretation}
 
