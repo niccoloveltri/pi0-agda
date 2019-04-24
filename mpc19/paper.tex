@@ -25,6 +25,7 @@
 \newcommand{\N}{\mathbb{N}}
 \newcommand{\Pio}{$\mathsf{\Pi}^{\mathsf{o}}$} 
 \newcommand{\Set}{\mathsf{Set}}
+\newcommand{\Par}{\mathsf{Par}}
 \newcommand{\comp}{\circ}
 \newcommand{\U}{\mathcal{U}}
 \newcommand{\copair}[2]{[#1,#2]}
@@ -112,11 +113,10 @@ Robin:
 \begin{itemize}
   \item Abstract.
   \item Introduction.
-  \item Check and correct 4.1, 4.2, add citations, etc.
   \item Make pictures! 
   \begin{itemize}
     \item Graphical language of monoidal categories, and for \Pio.
-    \item Trace.
+    \item Trace.  
     \item Iterator, iterator unfolding axiom.
     \item Trace from iterator.
   \end{itemize}
@@ -385,15 +385,19 @@ injections are given by $\inlD = \now \comp \inl : A \to \Delay (A +
 B)$ and $\inrD = \now \comp \inr : B \to \Delay (A + B)$.
 
 
-Limits in $\Set$ do not lift to $\Dapprox$. In particular, 1 is not
-terminal object and $A \times B$ is not the binary product of $A$ and
-$B$ in $\Dapprox$. In fact, 0 is the terminal object, with
-$\lambda \_.\, \never : A \to \Delay 0$ as the terminal morphism.  The
+Just as limits in $\Set$ do not lift to limits in the category $\Par$ of sets
+and partial functions, they do not lift to $\Dapprox$ either. This is not an
+issue with these concrete formulations of partiality, but rather with the
+interaction of partiality (in the sense of restriction categories) and limits
+in general (see \cite[Section 4.4]{CockettL07}). In particular, $1$ is not
+terminal object and $A \times B$ is not the binary product of $A$ and $B$ in
+$\Dapprox$. In fact, $0$ is (also) the terminal object, with $\lambda \_.\,
+\never : A \to \Delay 0$ as the terminal morphism. The
 binary product of $A$ and $B$ in $\Dapprox$ is given by
 $A + B + A \times B$. Nevertheless, it is possible to prove that 1 and
 $- \times -$ are partial terminal object and partial binary products
 respectively, in the sense of Cockett and Lack's restriction
-categories \cite{CockettL07}. Here we refrain from making the latter
+categories \cite{CockettL02,CockettL07}. Here we refrain from making the latter
 statement formal. We only show the construction of the partial pairing
 operation, which we employ in the interpretation of \Pio.  Given
 $f : C \to \Delay A$ and $g : C \to \Delay B$, we define:
@@ -419,28 +423,27 @@ type is inhabited:
 In other words, $f$ is a partial isomorphism if there exists a
 morphism $g : B \to \Delay A$ such that, if $f\,a$ terminates
 returning a value $b$, then $g\,b$ terminates returning $a$, and vice
-versa. 
-Our definition of partial isomorhisms is equivalent to the standard
-categorical one CITATION, which translated in our type-theoretical
-setting becomes
+versa. In $\Dapprox$, our definition of partial isomorphisms is equivalent to
+the standard categorical one~\cite{Kastl79} (see also \cite{CockettL02}),
+which, translated in our type-theoretical setting, is
 \begin{align*}
 \pisoalt \,f = (g : B \to \Delay A) \times f \diamond g \diamond
   f \approx f \times g \diamond f \diamond g \approx g 
 \end{align*}
-
-
-
 We denote $A \simeq B$ the type of partial isomorphisms between
 $A$ and $B$:
 \[
 A \simeq B = (f : A \to \Delay B) \times \piso \,f
 \]
-We call $\Inv \Dapprox$ the subcategory of $\Dapprox$ consisting
-of (equivalence classes of) partial isomorphisms. The category
-$\Inv\Dapprox$ inherits partial finite products from $\Dapprox$, but
-not the coproducts. It is possible to prove though that, in the category
-$\Inv\Dapprox$, 0 is a partial zero and $A + B$ is the disjointness
-tensor of $A$ and $B$ \cite{Giles}. 
+We call $\Inv \Dapprox$ the subcategory of $\Dapprox$ consisting of
+(equivalence classes of) partial isomorphisms. Note that $\Inv\Dapprox$
+inherits neither partial products nor coproducts of $\Dapprox$, as the
+universal mapping property fails in both cases. However, it can be shown that
+in the category $\Inv\Dapprox$, $0$ is a zero object, $A + B$ is the
+disjointness tensor product of $A$ and $B$ (in the sense of Giles~\cite{Giles})
+with unit $0$, and $A \times B$ a monoidal product of $A$ and $B$ with unit $1$
+(though it is \emph{not} an inverse product in the sense of
+Giles~\cite{Giles}, as that would imply decidable equality on all objects).
 
 %%  In this work we do not formally construct
 %% the quotients $(A \to \Delay B)/{\approx}$, since we work in a type
