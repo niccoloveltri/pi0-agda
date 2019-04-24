@@ -19,6 +19,9 @@
 \usepackage{mathtools}
 \usepackage{fancyvrb}
 
+\usepackage{soul}
+
+
 \newcommand{\N}{\mathbb{N}}
 \newcommand{\Pio}{$\mathsf{\Pi}^{\mathsf{o}}$} 
 \newcommand{\Set}{\mathsf{Set}}
@@ -67,6 +70,9 @@
 \newcommand{\pisoalt}{\mathsf{isPartialIso}_2}
 \newcommand{\iterD}{\mathsf{iter}_\D}
 
+\newcommand{\todo}[1]{\hl{TODO: #1}}
+\newcommand{\todocite}[1]{\hl{[TODO: #1]}}
+
 \begin{document}
 %
 \title{Type-theoretical Semantics of \Pio\ via the Delay Monad \thanks{Supported by organization x.}}
@@ -96,7 +102,53 @@ The abstract should briefly summarize the contents of the paper in
 \keywords{First keyword  \and Second keyword \and Another keyword.}
 \end{abstract}
 
+\section{TODO} % (fold)
+\label{sec:todo}
+Robin:
+\begin{itemize}
+  \item Abstract.
+  \item Introduction.
+  \item Check and correct 4.1, 4.2, add citations, etc.
+  \item Make pictures! 
+  \begin{itemize}
+    \item Graphical language of monoidal categories, and for \Pio.
+    \item Trace.
+    \item Iterator, iterator unfolding axiom.
+    \item Trace from iterator.
+  \end{itemize}
+  \item Conclusion
+  \begin{itemize}
+    \item Related work: Kleisli category of the Delay monad is a join
+    restriction category, inverse category of a join restriction category is a
+    join inverse category; already known to be dagger-traced under certain
+    conditions.
+    \item Future work: Semantics of time invertible programming. Extension of
+    the work on the Kleisli category of the Delay monad beyond $\Set$ to other
+    (more general) categories, e.g. topoi.
+  \end{itemize}
+\end{itemize}
+Niccolò: 
+\begin{itemize}
+  \item Fix the syntax to be closer to ordinary presentations (but do describe 
+  how it is realized in Agda).
+  \item Finish the section about trace and iteration.
+  \item Remind the reader about double lines of coinductive definitions. 
+\end{itemize}
+Both:
+\begin{itemize}
+  \item \textbf{Important:} Come up with a punnier title! (Something about 
+  delays and daggers).
+\end{itemize}
+% section todo (end)
+
 \section{Introduction}\label{sec:intro}
+\todo{RC Motivation.}
+
+\todo{Formalization motivation? Maybe?}
+
+\todo{Explain Carette et al. Say that we are extending it to be actually useful (but don't say it like that).}
+
+\todo{Delay vs. Maybe monad.}
 
 \paragraph{The type-theoretical framework}
 
