@@ -198,11 +198,11 @@ possibly non-terminating ``computations'' returning a value of $A$
 whenever they terminate. Formally, $\Delay A$ is defined as a
 coinductive type with the following introduction rules:
 \[
-\infer={\now\,a : \Delay A}{a : A}
+\infer{\now\,a : \Delay A}{a : A}
 \quad
 \infer={\later\,x : \Delay A}{x : \Delay A}
 \]
-(Double rule lines refer to a coinductive definition.) The
+(Double rule lines refer to a coinductive constructor.) The
 constructor $\now$ embeds $A$ into $\Delay A$, so $\now\,a$ represents
 the terminating computation returning the value $a$. The constructor
 $\later$ adds an additional unit of time delay to a computation. The
@@ -247,14 +247,29 @@ $x \dn a$. The relation $\dn$ is inductively defined by the rules:
 Two computations in $\Delay A$ are weakly bisimilar if they differ by
 a finite number of applications of the constructor $\later$. This
 informal statement can be formalized in several different but
-logically equivalent ways \cite{ChapmanUV19}. Here we consider the
-following definition:
-\[
-x \approx y = (a : A) \to (x \dn a \to y \dn a) \times (y \dn a \to x \dn a) 
-\]
+logically equivalent ways \cite{ChapmanUV19}. 
+A possible defintion is as follows:
+\begin{equation}\label{eq:weak1}
+x \approx y = (a : A) \to x \dn a \leftrightarrow y \dn a
+\end{equation}
 The definition says that $x$ and $y$ are weakly bisimilar if, whenever
 $x$ terminates returning a value $a$, then $y$ also terminates
-returning $a$, and vice versa. Weak bisimilarity is an equivalence
+returning $a$, and vice versa.
+Equivalently, weak bisimilarity can be coinductively formulated as follows:
+\begin{equation}
+\label{eq:weak2}
+\infer{\now\,a \approx \now\,a}{}
+\quad
+\infer{\now\,a \approx \later\,x}{\now\,a \approx x}
+\quad
+\infer{\later\,x \approx \now\,a}{x \approx \now \,a}
+\quad
+\infer={\later\,x_1 \approx \later\,x_2}{x_1 \approx x_2}
+\end{equation}
+In the rest of the paper we will employ
+both encodings of weak bisimilarity, in each case explicitly stating
+if we are working with definition (\ref{eq:weak1}) or definition (\ref{eq:weak2}).
+Weak bisimilarity is an equivalence
 relation and it is a congruence w.r.t. the $\later$ operation.
 We call $\Dapprox$ the category $\D$ with homsets
 quotiented by pointwise weak bisimilarity. This means that in
@@ -264,15 +279,15 @@ also write $f \approx g$.
 
 As an alternative to quotienting the homsets of $\D$, we could have
 quotiented the delay datatype by weak bisimilarity:
-$\mathsf{DelayQuot}\,A = \Delay A/{\approx}$. In previous work
+$\mathsf{Delay}_{\approx}\,A = \Delay A/{\approx}$. In previous work
 \cite{ChapmanUV19}, we showed that this construction has problematic
 consequences if we employ Hofmann's approach to quotient types
 \cite{Hofmann}. For example, it does not seem possible to lift the
-monad structure of $\Delay$ to $\mathsf{DelayQuot}$ without
+monad structure of $\Delay$ to $\mathsf{Delay}_{\approx}$ without
 postulating additional principles such as the axiom of countable
 choice. More fundamentally for this work, countable choice would be
 needed for modelling the trace operator of \Pio\ in the Kleisli
-category of $\mathsf{DelayQuot}$. Notice that, if the setoid approach
+category of $\mathsf{Delay}_{\approx}$. Notice that, if the setoid approach
 to quotienting is employed, the latter constructions go through
 without the need for additional assumptions. In order to keep an
 agnostic perspective on quotient types and avoid the need for
@@ -396,12 +411,13 @@ satisfying a number of axioms, most notably the unfolding axiom:
 where $\eta_\T$ is the unit of $\T$ and $\diamond_\T$ denotes morphism
 composition in the Kleisli category of $\T$.
 
-The delay monad is an Elgot monad up to weak bisimilarity. Its
-iteration operator relies on the definition of an auxiliary function
-$\iterD'$ corecursively defined as follows:
+The delay monad is an Elgot monad for which the axioms holds up to
+weak bisimilarity, not propositional equality. Its iteration operator
+relies on the definition of an auxiliary function $\iterD'$
+corecursively defined as follows:
 \begin{align*}
 & \iterD' : (A \to \Delay (A + B)) \to \Delay (A + B) \to \Delay B \\
-& \iterD' \,f \,(\now \,(\inl\, a)) = \later \,(\iterD' \,f \,(f a)) \\
+& \iterD' \,f \,(\now \,(\inl\, a)) = \later \,(\iterD' \,f \,(f \,a)) \\
 & \iterD' \,f \,(\now \,(\inr\, b)) = \now \,b \\
 & \iterD' \,f \,(\later \,x) = \later \,(\iterD' \,f \,x) \\ 
 & \\
@@ -423,6 +439,7 @@ and taking $f = \inlD$, we would have that $\iterD' \,f \,(\now
 \,(\inl\, a))$ unfolds indefinitely without producing any output. In
 Agda, such a definition would be rightfully rejected by the termination
 checker. 
+
 
 
 \section{Interpretation}\label{sec:interpretation}
