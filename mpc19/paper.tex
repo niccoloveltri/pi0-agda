@@ -581,17 +581,20 @@ The trace operator in $\Dapprox$ is defined as follows:
 \end{align*}
 The operation $\traceD$ is compatible with weak bisimilarity. 
 
+\ctikzfig{fL_fR}
+\ctikzfig{trace}
+
 It is well-known that a trace operator is obtainable from an iteration
-operator. This is how Hasegawa's construction  \cite{Hasegwa97} derives it in the following way:
+operator, as shown by Hasegawa  \cite{Hasegawa97}. His construction,
+instantiated to our setting, looks like this:
 \begin{align*}
-& \traceD : (A + B \to \Delay (A + C)) \to B \to \Delay C \\
-& \traceD \,f = \copairD{\iterD \,\mapL f}{\now} \diamond \mapR f
+& \traceHD : (A + B \to \Delay (A + C)) \to B \to \Delay C \\
+& \traceHD \,f = \iterD (\Delay (\inl + \id) \comp f) \comp \inr
 \end{align*}
 
 
-\subsection{Dagger Trace}\label{sec:daggertrace}
 
-%\ctikzfig{language}
+\subsection{Dagger Trace}\label{sec:daggertrace}
 
 
 \section{Interpretation}\label{sec:interpretation}
