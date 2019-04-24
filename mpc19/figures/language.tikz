@@ -28,6 +28,43 @@
 		\node [style=object] (27) at (5.75, 0.75) {$X$};
 		\node [style=object] (28) at (8.5, 1.25) {$X$};
 		\node [style=object] (29) at (8.5, 0.25) {$Y$};
+		\node [style=none] (75) at (0.25, 5.5) {};
+		\node [style=none] (76) at (0.25, 3.5) {};
+		\node [style=dot] (77) at (0.75, 4.5) {};
+		\node [style=none] (78) at (2.5, 4.5) {};
+		\node [style=large box] (79) at (5, 4.5) {$f$};
+		\node [style=none] (80) at (4.5, 5) {};
+		\node [style=none] (81) at (4.5, 4) {};
+		\node [style=none] (82) at (5.5, 4) {};
+		\node [style=none] (83) at (5.5, 5) {};
+		\node [style=none] (84) at (6.25, 5) {};
+		\node [style=none] (85) at (6.25, 4) {};
+		\node [style=none] (86) at (3.75, 5) {};
+		\node [style=none] (87) at (3.75, 4) {};
+		\node [style=object] (88) at (4, 5.25) {$U$};
+		\node [style=object] (89) at (6, 5.25) {$U$};
+		\node [style=object] (90) at (4, 4.25) {$X$};
+		\node [style=object] (91) at (6, 4.25) {$Y$};
+		\node [style=small box] (92) at (8.5, 5.5) {$f_2$};
+		\node [style=none] (93) at (8, 5.5) {};
+		\node [style=none] (94) at (9, 5.25) {};
+		\node [style=none] (95) at (9, 5.75) {};
+		\node [style=none] (96) at (7.25, 5.5) {};
+		\node [style=object] (97) at (9.5, 6) {$U$};
+		\node [style=object] (98) at (7.5, 5.75) {$U$};
+		\node [style=object] (99) at (9.5, 5.5) {$Y$};
+		\node [style=small box] (100) at (8.5, 3.5) {$f_1$};
+		\node [style=none] (101) at (8, 3.5) {};
+		\node [style=none] (102) at (9, 3.25) {};
+		\node [style=none] (103) at (9, 3.75) {};
+		\node [style=none] (104) at (7.25, 3.5) {};
+		\node [style=object] (105) at (9.5, 4) {$U$};
+		\node [style=object] (106) at (7.5, 3.75) {$X$};
+		\node [style=object] (107) at (9.5, 3.5) {$Y$};
+		\node [style=none] (108) at (9.75, 5.75) {};
+		\node [style=none] (109) at (9.75, 5.25) {};
+		\node [style=none] (110) at (9.75, 3.75) {};
+		\node [style=none] (111) at (9.75, 3.25) {};
 	\end{pgfonlayer}
 	\begin{pgfonlayer}{edgelayer}
 		\draw (7.center) to (1.center);
@@ -44,5 +81,18 @@
 		\draw (13.center) to (22.center);
 		\draw [in=90, out=-180, looseness=0.75] (20.center) to (13.center);
 		\draw [bend right=90] (16.center) to (21.center);
+		\draw [in=90, out=-15, looseness=0.75] (75.center) to (77);
+		\draw [in=-90, out=0, looseness=0.75] (76.center) to (77);
+		\draw (77) to (78.center);
+		\draw (86.center) to (80.center);
+		\draw (87.center) to (81.center);
+		\draw (82.center) to (85.center);
+		\draw (83.center) to (84.center);
+		\draw (96.center) to (93.center);
+		\draw (104.center) to (101.center);
+		\draw (95.center) to (108.center);
+		\draw (94.center) to (109.center);
+		\draw (103.center) to (110.center);
+		\draw (102.center) to (111.center);
 	\end{pgfonlayer}
 \end{tikzpicture}
