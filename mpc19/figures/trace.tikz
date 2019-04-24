@@ -11,27 +11,27 @@
 		\node [style=none] (8) at (0, 0) {};
 		\node [style=none] (9) at (0.75, 2.25) {};
 		\node [style=none] (10) at (3.25, 2.25) {};
-		\node [style=object] (11) at (1, 1.25) {$U$};
-		\node [style=object] (12) at (3, 1.25) {$U$};
-		\node [style=object] (13) at (1, 0.25) {$X$};
-		\node [style=object] (14) at (3, 0.25) {$Y$};
+		\node [style=object] (11) at (1, 1.25) {$C$};
+		\node [style=object] (12) at (3, 1.25) {$C$};
+		\node [style=object] (13) at (1, 0.25) {$A$};
+		\node [style=object] (14) at (3, 0.25) {$B$};
 		\node [style=none] (15) at (5, 1) {$=$};
 		\node [style=large box] (16) at (7.5, 0.5) {$f_\mathsf{L}$};
 		\node [style=none] (17) at (7, 0.5) {};
 		\node [style=none] (18) at (8, -0.25) {};
 		\node [style=none] (19) at (8, 1.25) {};
 		\node [style=none] (20) at (6, 0.5) {};
-		\node [style=object] (21) at (8.5, 1.5) {$U$};
-		\node [style=object] (22) at (6.5, 0.75) {$X$};
-		\node [style=object] (23) at (8.5, 0) {$Y$};
+		\node [style=object] (21) at (8.5, 1.5) {$C$};
+		\node [style=object] (22) at (6.5, 0.75) {$A$};
+		\node [style=object] (23) at (8.5, 0) {$B$};
 		\node [style=large box] (24) at (10.25, 1.25) {$f_\mathsf{R}$};
 		\node [style=none] (25) at (9.75, 1.25) {};
 		\node [style=none] (26) at (10.75, 0.75) {};
 		\node [style=none] (27) at (10.75, 1.75) {};
 		\node [style=none] (28) at (11.5, 1.75) {};
 		\node [style=none] (29) at (12, 0.75) {};
-		\node [style=object] (30) at (11.25, 2) {$U$};
-		\node [style=object] (31) at (11.25, 1) {$Y$};
+		\node [style=object] (30) at (11.25, 2) {$C$};
+		\node [style=object] (31) at (11.25, 1) {$B$};
 		\node [style=none] (32) at (12, 0.75) {};
 		\node [style=none] (33) at (12, -0.25) {};
 		\node [style=dot] (34) at (12.25, 0.25) {};
@@ -40,7 +40,7 @@
 		\node [style=none] (37) at (11.5, 1.75) {};
 		\node [style=none] (38) at (9.5, 3) {};
 		\node [style=none] (39) at (11.5, 3) {};
-		\node [style=object] (40) at (12.75, 0.5) {$Y$};
+		\node [style=object] (40) at (12.75, 0.5) {$B$};
 	\end{pgfonlayer}
 	\begin{pgfonlayer}{edgelayer}
 		\draw (7.center) to (1.center);
