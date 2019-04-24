@@ -252,7 +252,7 @@ A ::= \Z \, | \,A \oplus A \, | \,\I \,| \,A \otimes A \,| \,X \,|
 & \infer{\delta^{-1} : (A \otimes C) \oplus (B \otimes C)  \lr (A \oplus B) \otimes C}{} \\
 \infer{\fold : \sub \, A \, (\mu \,A) \lr \mu \,A}{} 
 & \infer{\unfold : \mu\,A \lr \sub \, A \, (\mu \,A)}{} \\
-\multicolumn{2}{|c|}{\infer{\trace \,f: B \lr C}{f : A \oplus B \lr A \oplus C}} \\
+\multicolumn{2}{|c|}{\infer{\trace \,f: A \lr B}{f : A \oplus C \lr B \oplus C}} \\
 \hline
 \end{array}
 \]
@@ -576,8 +576,8 @@ $\mapL f = f \comp \inl : A \to C$ and
 $\mapR f = f \comp \inr : B \to C$, so that $f = [\mapL f , \mapR f]$.
 The trace operator in $\Dapprox$ is defined as follows:
 \begin{align*}
-& \traceD : (A + B \to \Delay (A + C)) \to B \to \Delay C \\
-& \traceD \,f = \copairD{\iterD \,\mapL f}{\now} \diamond \mapR f
+& \traceD : (A + C \to \Delay (B + C)) \to A \to \Delay B \\
+& \traceD \,f = \copairD{\now}{\iterD \,\mapR f}\diamond \mapL f
 \end{align*}
 The operation $\traceD$ is compatible with weak bisimilarity. 
 
@@ -588,8 +588,8 @@ It is well-known that a trace operator is obtainable from an iteration
 operator, as shown by Hasegawa  \cite{Hasegawa97}. His construction,
 instantiated to our setting, looks like this:
 \begin{align*}
-& \traceHD : (A + B \to \Delay (A + C)) \to B \to \Delay C \\
-& \traceHD \,f = \iterD (\Delay (\inl + \id) \comp f) \comp \inr
+& \traceHD : (A + C \to \Delay (B + C)) \to A \to \Delay B \\
+& \traceHD \,f = \iterD (\Delay (\id + \inr) \comp f) \comp \inl
 \end{align*}
 
 
