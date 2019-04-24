@@ -40,6 +40,9 @@
 \newcommand{\T}{\mathsf{T}}
 \newcommand{\Inv}{\mathsf{Inv}}
 \newcommand{\iter}{\mathsf{iter}}
+\newcommand{\mapL}[1]{#1_{\mathsf{L}}}
+\newcommand{\mapR}[1]{#1_{\mathsf{R}}}
+
 
 % Syntax Pi0
 \newcommand{\Ty}{\mathsf{Ty}}
@@ -77,6 +80,8 @@
 \newcommand{\iterD}{\mathsf{iter}_\D}
 \newcommand{\unfolding}{\mathsf{unfolding}}
 \newcommand{\refl}{\mathsf{refl}}
+\newcommand{\traceD}{\mathsf{trace}_\D}
+\newcommand{\traceHD}{\mathsf{traceH}_\D}
 
 \newcommand{\todo}[1]{\hl{TODO: #1}}
 \newcommand{\todocite}[1]{\hl{[TODO: #1]}}
@@ -539,6 +544,9 @@ and taking $f = \inlD$, we would have that $\iterD' \,f \,(\now
 Agda, such a definition would be rightfully rejected by the termination
 checker. 
 
+The operation $\iterD$ is compatible with weak bisimilarity, which means
+that $\iterD\,f_1 \approx \iterD\,f_2$ whenever $f_1 \approx f_2$.
+
 As mentioned above, $\iterD$ satisfies the Elgot iteration axioms only
 up to weak bisimilarity. Here we show the proof of the unfolding
 axiom. We employ the definition (\ref{eq:weak2}) of weak
@@ -561,6 +569,25 @@ bisimilarity. The proof relies on an auxiliary proof $\unfolding'$.
 \]
 
 \subsection{Trace}\label{sec:trace}
+
+From the Elgot iteration operator it is possible to derive a trace
+operator. First, given $f : A + B \to C$, we introduce
+$\mapL f = f \comp \inl : A \to C$ and
+$\mapR f = f \comp \inr : B \to C$, so that $f = [\mapL f , \mapR f]$.
+The trace operator in $\Dapprox$ is defined as follows:
+\begin{align*}
+& \traceD : (A + B \to \Delay (A + C)) \to B \to \Delay C \\
+& \traceD \,f = \copairD{\iterD \,\mapL f}{\now} \diamond \mapR f
+\end{align*}
+The operation $\traceD$ is compatible with weak bisimilarity. 
+
+It is well-known that a trace operator is obtainable from an iteration
+operator. This is how Hasegawa's construction  \cite{Hasegwa97} derives it in the following way:
+\begin{align*}
+& \traceD : (A + B \to \Delay (A + C)) \to B \to \Delay C \\
+& \traceD \,f = \copairD{\iterD \,\mapL f}{\now} \diamond \mapR f
+\end{align*}
+
 
 \subsection{Dagger Trace}\label{sec:daggertrace}
 
