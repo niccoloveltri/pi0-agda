@@ -43,7 +43,6 @@
 \newcommand{\mapL}[1]{#1_{\mathsf{L}}}
 \newcommand{\mapR}[1]{#1_{\mathsf{R}}}
 
-
 % Syntax Pi0
 \newcommand{\Ty}{\mathsf{Ty}}
 \newcommand{\Var}{\mathsf{Var}}
@@ -82,6 +81,11 @@
 \newcommand{\refl}{\mathsf{refl}}
 \newcommand{\traceD}{\mathsf{trace}_\D}
 \newcommand{\traceHD}{\mathsf{traceH}_\D}
+\newcommand{\daggerD}{\mathsf{dagger}_\D}
+\newcommand{\Orb}[3]{\mathsf{Orb}\,#1\,#2\,#3}
+\newcommand{\done}{\mathsf{done}}
+\renewcommand{\next}{\mathsf{next}}
+\newcommand{\reverseOrbit}{\mathsf{reverseOrb}}
 
 \newcommand{\todo}[1]{\hl{TODO: #1}}
 \newcommand{\todocite}[1]{\hl{[TODO: #1]}}
@@ -435,7 +439,10 @@ type is inhabited:
 In other words, $f$ is a partial isomorphism if there exists a
 morphism $g : B \to \Delay A$ such that, if $f\,a$ terminates
 returning a value $b$, then $g\,b$ terminates returning $a$, and vice
-versa. In $\Dapprox$, our definition of partial isomorphisms is equivalent to
+versa. Given a partial isomorphism $f$, we denote its partial inverse
+by $\daggerD\,f$.
+
+In $\Dapprox$, our definition of partial isomorphisms is equivalent to
 the standard categorical one~\cite{Kastl79} (see also \cite{CockettL02}),
 which, translated in our type-theoretical setting, is
 \begin{align*}
@@ -485,17 +492,18 @@ Giles~\cite{Giles}, as that would imply decidable equality on all objects).
 
 \section{Elgot Iteration}\label{sec:elgot}
 
-An Elgot monad is a monad $T$ whose Kleilsi category supports
-unguarded Elgot iteration. More precisely\footnote{Here we give the
-  definition of Elgot monad on $\Set$, but the definition of Elgot
-  monad makes sense in any category with binary coproducts.}, a monad
-$\T$ is Elgot if there exists an operation
+An Elgot monad \cite{GoncharovMR16,GoncharovSRJ18} is a monad $T$
+whose Kleilsi category supports unguarded uniform iteration. More
+precisely\footnote{Here we give the definition of Elgot monad on
+  $\Set$, but the definition of Elgot monad makes sense in any
+  category with binary coproducts.}, a monad $\T$ is Elgot if there
+exists an operation
 \[
-\iter_\T : (A \to \T \,(A + B)) \to A \to \T\,B
+\iter_\T : (A \to \T \,(B + A)) \to A \to \T\,B
 \]
 satisfying a number of axioms, most notably the unfolding axiom:
 \[
-\iter_\T\,f \equiv \copair{\iter_\T \,f}{\eta_\T} \diamond_\T f
+\iter_\T\,f \equiv \copair {\eta_\T}{\iter_\T \,f} \diamond_\T f
 \]
 where $\eta_\T$ is the unit of $\T$ and $\diamond_\T$ denotes morphism
 composition in the Kleisli category of $\T$.
@@ -507,12 +515,12 @@ corecursively defined as follows:
 \[ %\arraycolsep=8pt
 \def\arraystretch{1.2}
 \begin{array}{ll}
-\multicolumn{2}{l}{\iterD' : (A \to \Delay (A + B)) \to \Delay (A + B) \to \Delay B} \\
-\iterD' \,f \,(\now \,(\inl\, a)) &= \later \,(\iterD' \,f \,(f \,a)) \\
-\iterD' \,f \,(\now \,(\inr\, b)) &= \now \,b \\
+\multicolumn{2}{l}{\iterD' : (A \to \Delay (B + A)) \to \Delay (B + A) \to \Delay B} \\
+\iterD' \,f \,(\now \,(\inl\, b)) &= \now \,b \\
+\iterD' \,f \,(\now \,(\inr\, a)) &= \later \,(\iterD' \,f \,(f \,a)) \\
 \iterD' \,f \,(\later \,x) &= \later \,(\iterD' \,f \,x) \\
  \\
-\multicolumn{2}{l}{\iterD : (A \to \Delay (A + B)) \to A \to \Delay B} \\
+\multicolumn{2}{l}{\iterD : (A \to \Delay (B + A)) \to A \to \Delay B} \\
 \multicolumn{2}{l}{\iterD \,f \,a = \iterD' \,f \,(f \,a)}
 \end{array}
 \]
@@ -534,11 +542,11 @@ $\iterD\,f\,a$ terminates returning the value $b$; or $f\,a$ converges
 to $\inl\,a'$, in which case we repeat the precedure by replacing $a$
 with $a'$. Notice that in the latter case we also add one occurrence
 of $\later$ to the total computation time. This addition is necessary
-achieving the productivity of the corecursively defined function
-$\iterD'$. In fact, by changing the first line of its specification to
-$\iterD' \,f \,(\now \,(\inl\, a)) = \iterD' \,f \,(f a)$
-and taking $f = \inlD$, we would have that $\iterD' \,f \,(\now
-\,(\inl\, a))$ unfolds indefinitely without producing any output. In
+for ensuring the productivity of the corecursively defined function
+$\iterD'$. In fact, by changing the second line of its specification to
+$\iterD' \,f \,(\now \,(\inr\, a)) = \iterD' \,f \,(f a)$
+and taking $f = \inrD$, we would have that $\iterD' \,f \,(\now
+\,(\inr\, a))$ unfolds indefinitely without producing any output. In
 Agda, such a definition would be rightfully rejected by the termination
 checker. 
 
@@ -552,19 +560,22 @@ bisimilarity. The proof relies on an auxiliary proof $\unfolding'$.
 \[
 \def\arraystretch{1.2}
 \begin{array}{ll}
-\multicolumn{2}{l}{\unfolding' : (f : A \to \Delay (A + B)) \to
-  \bind\, \copairD{\iterD \,f}{\now} \approx \iterD' \,f} \\
-\unfolding' \,f \,(\now \,(\inl \,a)) & = \laterR_{\approx} \,
+\multicolumn{2}{l}{\unfolding' : (f : A \to \Delay (B + A)) \to
+  \bind\, \copairD {\now}{\iterD \,f} \approx \iterD' \,f} \\
+\unfolding' \,f \,(\now \,(\inl \,b)) & = \now_\approx \\
+\unfolding' \,f \,(\now \,(\inr \,a)) & = \laterR_{\approx} \,
   \refl_\approx \\
-\unfolding' \,f \,(\now \,(\inr \,b)) & = \now_\approx \\
 \unfolding' \,f \,(\later \,x) & = \later_\approx \,(\unfolding'\, f\,
   x) \\
  \\
-\multicolumn{2}{l}{\unfolding : (f : A \to \Delay (A + B)) \to \copairD{\iterD
-  \,f}{\now} \diamond f \approx \iterD \,f}\\
+\multicolumn{2}{l}{\unfolding : (f : A \to \Delay (B + A)) \to
+  \copairD {\now}{\iterD \,f}\diamond f \approx \iterD \,f}\\
 \multicolumn{2}{l}{\unfolding \,f\,x = \unfolding'\,f\,(f\,x)}
 \end{array}
 \]
+
+
+
 
 \subsection{Trace}\label{sec:trace}
 
@@ -572,27 +583,120 @@ From the Elgot iteration operator it is possible to derive a trace
 operator. First, given $f : A + B \to C$, we introduce
 $\mapL f = f \comp \inl : A \to C$ and
 $\mapR f = f \comp \inr : B \to C$, so that $f = [\mapL f , \mapR f]$.
+Graphically:
+\ctikzfig{fL_fR}
+ 
 The trace operator in $\Dapprox$ is defined as follows:
 \begin{align*}
 & \traceD : (A + C \to \Delay (B + C)) \to A \to \Delay B \\
 & \traceD \,f = \copairD{\now}{\iterD \,\mapR f}\diamond \mapL f
 \end{align*}
 The operation $\traceD$ is compatible with weak bisimilarity. 
+Pictorially:
 
-\ctikzfig{fL_fR}
 \ctikzfig{trace}
+
+Intuitively, the function $\mapL f$ initialises the loop. It either
+diverges, so that the trace of $f$ diverges as well, or it terminates. It either terminates with
+an element $b : B$, in which case the loop ends immediately returning
+$b$, or it converges to a value $c : C$, and in this case we proceed
+by  invoking the iteration of $\mapR f$ on $c$.
 
 It is well-known that a trace operator is obtainable from an iteration
 operator, as shown by Hasegawa  \cite{Hasegawa97}. His construction,
-instantiated to our setting, looks like this:
+instantiated to our setting, looks as follows:
 \begin{align*}
 & \traceHD : (A + C \to \Delay (B + C)) \to A \to \Delay B \\
 & \traceHD \,f = \iterD (\Delay (\id + \inr) \comp f) \comp \inl
 \end{align*}
 
+It is not difficoult to prove that the two possible ways of defining a
+trace operator from Elgot iteration are equivalent, in the sense that
+$\traceD\,f \approx \traceHD\,f$ for all $f : A + C \to \Delay (B +
+C)$. 
 
+The trace axioms follow from the Elgot iteration axioms.
 
 \subsection{Dagger Trace}\label{sec:daggertrace}
+
+We now show that $\traceD$ is a $\dagger$-trace operator,
+i.e. if $f$ is a partial isomorphism, then
+$\traceD\,f$ is also a partial isomorphism with partial inverse $\traceD\,(\daggerD\,f)$.
+
+
+This is proved by introducing the notion of \emph{orbit} of an element
+$x : A + C$ wrt. a function $f : A + C \to \Delay (B + C)$. The orbit of
+$x$ consists of the terms of type $B + C$ that are obtained in a
+finite number of steps from repeated applications of the function $f$
+on $x$. Formally, a term $y$ belongs to the orbit of $f$ wrt. $x$ if
+the type $\Orb f x y $ is inhabited, with the latter type
+inductively defined as: 
+\[
+\infer{\done\,p : \Orb f x y}{p : f \,x \dn y}
+\qquad 
+\infer{\next\,p \,q : \Orb f x y}{p : f \,x \dn \inr\,c & q : \Orb f
+  {(\inr\,c)} y}
+\]
+
+The notion of orbit can be used to state when 
+the iteration of a function $f : A \to \Delay (B + A)$ on a input
+$a : A$ terminates with value $b : B$.
+\[
+\iterD\,f\,a \dn b \leftrightarrow \Orb {\copairD{\inlD}{f}} {(\inr\,a)} {(\inl\,b)}
+\]
+We refer the intersted reader to our Agda formalization for a complete
+proof of this logical equivalence.
+Similarly, the orbit can be used to state when 
+the trace of a function $f : A + C \to \Delay (B + C)$ on a input
+$a : A$ terminates with value $b : B$.
+\begin{equation}\label{eq:traceorbit}
+\traceD\,f\,a \dn b \leftrightarrow \Orb f{(\inl\,a)} {(\inl\,b)}
+\end{equation}
+
+Showing that $\traceD$ is a $\dagger$-trace operator requires the
+construction of an inhabitant of $\traceD\,f\,a \dn b \leftrightarrow
+\traceD\,(\daggerD\,f)\,b \dn a$. Thanks to the logical equivalence in
+(\ref{eq:traceorbit}), this is equivalent to prove the following
+statement instead: 
+\[
+\Orb f {(\inl\,a)} {(\inl\,b)} \leftrightarrow \Orb {(\daggerD\,f)} {(\inl\,b)} {(\inl\,a)}
+\]
+We give a proof of the left-to-right direction, the other implication
+is proved in an analogous way.  Notice that a term
+$p : \Orb f {(\inl\,a)} {(\inl\,b)}$ can be seen as a finite sequence of
+elements of $C$, precisely the intermediate values produced by
+$\traceD\,f\,a$ before converging to $b$. The orbit of $b$ wrt. the
+partial inverse of $f$ can therefore be computed by reversing the
+sequence of elements present in $p$. The construction of the reverse
+of an orbit is very similar to the way the reverse of a list is typically
+defined in a functional programming language like Haskell.
+
+\[
+\def\arraystretch{1.2}
+\begin{array}{ll}
+\multicolumn{2}{l}{\reverseOrbit' : (i : \{a : A\} \{b : B\} \to f \,a
+\dn b \to \daggerD\,f  \,b \dn a) \to } \\
+\multicolumn{2}{l}{\qquad \{a : A\} \{b : B\} \{c : C\} \to } \\
+\multicolumn{2}{l}{\qquad \Orb f {(\inr\,c)}
+ {(\inl\,b)} \to \Orb  {(\daggerD\,f)} {(\inr\,c)} {(\inl\,a)} \to } \\
+\multicolumn{2}{l}{\qquad \Orb  {(\daggerD\,f)} {(\inl\,b)} {(\inl\,a)}}\\
+\reverseOrbit' \,i\, (\done \,p) \,p'&= \next\, (i \,p)\,p' \\
+\reverseOrbit' \,i\,(\next\,p\,q) \,p'&= \reverseOrbit' \,i\,q \,(\next \,(i\,p)\,p')
+\end{array}
+\]
+
+\[
+\def\arraystretch{1.2}
+\begin{array}{ll}
+\multicolumn{2}{l}{\reverseOrbit : (i : \{a : A\} \{b : B\} \to f \,a
+  \dn b \to \daggerD\,f  \,b \dn a) \to} \\
+\multicolumn{2}{l}{\qquad \{a : A\} \{b : B\} \to} \\
+\multicolumn{2}{l}{\qquad \Orb f {(\inl\,a)}
+  {(\inl\,b)} \to \Orb  {(\daggerD\,f)} {(\inl\,b)} {(\inl\,a)}}\\
+\reverseOrbit \,i\, (\done \,p) &= \done \, (i \,p) \\
+\reverseOrbit \,i\,(\next\,p\,q) &= \reverseOrbit' \,i\,q \,(\done \,(i\,p))
+\end{array}
+\]
 
 
 \section{Interpretation}\label{sec:interpretation}
