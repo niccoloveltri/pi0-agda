@@ -2,7 +2,7 @@
 % LLNCS macro package for Springer Computer Science proceedings;
 % Version 2.20 of 2017/10/04
 %
-\documentclass[runningheads]{llncs}
+\documentclass[runningheads,a4paper]{llncs}
 %
 \usepackage{graphicx}
 % Used for displaying a sample figure. If possible, figure files should
@@ -109,7 +109,25 @@ Department of Computer Science, IT University of
 \maketitle              % typeset the header of the contribution
 %
 \begin{abstract}
-\todo{Write it!}
+Reversible computation studies computations which exhibit both forward and
+backward determinism. Among others, it has been studied for half a century for
+its applications in low-power computing, and forms the basis for quantum
+computing. 
+
+Though certified program equivalence is useful for a number of applications
+(e.g., certified compilation and optimization), little work on this topic has
+been carried out for reversible programming languages. As a notable exception,
+Carette and Sabry have studied the equivalences of the finitary fragment of \Pio, a reversible combinator calculus, yielding a two-level calculus of type isomorphisms and equivalences between them.
+
+In this paper, we extend the two-level calculus of finitary \Pio{} to one for
+full \Pio{} (i.e., with both recursive types and iteration by means of a
+\trace{} combinator) using the \Delay{} monad, which can be regarded as a
+``computability-aware'' analogue of the usual $\mathsf{Maybe}$ monad for
+partiality. This yields a calculus of iterative (and possibly nonterminating)
+reversible programs acting on user-defined dynamic data structures together
+with a calculus of certified program equivalences between these programs.
+
+\todo{Niccol\`o, anything to add? Feel free to edit.}
 
 \keywords{reversible computation \and iteration \and delay monad}
 \end{abstract}
