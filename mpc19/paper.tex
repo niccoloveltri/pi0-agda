@@ -2,7 +2,7 @@
 % LLNCS macro package for Springer Computer Science proceedings;
 % Version 2.20 of 2017/10/04
 %
-\documentclass[runningheads]{llncs}
+\documentclass[runningheads,a4paper]{llncs}
 %
 \usepackage{graphicx}
 % Used for displaying a sample figure. If possible, figure files should
@@ -26,7 +26,7 @@
 
 
 \newcommand{\N}{\mathbb{N}}
-\newcommand{\Pio}{$\mathsf{\Pi}^{\mathsf{o}}$} 
+\newcommand{\Pio}{\ensuremath{\mathsf{\Pi}^{\mathsf{o}}}} 
 \newcommand{\Set}{\mathsf{Set}}
 \newcommand{\Par}{\mathsf{Par}}
 \newcommand{\comp}{\circ}
@@ -51,12 +51,12 @@
 \newcommand{\fold}{\mathsf{fold}}
 \newcommand{\unfold}{\mathsf{unfold}}
 \newcommand{\sub}{\mathsf{sub}}
-\newcommand{\trace}{\mathsf{trace}}
+\newcommand{\trace}{\ensuremath{\mathsf{trace}}}
 \newcommand{\Z}{\mathsf{Z}}
 \newcommand{\I}{\mathsf{I}}
 
 % Delay macros
-\newcommand{\Delay}{\mathsf{Delay}\,}
+\newcommand{\Delay}{\ensuremath{\mathsf{Delay}\,}}
 \newcommand{\now}{\mathsf{now}}
 \newcommand{\later}{\mathsf{later}}
 \newcommand{\laterR}{\mathsf{laterR}}
@@ -113,10 +113,27 @@ Department of Computer Science, IT University of
 \maketitle              % typeset the header of the contribution
 %
 \begin{abstract}
-The abstract should briefly summarize the contents of the paper in
-150--250 words.
+Reversible computation studies computations which exhibit both forward and
+backward determinism. Among others, it has been studied for half a century for
+its applications in low-power computing, and forms the basis for quantum
+computing. 
 
-\keywords{First keyword  \and Second keyword \and Another keyword.}
+Though certified program equivalence is useful for a number of applications
+(e.g., certified compilation and optimization), little work on this topic has
+been carried out for reversible programming languages. As a notable exception,
+Carette and Sabry have studied the equivalences of the finitary fragment of \Pio, a reversible combinator calculus, yielding a two-level calculus of type isomorphisms and equivalences between them.
+
+In this paper, we extend the two-level calculus of finitary \Pio{} to one for
+full \Pio{} (i.e., with both recursive types and iteration by means of a
+\trace{} combinator) using the \Delay{} monad, which can be regarded as a
+``computability-aware'' analogue of the usual $\mathsf{Maybe}$ monad for
+partiality. This yields a calculus of iterative (and possibly nonterminating)
+reversible programs acting on user-defined dynamic data structures together
+with a calculus of certified program equivalences between these programs.
+
+\todo{Niccol\`o, anything to add? Feel free to edit.}
+
+\keywords{reversible computation \and iteration \and delay monad}
 \end{abstract}
 
 \section{TODO} % (fold)
@@ -156,13 +173,40 @@ Both:
 % section todo (end)
 
 \section{Introduction}\label{sec:intro}
-\todo{RC Motivation.}
+Reversible computation is an emerging computation paradigm encompassing
+computations that are not just deterministic when executed the \emph{forward}
+direction, but also in the \emph{backward} direction. While this may seem
+initially obscure, reversible computation forms the basis for quantum
+computing, and has seen applications in a number of different areas such as
+low-power computing~\cite{Landauer61}, robotics~\cite{SchultzLE18}, discrete
+event simulation~\cite{Schordan15}, and the simultaneous construction of
+parser/pretty printer pairs~\cite{RendelO10}. Like classical computing, it has
+its own automata~\cite{Bennett73}, circuit model~\cite{DeVos10}, machine
+architectures, programming
+languages~\cite{JamesS12,JamesS14,YokoyamaG07,Schultz18,JacobsenKT18}, semantic
+metalanguages~\cite{Giles,KaarsgaardAG17,KaarsgaardG18}, and so on.
 
-\todo{Formalization motivation? Maybe?}
+\todo{Niccol\`{o}: Formalization motivation? Maybe?}
 
-\todo{Explain Carette et al. Say that we are extending it to be actually useful (but don't say it like that).}
+\Pio{} is a family of reversible combinator calculi comprising structural
+isomorphisms and combinators corresponding to those found in dagger-traced
+$\omega$-continuous rig categories~\cite{Karvonen19}. Though superficially
+simple, \Pio{} is expressive enough as a metalanguage to give semantics to the
+typed reversible functional programming language Theseus~\cite{JamesS14}.
 
-\todo{Delay vs. Maybe monad.}
+In \cite{CaretteS16}, the authors studied the equivalences of isomorphisms in
+the finitary fragment of \Pio{} (i.e., without recursive types and iteration
+via the \trace{} combinator), and showed that these equivalences could be
+adequately described by another combinator calculus of equivalences of
+isomorphisms, in sum yielding a two-level calculus of isomorphisms and
+equivalences of isomorphisms. In this paper, we build on this work to produce a
+(fully formalized) two-level calculus for full \Pio{} (supporting both recursive
+types and iteration) via the \Delay{} monad, using insights gained from the
+study its Kleisli category~\cite{UustaluV17,ChapmanUV19,VeltriPhD}, as well as
+of join inverse categories in which reversible
+iteration may be modelled~\cite{KaarsgaardAG17}. \todo{Niccol\`{o}, do you have anything to add here?}
+
+\todo{Niccol\`{o}: \Delay vs. Maybe monad.}
 
 \paragraph{The type-theoretical framework}
 
