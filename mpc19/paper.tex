@@ -95,9 +95,9 @@
 
 \begin{document}
 %
-\title{Type-theoretical Semantics of \Pio\ via the Delay Monad \thanks{Supported by organization x.}}
+\title{En garde! Unguarded iteration for reversible computation in the Delay monad\thanks{Supported by organization x.}}
 %
-%\titlerunning{Abbreviated paper title}
+\titlerunning{Unguarded iteration for reversible computation in the Delay monad}
 % If the paper title is too long for the running head, you can set
 % an abbreviated paper title here
 %
@@ -116,28 +116,23 @@ Department of Computer Science, IT University of
 \maketitle              % typeset the header of the contribution
 %
 \begin{abstract}
-  Reversible computation studies computations which exhibit both
-  forward and backward determinism. Among others, it has been studied
-  for half a century for its applications in low-power computing, and
-  forms the basis for quantum computing.
+Reversible computation studies computations which exhibit both forward and
+backward determinism. Among others, it has been studied for half a century for
+its applications in low-power computing, and forms the basis for quantum
+computing.
 
-  Though certified program equivalence is useful for a number of
-  applications (e.g., certified compilation and optimization), little
-  work on this topic has been carried out for reversible programming
-  languages. As a notable exception, Carette and Sabry have studied
-  the equivalences of the finitary fragment of \Pio, a reversible
-  combinator calculus, yielding a two-level calculus of type
-  isomorphisms and equivalences between them.
+Though certified program equivalence is useful for a number of applications
+(e.g., certified compilation and optimization), little work on this topic has
+been carried out for reversible programming languages. As a notable exception,
+Carette and Sabry have studied the equivalences of the finitary fragment of \Pio, a reversible combinator calculus, yielding a two-level calculus of type isomorphisms and equivalences between them.
 
-  In this paper, we extend the two-level calculus of finitary \Pio{}
-  to one for full \Pio{} (i.e., with both recursive types and
-  iteration by means of a \trace{} combinator) using the \Delay{}
-  monad, which can be regarded as a ``computability-aware'' analogue
-  of the usual $\mathsf{Maybe}$ monad for partiality. This yields a
-  calculus of iterative (and possibly nonterminating) reversible
-  programs acting on user-defined dynamic data structures together
-  with a calculus of certified program equivalences between these
-  programs.
+In this paper, we extend the two-level calculus of finitary \Pio{} to one for
+full \Pio{} (i.e., with both recursive types and iteration by means of a
+\trace{} combinator) using the \Delay{} monad, which can be regarded as a
+``computability-aware'' analogue of the usual $\mathsf{Maybe}$ monad for
+partiality. This yields a calculus of iterative (and possibly non-terminating)
+reversible programs acting on user-defined dynamic data structures together
+with a calculus of certified program equivalences between these programs.
 
 \keywords{reversible computation \and iteration \and delay monad}
 \end{abstract}
@@ -146,8 +141,6 @@ Department of Computer Science, IT University of
 \label{sec:todo}
 Robin:
 \begin{itemize}
-  \item Abstract.
-  \item Introduction.
   \item Make pictures! 
   \begin{itemize}
     \item Hasegawa trace from iterator.
@@ -188,7 +181,7 @@ low-power computing~\cite{Landauer61}, robotics~\cite{SchultzLE18}, discrete
 event simulation~\cite{Schordan15}, and the simultaneous construction of
 parser/pretty printer pairs~\cite{RendelO10}. Like classical computing, it has
 its own automata~\cite{Bennett73}, circuit model~\cite{DeVos10}, machine
-architectures, programming
+architectures~\cite{ThomsenAG11}, programming
 languages~\cite{JamesS12,JamesS14,YokoyamaG07,Schultz18,JacobsenKT18}, semantic
 metalanguages~\cite{Giles,KaarsgaardAG17,KaarsgaardG18}, and so on.
 
@@ -206,9 +199,9 @@ isomorphisms, in sum yielding a two-level calculus of isomorphisms and
 equivalences of isomorphisms. In this paper, we build on this work to produce a
 (fully formalized) two-level calculus for full \Pio{} (supporting both recursive
 types and iteration) via the \Delay{} monad, using insights gained from the
-study of its Kleisli category~\cite{UustaluV17,ChapmanUV19,VeltriPhD}, as well as
-of join inverse categories in which reversible
-iteration may be modelled~\cite{KaarsgaardAG17}. 
+study of its Kleisli category~\cite{UustaluV17,ChapmanUV19,VeltriPhD}, as well
+as of join inverse categories in which reversible iteration may be
+modelled~\cite{KaarsgaardAG17}.
 
 The coinductive delay datatype was introduced by Capretta
 \cite{Capretta05} as a way of defining possibly non-terminating
@@ -226,7 +219,7 @@ Throughout the paper, we reason constructively in Martin-L\"of type
 theory. Classically, the delay monad is isomorphic to the maybe monad
 $\Maybe\,X \equiv X + 1$,
 and thus just a complication of something that can be expressed much
-simpler. But constructively they are very different. In particular,
+simpler. Constructively, however, they are very different. In particular,
 it is impossible to define a well-behaved trace combinator for the
 maybe monad without assuming classical principles such as the law of
 excluded middle.
@@ -234,7 +227,7 @@ excluded middle.
 
 We have fully formalized the development of the paper in the
 dependently typed programming language Agda~\cite{Agda}. The code is
-available online at \\ \url{https://github.com/niccoloveltri/pi0-agda}. The
+available online at \\ \texttt{\url{https://github.com/niccoloveltri/pi0-agda}}. The
 formalization uses Agda 2.6.0.
 
 
