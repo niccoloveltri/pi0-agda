@@ -54,6 +54,8 @@
 \newcommand{\trace}{\ensuremath{\mathsf{trace}}}
 \newcommand{\Z}{\mathsf{Z}}
 \newcommand{\I}{\mathsf{I}}
+\newcommand{\LR}{\iff}
+\renewcommand{\dagger}{\mathsf{dagger}}
 
 % Delay macros
 \newcommand{\Delay}{\ensuremath{\mathsf{Delay}\,}}
@@ -114,25 +116,28 @@ Department of Computer Science, IT University of
 \maketitle              % typeset the header of the contribution
 %
 \begin{abstract}
-Reversible computation studies computations which exhibit both forward and
-backward determinism. Among others, it has been studied for half a century for
-its applications in low-power computing, and forms the basis for quantum
-computing. 
+  Reversible computation studies computations which exhibit both
+  forward and backward determinism. Among others, it has been studied
+  for half a century for its applications in low-power computing, and
+  forms the basis for quantum computing.
 
-Though certified program equivalence is useful for a number of applications
-(e.g., certified compilation and optimization), little work on this topic has
-been carried out for reversible programming languages. As a notable exception,
-Carette and Sabry have studied the equivalences of the finitary fragment of \Pio, a reversible combinator calculus, yielding a two-level calculus of type isomorphisms and equivalences between them.
+  Though certified program equivalence is useful for a number of
+  applications (e.g., certified compilation and optimization), little
+  work on this topic has been carried out for reversible programming
+  languages. As a notable exception, Carette and Sabry have studied
+  the equivalences of the finitary fragment of \Pio, a reversible
+  combinator calculus, yielding a two-level calculus of type
+  isomorphisms and equivalences between them.
 
-In this paper, we extend the two-level calculus of finitary \Pio{} to one for
-full \Pio{} (i.e., with both recursive types and iteration by means of a
-\trace{} combinator) using the \Delay{} monad, which can be regarded as a
-``computability-aware'' analogue of the usual $\mathsf{Maybe}$ monad for
-partiality. This yields a calculus of iterative (and possibly nonterminating)
-reversible programs acting on user-defined dynamic data structures together
-with a calculus of certified program equivalences between these programs.
-
-\todo{Niccol\`o, anything to add? Feel free to edit.}
+  In this paper, we extend the two-level calculus of finitary \Pio{}
+  to one for full \Pio{} (i.e., with both recursive types and
+  iteration by means of a \trace{} combinator) using the \Delay{}
+  monad, which can be regarded as a ``computability-aware'' analogue
+  of the usual $\mathsf{Maybe}$ monad for partiality. This yields a
+  calculus of iterative (and possibly nonterminating) reversible
+  programs acting on user-defined dynamic data structures together
+  with a calculus of certified program equivalences between these
+  programs.
 
 \keywords{reversible computation \and iteration \and delay monad}
 \end{abstract}
@@ -275,60 +280,113 @@ we refrain from technical discussions on their implementation.
 
 \[
 A ::= \Z \, | \,A \oplus A \, | \,\I \,| \,A \otimes A \,| \,X \,|
-\,\mu X.\,A 
+\,\mu X.A 
 \]
 
-%% \begin{figure}
-%% \[
-%% \arraycolsep=8pt\def\arraystretch{2.8}
-%% \begin{array}{|ccc|}
-%% \hline 
-%% \infer{\Z : \Ty_n}{} 
-%% & \infer{\I : \Ty_n}{}
-%% & \infer{\Var\,i : \Ty_n}{i \in [0..n)}  \\
-%% \infer{A \oplus B : \Ty_n}{A : \Ty_n & B : \Ty_n}
-%% & \infer{A \otimes B : \Ty_n}{A : \Ty_n & B : \Ty_n}
-%% & \infer{\mu\,A : \Ty_n}{A : \Ty_{n+1}} \\
-%% \hline
-%% \end{array}
-%% \]
-%% \caption{Types of \Pio.}
-%% \label{fig:types}
-%% \end{figure}
+\begin{figure}
+\[
+\arraycolsep=8pt\def\arraystretch{2.8}
+\begin{array}{ccc}
+%\hline 
+\infer{\Z : \Ty\,n}{} 
+& \infer{\I : \Ty\,n}{}
+& \infer{\Var\,i : \Ty\,n}{i \in [0..n)}  \\
+\infer{A \oplus B : \Ty\,n}{A : \Ty\,n & B : \Ty\,n}
+& \infer{A \otimes B : \Ty\,n}{A : \Ty\,n & B : \Ty\,n}
+& \infer{\mu A : \Ty\,n}{A : \Ty\,(n+1)} 
+%\\ \hline
+\end{array}
+\]
+\caption{Types of \Pio, as formalized in Agda}
+\label{fig:types}
+\end{figure}
 
 \subsection{Programs}
 
 \begin{figure}
 \[
-\arraycolsep=8pt\def\arraystretch{2.8}
-\begin{array}{|cc|}
-\hline
-\infer{\id : A \lr A}{}
-& \infer{g \bullet f : A \lr C}{g : B \lr C & f : A \lr B} \\
+\arraycolsep=8pt\def\arraystretch{1.8}
+\begin{array}{cc}%{|cc|}
+%\hline 
+\id : A \lr A
+& \infer{g \bullet f : A \lr C}{g : B \lr C & f : A \lr B} \\ [.25cm]
 \infer{f \oplus g : A \oplus B \lr C \oplus D}{f : A \lr C & g : B \lr D} 
 & \infer{f \otimes g : A \otimes B \lr C \otimes D}{f : A \lr C & g : B \lr D} \\
-\infer{\lambda_{\oplus} : \Z \oplus A \lr A}{}
-& \infer{\lambda_{\oplus}^{-1} : A \lr \Z \oplus A}{} \\
-\infer{\lambda_{\otimes} : \I \otimes A \lr A}{}
-& \infer{\lambda_{\otimes}^{-1} : A \lr \I \otimes A}{} \\
-\infer{\alpha_{\oplus} : (A \oplus B) \oplus C \lr A \oplus (B \oplus C)}{}
-& \infer{\alpha_{\oplus}^{-1} : A \oplus (B \oplus C) \lr (A \oplus B) \oplus C}{} \\
-\infer{\alpha_{\otimes} : (A \otimes B) \otimes C \lr A \otimes (B \otimes C)}{}
-& \infer{\alpha_{\otimes}^{-1} : A \otimes (B \otimes C) \lr (A \otimes B) \otimes C}{} \\
-\infer{\sigma_{\oplus} : A \oplus B \lr B \oplus A}{}
-& \infer{\sigma_{\otimes} : A \otimes B \lr B \otimes A}{} \\
-\infer{\kappa : \Z \otimes A \lr \Z}{} 
-& \infer{\delta : (A \oplus B) \otimes C \lr (A \otimes C) \oplus (B \otimes C)}{} \\
-\infer{\kappa^{-1} : \Z \lr \Z \otimes A}{}
-& \infer{\delta^{-1} : (A \otimes C) \oplus (B \otimes C)  \lr (A \oplus B) \otimes C}{} \\
-\infer{\fold : \sub \, A \, (\mu \,A) \lr \mu \,A}{} 
-& \infer{\unfold : \mu\,A \lr \sub \, A \, (\mu \,A)}{} \\
-\multicolumn{2}{|c|}{\infer{\trace \,f: A \lr B}{f : A \oplus C \lr B \oplus C}} \\
-\hline
+\lambda_{\oplus} : \Z \oplus A \lr A
+& \lambda_{\oplus}^{-1} : A \lr \Z \oplus A\\
+\lambda_{\otimes} : \I \otimes A \lr A
+& \lambda_{\otimes}^{-1} : A \lr \I \otimes A\\
+\alpha_{\oplus} : (A \oplus B) \oplus C \lr A \oplus (B \oplus C)
+& \alpha_{\oplus}^{-1} : A \oplus (B \oplus C) \lr (A \oplus B) \oplus C \\
+\alpha_{\otimes} : (A \otimes B) \otimes C \lr A \otimes (B \otimes C)
+& \alpha_{\otimes}^{-1} : A \otimes (B \otimes C) \lr (A \otimes B) \otimes C \\
+\sigma_{\oplus} : A \oplus B \lr B \oplus A
+& \sigma_{\otimes} : A \otimes B \lr B \otimes A \\
+\kappa : \Z \otimes A \lr \Z 
+& \delta : (A \oplus B) \otimes C \lr (A \otimes C) \oplus (B \otimes C) \\
+\kappa^{-1} : \Z \lr \Z \otimes A
+& \delta^{-1} : (A \otimes C) \oplus (B \otimes C)  \lr (A \oplus B) \otimes C \\
+\fold : A[\mu X.A/X] \lr \mu X.A
+& \unfold : \mu X.A \lr A[\mu X.A/X] \\[.25cm]
+\multicolumn{2}{c}{\infer{\trace \,f: A \lr B}{f : A \oplus C \lr B \oplus C}} \\
+%\hline
 \end{array}
 \]
 \caption{Programs of \Pio}
 \label{fig:programs}
+\end{figure}
+
+%% \infer{\lambda_{\oplus} : \Z \oplus A \lr A}{}
+%% & \infer{\lambda_{\oplus}^{-1} : A \lr \Z \oplus A}{} \\
+%% \infer{\lambda_{\otimes} : \I \otimes A \lr A}{}
+%% & \infer{\lambda_{\otimes}^{-1} : A \lr \I \otimes A}{} \\
+%% \infer{\alpha_{\oplus} : (A \oplus B) \oplus C \lr A \oplus (B \oplus C)}{}
+%% & \infer{\alpha_{\oplus}^{-1} : A \oplus (B \oplus C) \lr (A \oplus B) \oplus C}{} \\
+%% \infer{\alpha_{\otimes} : (A \otimes B) \otimes C \lr A \otimes (B \otimes C)}{}
+%% & \infer{\alpha_{\otimes}^{-1} : A \otimes (B \otimes C) \lr (A \otimes B) \otimes C}{} \\
+%% \infer{\sigma_{\oplus} : A \oplus B \lr B \oplus A}{}
+%% & \infer{\sigma_{\otimes} : A \otimes B \lr B \otimes A}{} \\
+%% \infer{\kappa : \Z \otimes A \lr \Z}{} 
+%% & \infer{\delta : (A \oplus B) \otimes C \lr (A \otimes C) \oplus (B \otimes C)}{} \\
+%% \infer{\kappa^{-1} : \Z \lr \Z \otimes A}{}
+%% & \infer{\delta^{-1} : (A \otimes C) \oplus (B \otimes C)  \lr (A \oplus B) \otimes C}{} \\
+%% \infer{\fold : \sub \, A \, (\mu \,A) \lr \mu \,A}{} 
+%% & \infer{\unfold : \mu\,A \lr \sub \, A \, (\mu \,A)}{} \\
+%% \multicolumn{2}{c}{\infer{\trace \,f: A \lr B}{f : A \oplus C \lr B \oplus C}} \\
+
+\subsection{Program Equivalences}
+
+\begin{figure}
+\[
+\arraycolsep=8pt\def\arraystretch{1.8}
+\begin{array}{cc} %{|cc|} \hline 
+\multicolumn{2}{c}{\mathsf{naturality_L} : f \bullet \trace\,g \LR \trace\,((f \oplus
+  \id) \bullet g)} \\ 
+\multicolumn{2}{c}{\mathsf{naturality_R} : \trace\,g \bullet f \LR \trace\,(g \bullet (f 
+  \oplus \id))} \\  
+\multicolumn{2}{c}{\mathsf{dinaturality} : \trace \,((\id \oplus f) \bullet g) \LR \trace
+  \,(g \bullet (\id \oplus f))} \\
+\multicolumn{2}{c}{\mathsf{vanishing_\oplus} : \trace \,f \LR \trace \,(\trace
+  \,(\alpha_\oplus^{-1} \bullet f \bullet \alpha_\oplus))} \\ 
+\mathsf{vanishing_\Z} : f \LR \rho_\oplus^{-1} \bullet \trace \,f
+  \bullet \rho_\oplus 
+&
+\mathsf{yanking} : \trace \sigma_\oplus \LR \id \\
+\multicolumn{2}{c}{\mathsf{uniquePIso} : f \bullet (\dagger \,f)
+  \bullet g \bullet (\dagger \, g) \LR g \bullet (\dagger \,g)
+  \bullet f \bullet (\dagger \, f)} \\
+\mathsf{foldIso} : \fold \bullet \unfold \LR \id 
+&
+\mathsf{unfoldIso} : \unfold \bullet \fold \LR \id
+\\[.25cm]
+\multicolumn{2}{c}{\infer{\mathsf{tracePIso}\,p : \trace\,f \bullet \trace\,(\dagger\,f)
+  \bullet \trace\,f \LR \trace \,f}{p : f \bullet (\dagger\,f) \bullet
+  f \LR f}}
+%\\ \hline
+\end{array}
+\]
+\caption{Selection of program equivalences of \Pio}
+\label{fig:programequivs}
 \end{figure}
 
 \section{Delay Monad}\label{sec:delay}
@@ -688,7 +746,7 @@ The trace axioms follow from the Elgot iteration axioms.
 
 \subsection{Dagger Trace}\label{sec:daggertrace}
 
-We now show that $\traceD$ is a $\dagger$-trace operator,
+We now show that $\traceD$ is a dagger trace operator,
 i.e. if $f$ is a partial isomorphism, then
 $\traceD\,f$ is also a partial isomorphism with partial inverse $\traceD\,(\daggerD\,f)$.
 
@@ -722,7 +780,7 @@ $a : A$ terminates with value $b : B$.
 \traceD\,f\,a \dn b \leftrightarrow \Orb f{(\inl\,a)} {(\inl\,b)}
 \end{equation}
 
-Showing that $\traceD$ is a $\dagger$-trace operator requires the
+Showing that $\traceD$ is a dagger trace operator requires the
 construction of an inhabitant of $\traceD\,f\,a \dn b \leftrightarrow
 \traceD\,(\daggerD\,f)\,b \dn a$. Thanks to the logical equivalence in
 (\ref{eq:traceorbit}), this is equivalent to prove the following
@@ -732,28 +790,46 @@ statement instead:
 \]
 We give a proof of the left-to-right direction, the other implication
 is proved in an analogous way.  Notice that a term
-$p : \Orb f {(\inl\,a)} {(\inl\,b)}$ can be seen as a finite sequence of
-elements of $C$, precisely the intermediate values produced by
+$p : \Orb f {(\inl\,a)} {(\inl\,b)}$ can be seen as a finite sequence
+of elements of $C$, precisely the intermediate values produced by
 $\traceD\,f\,a$ before converging to $b$. The orbit of $b$ wrt. the
 partial inverse of $f$ can therefore be computed by reversing the
 sequence of elements present in $p$. The construction of the reverse
-of an orbit is very similar to the way the reverse of a list is typically
-defined in a functional programming language like Haskell.
-
+of an orbit is very similar to the way the reverse of a list is
+typically defined in a functional programming language like Haskell.
+We first consider an intermediate value $c : C$ and we assume to have
+already reversed the initial section of the orbit between $\inl\,a$
+and $\inr\,c$, that is a term $p' : \Orb  {(\daggerD\,f)} {(\inr\,c)}
+{(\inl\,a)}$. 
 \[
 \def\arraystretch{1.2}
-\begin{array}{ll}
-\multicolumn{2}{l}{\reverseOrbit' : (i : \{a : A\} \{b : B\} \to f \,a
+\begin{array}{lll}
+\multicolumn{3}{l}{\reverseOrbit' : (i : \{a : A\} \{b : B\} \to f \,a
 \dn b \to \daggerD\,f  \,b \dn a) \to } \\
-\multicolumn{2}{l}{\qquad \{a : A\} \{b : B\} \{c : C\} \to } \\
-\multicolumn{2}{l}{\qquad \Orb f {(\inr\,c)}
+\multicolumn{3}{l}{\qquad \{a : A\} \{b : B\} \{c : C\} \to } \\
+\multicolumn{3}{l}{\qquad \Orb f {(\inr\,c)}
  {(\inl\,b)} \to \Orb  {(\daggerD\,f)} {(\inr\,c)} {(\inl\,a)} \to } \\
-\multicolumn{2}{l}{\qquad \Orb  {(\daggerD\,f)} {(\inl\,b)} {(\inl\,a)}}\\
-\reverseOrbit' \,i\, (\done \,p) \,p'&= \next\, (i \,p)\,p' \\
-\reverseOrbit' \,i\,(\next\,p\,q) \,p'&= \reverseOrbit' \,i\,q \,(\next \,(i\,p)\,p')
+\multicolumn{3}{l}{\qquad \Orb  {(\daggerD\,f)} {(\inl\,b)} {(\inl\,a)}}\\
+\reverseOrbit' \,i\, (\done \,p) & p'&= \next\, (i \,p)\,p' \\
+\reverseOrbit' \,i\,(\next\,p\,q) & p'&= \reverseOrbit' \,i\,q \,(\next \,(i\,p)\,p')
 \end{array}
 \]
+The proof of $\reverseOrbit'$ proceeds by structural induction on the final
+segment of the orbit between $\inr\,c$ and $\inl\,b$ that still needs
+to be reversed, which is the argument of type
+$\Orb f {(\inr\,c)} {(\inl\,b)}$. There are two possibilities.
+\begin{itemize}
+\item We have $p : f\,(\inr\,c) \dn
+\inl\,b$, in which case $i\,p : \daggerD\,f\,(\inl\,b) \dn
+\inl\,c$. Then we return $\next\,(i\,p)\,p'$.
+\item There exists another value $c' : C$ such that $p :
+  f\,(\inr\,c) \dn \inr\,c'$ and $q : \Orb f {(\inr\,c')}
+  {(\inl\,b)}$. Then we recursively invoke the function
+  $\reverseOrbit' \,i$ on arguments $q$ and $\next\,(i\,p)\,p' : \Orb
+  {(\daggerD \,f)} {(\inr\,c')} {(\inl\,b)}$.
+\end{itemize}
 
+The reverse of an orbit is derivable using the auxiliary function $\reverseOrbit'$.
 \[
 \def\arraystretch{1.2}
 \begin{array}{ll}
@@ -766,6 +842,19 @@ defined in a functional programming language like Haskell.
 \reverseOrbit \,i\,(\next\,p\,q) &= \reverseOrbit' \,i\,q \,(\done \,(i\,p))
 \end{array}
 \]
+The proof of $\reverseOrbit$ proceeds bystructural induction on the
+orbit of type
+$\Orb f {(\inl\,a)} {(\inl\,b)}$. There are two possibilities.
+\begin{itemize}
+\item We have $p : f\,(\inl\,a) \dn
+\inl\,b$, in which case $i\,p : \daggerD\,f\,(\inl\,b) \dn
+\inl\,a$. Then we return $\done\,(i\,p)$.
+\item There exists a value $c : C$ such that $p :
+  f\,(\inl\,a) \dn \inr\,c$ and $q : \Orb f {(\inr\,c)}
+  {(\inl\,b)}$. We conclude by invoking the function
+  $\reverseOrbit' \,i$ on arguments $q$ and $\done\,(i\,p) : \Orb
+  {(\daggerD \,f)} {(\inr\,c)} {(\inl\,a)}$.
+\end{itemize}
 
 
 \section{Interpretation}\label{sec:interpretation}
