@@ -57,6 +57,7 @@
 
 % Delay macros
 \newcommand{\Delay}{\ensuremath{\mathsf{Delay}\,}}
+\newcommand{\Maybe}{\mathsf{Maybe}}
 \newcommand{\now}{\mathsf{now}}
 \newcommand{\later}{\mathsf{later}}
 \newcommand{\laterR}{\mathsf{laterR}}
@@ -186,8 +187,6 @@ architectures, programming
 languages~\cite{JamesS12,JamesS14,YokoyamaG07,Schultz18,JacobsenKT18}, semantic
 metalanguages~\cite{Giles,KaarsgaardAG17,KaarsgaardG18}, and so on.
 
-\todo{Niccol\`{o}: Formalization motivation? Maybe?}
-
 \Pio{} is a family of reversible combinator calculi comprising structural
 isomorphisms and combinators corresponding to those found in dagger-traced
 $\omega$-continuous rig categories~\cite{Karvonen19}. Though superficially
@@ -202,11 +201,37 @@ isomorphisms, in sum yielding a two-level calculus of isomorphisms and
 equivalences of isomorphisms. In this paper, we build on this work to produce a
 (fully formalized) two-level calculus for full \Pio{} (supporting both recursive
 types and iteration) via the \Delay{} monad, using insights gained from the
-study its Kleisli category~\cite{UustaluV17,ChapmanUV19,VeltriPhD}, as well as
+study of its Kleisli category~\cite{UustaluV17,ChapmanUV19,VeltriPhD}, as well as
 of join inverse categories in which reversible
-iteration may be modelled~\cite{KaarsgaardAG17}. \todo{Niccol\`{o}, do you have anything to add here?}
+iteration may be modelled~\cite{KaarsgaardAG17}. 
 
-\todo{Niccol\`{o}: \Delay vs. Maybe monad.}
+The coinductive delay datatype was introduced by Capretta
+\cite{Capretta05} as a way of defining possibly non-terminating
+functions in Martin-L\"of type theory. It has found a number of
+applications, ranging from operational semantics of functional
+languages \cite{Danielsson12} to formalization of domain theory in
+type theory \cite{BentonKV09} and normalization by evaluation
+\cite{AbelC14}. Here we employ it for giving denotational semantics to
+\Pio. In particular, we show how to endow the delay datatype with a
+dagger trace combinator, whose construction factors through the
+specification of a uniform iteration operator
+\cite{GoncharovSRJ18,GoncharovMR16}.
+
+Throughout the paper, we reason constructively in Martin-L\"of type
+theory. Classically, the delay monad is isomorphic to the maybe monad
+$\Maybe\,X \equiv X + 1$,
+and thus just a complication of something that can be expressed much
+simpler. But constructively they are very different. In particular,
+it is impossible to define a well-behaved trace combinator for the
+maybe monad without assuming classical principles such as the law of
+excluded middle.
+
+
+We have fully formalized the development of the paper in the
+dependently typed programming language Agda~\cite{Agda}. The code is
+available online at \\ \url{https://github.com/niccoloveltri/pi0-agda}. The
+formalization uses Agda 2.6.0.
+
 
 \paragraph{The type-theoretical framework}
 
