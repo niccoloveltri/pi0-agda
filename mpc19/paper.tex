@@ -103,7 +103,9 @@
 
 \begin{document}
 %
-\title{En garde! Unguarded iteration for reversible computation in the Delay monad\thanks{Supported by organization x.}}
+\title{En garde! Unguarded iteration for reversible computation in the
+  Delay monad\thanks{Niccol\`o Veltri was supported by a research
+    grant (13156) from VILLUM FONDEN.}}
 %
 \titlerunning{Unguarded iteration for reversible computation in the Delay monad}
 % If the paper title is too long for the running head, you can set
@@ -865,11 +867,13 @@ $f$, we need to decide whether $xs$ is a finite sequence terminating
 with an element of $B + 1$, or $xs$ is an infinite stream of elements
 of $C$. This decision requires the limited principle of omniscience,
 an instance of the law of excluded middle not provable in Martin-L\"of
-type theory.
+type theory:
 \[
 \mathsf{LPO} = (s : \mathbb{N} \to 2) \to ((n : \mathbb{N}) \times
 s\,n \equiv \mathsf{true}) + ((n : \mathbb{N}) \to s\,n \equiv \mathsf{false})
 \]
+where $2$ is the type of booleans, with $\mathsf{true}$ and
+$\mathsf{false}$ as only inhabitants.
 
 \subsection{Dagger Trace}\label{sec:daggertrace}
 
