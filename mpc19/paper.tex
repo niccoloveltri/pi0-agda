@@ -96,7 +96,7 @@
 \newcommand{\semMu}[1]{{\llbracket #1 \rrbracket}_\mu}
 \newcommand{\semTm}[1]{{\llbracket #1 \rrbracket}_{\lr}}
 \newcommand{\semEq}[1]{{\llbracket #1 \rrbracket}_{\LR}}
-
+\newcommand{\semTrace}{\mathsf{trace}_{\D\simeq}}
 
 \newcommand{\todo}[1]{\hl{TODO: #1}}
 \newcommand{\todocite}[1]{\hl{[TODO: #1]}}
@@ -513,9 +513,9 @@ The constructor $\now$ embeds $A$ into $\Delay A$, so $\now\,a$
 represents the terminating computation returning the value $a$. The
 constructor $\later$ adds an additional unit of time delay to a
 computation. Double rule lines refer to a coinductive constructor,
-which can be applied an infinite amount of times.
-The non-terminating computation $\never$
-is corecursively defined as $\never = \later \,\never$.
+which can be employed an infinite number of times in the construction
+of a term of type $\Delay A$.  E.g., the non-terminating computation
+$\never$ is corecursively defined as $\never = \later \,\never$.
 
 The delay datatype is a monad. The unit is the constructor $\now$,
 while the Kleisli extension $\bind$ is corecursively defined as follows:
@@ -553,17 +553,21 @@ $x \dn a$. The relation $\dn$ is inductively defined by the rules:
 \infer{\later\,x \dn a}{x \dn a}
 \]
 Two computations in $\Delay A$ are weakly bisimilar if they differ by
-a finite number of applications of the constructor $\later$. This
+a finite number of applications of the constructor
+$\later$. Alternatively, we can say that two computations $x$ and $y$
+are weakly bisimilar if, whenever $x$ terminates returning a value
+$a$, then $y$ also terminates returning $a$, and vice versa. This
 informal statement can be formalized in several different but
-logically equivalent ways \cite{ChapmanUV19}. 
-A possible defintion is as follows:
-\begin{equation}\label{eq:weak1}
-x \approx y = (a : A) \to x \dn a \leftrightarrow y \dn a
-\end{equation}
-The definition says that $x$ and $y$ are weakly bisimilar if, whenever
-$x$ terminates returning a value $a$, then $y$ also terminates
-returning $a$, and vice versa.
-Alternatively, weak bisimilarity can be coinductively formulated as follows:
+logically equivalent ways \cite{ChapmanUV19}. Here we consider a
+coinductive formulation employed e.g. in \cite{Danielsson18}.
+%% A possible defintion is as follows:
+%% \begin{equation}\label{eq:weak1}
+%% x \approx y = (a : A) \to x \dn a \leftrightarrow y \dn a
+%% \end{equation}
+%% The definition says that $x$ and $y$ are weakly bisimilar if, whenever
+%% $x$ terminates returning a value $a$, then $y$ also terminates
+%% returning $a$, and vice versa.
+%% Alternatively, weak bisimilarity can be coinductively formulated as follows:
 \begin{equation}
 \label{eq:weak2}
 \arraycolsep=8pt\def\arraystretch{2.8}
@@ -577,18 +581,19 @@ Alternatively, weak bisimilarity can be coinductively formulated as follows:
 \infer{\laterR_{\approx} \, p: \now\,a \approx \later\,x}{p : \now\,a \approx x}
 \end{array}
 \end{equation}
-Notice that the constructor $\later_{\approx}$ is
-coinductive. Formulation (\ref{eq:weak1}) and (\ref{eq:weak2}) are
-logically equivalent, meaning that two computations are weakly
-bisimilar as in (\ref{eq:weak1}) if and only if they are weakly
-bisimilar as in (\ref{eq:weak2}).
-In the rest of the paper we will employ
-both encodings of weak bisimilarity, in each case explicitly stating
-if we are working with definition (\ref{eq:weak1}) or definition (\ref{eq:weak2}).
-Weak bisimilarity is an equivalence
-relation and it is a congruence w.r.t. the $\later$ operation.
-For example, here is a proof that weak bisimilarity is reflexive,
-employing definition (\ref{eq:weak2}).
+Notice that the constructor $\later_{\approx}$ is coinductive. This
+allows us to prove $\never \approx \never$. 
+%% Formulation
+%% (\ref{eq:weak1}) and (\ref{eq:weak2}) are logically equivalent,
+%% meaning that two computations are weakly bisimilar as in
+%% (\ref{eq:weak1}) if and only if they are weakly bisimilar as in
+%% (\ref{eq:weak2}).  In the rest of the paper we will employ both
+%% encodings of weak bisimilarity, in each case explicitly stating if we
+%% are working with definition (\ref{eq:weak1}) or definition
+%% (\ref{eq:weak2}). 
+ Weak bisimilarity is an equivalence relation and it
+is a congruence w.r.t. the $\later$ operation.  For example, here is a
+proof that weak bisimilarity is reflexive.
 \begin{align*}
 & \refl_{\approx} : \{x : \Delay A\} \to x \approx x \\
 & \refl_{\approx} \,\{\now\,a\} = \now_\approx \\
@@ -789,8 +794,7 @@ that $\iterD\,f_1 \approx \iterD\,f_2$ whenever $f_1 \approx f_2$.
 
 As mentioned above, $\iterD$ satisfies the Elgot iteration axioms only
 up to weak bisimilarity. Here we show the proof of the unfolding
-axiom. We employ the definition (\ref{eq:weak2}) of weak
-bisimilarity. The proof relies on an auxiliary proof $\unfolding'$. 
+axiom. The proof relies on an auxiliary proof $\unfolding'$. 
 \[
 \def\arraystretch{1.2}
 \begin{array}{ll}
@@ -807,8 +811,6 @@ bisimilarity. The proof relies on an auxiliary proof $\unfolding'$.
 \multicolumn{2}{l}{\unfolding \,f\,x = \unfolding'\,f\,(f\,x)}
 \end{array}
 \]
-
-
 
 
 \subsection{Trace}\label{sec:trace}
@@ -852,6 +854,22 @@ $\traceD\,f \approx \traceHD\,f$ for all $f : A + C \to \Delay (B +
 C)$. 
 
 The trace axioms follow from the Elgot iteration axioms.
+
+We conclude this section by remarking that the construction of a trace
+operator in the Kleisli category of the maybe monad is impossible
+without the assumption of additional classical principles. In fact,
+given a map $f : A + C \to B + C + 1$, let $xs$ be the possibly
+infinite sequence of elements of $B + C + 1$ produced by the iteration
+of $f$ on a given input $A + C$. In order to construct the trace of
+$f$, we need to decide whether $xs$ is a finite sequence terminating
+with an element of $B + 1$, or $xs$ is an infinite stream of elements
+of $C$. This decision requires the limited principle of omniscience,
+an instance of the law of excluded middle not provable in Martin-L\"of
+type theory.
+\[
+\mathsf{LPO} = (s : \mathbb{N} \to 2) \to ((n : \mathbb{N}) \times
+s\,n \equiv \mathsf{true}) + ((n : \mathbb{N}) \to s\,n \equiv \mathsf{false})
+\]
 
 \subsection{Dagger Trace}\label{sec:daggertrace}
 
@@ -968,7 +986,7 @@ Summing up, in this section we have showed that the $\traceD$ operator
 can be restricted to act on partial isomorphisms. That is, the
 following type is inhabited:
 \[
-\mathsf{semTrace} : A + C\simeq B + C \to A \simeq C
+\semTrace : A + C\simeq B + C \to A \simeq C
 \]
 
 \section{Soundness}\label{sec:interpretation}
@@ -1001,9 +1019,10 @@ i.e. partial isomorphisms. Formally, we define an operation:
 \semTm - : (A \lr B) \to \semTy A \, \rho \simeq \semTy B \, \rho
 \]
 We refer the interested reader to our Agda formalization for a
-complete definition of the interpretation of terms. We only emphasize
+complete definition of the interpretation of terms. Here we limit
+ourselves to emphasize
 the semantics of the trace operator: $\semTm {\trace\,f} =
-\mathsf{semTrace}\,\semTm f$. 
+\semTrace\,\semTm f$.
 
 Term equivalences of \Pio\ are modelled as morphism equalities in
 $\Inv\Dapprox$, i.e. proofs of weak bisimilarity between two
