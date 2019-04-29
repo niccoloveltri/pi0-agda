@@ -94,7 +94,8 @@
 % Semantics
 \newcommand{\semTy}[1]{{\llbracket #1 \rrbracket}_\mathsf{Ty}}
 \newcommand{\semMu}[1]{{\llbracket #1 \rrbracket}_\mu}
-\newcommand{\semTm}[1]{{\llbracket #1 \rrbracket}_\lr}
+\newcommand{\semTm}[1]{{\llbracket #1 \rrbracket}_{\lr}}
+\newcommand{\semEq}[1]{{\llbracket #1 \rrbracket}_{\LR}}
 
 
 \newcommand{\todo}[1]{\hl{TODO: #1}}
@@ -963,6 +964,12 @@ $\Orb f {(\inl\,a)} {(\inl\,b)}$. There are two possibilities.
   {(\daggerD \,f)} {(\inr\,c)} {(\inl\,a)}$.
 \end{itemize}
 
+Summing up, in this section we have showed that the $\traceD$ operator
+can be restricted to act on partial isomorphisms. That is, the
+following type is inhabited:
+\[
+\mathsf{semTrace} : A + C\simeq B + C \to A \simeq C
+\]
 
 \section{Soundness}\label{sec:interpretation}
 
@@ -991,8 +998,22 @@ giving semantics to the $\mu$ type former.
 Terms of \Pio\ are modelled as morphism of $\Inv\Dapprox$,
 i.e. partial isomorphisms. Formally, we define an operation:
 \[
-\semTm - : (A \lr B) \to 
+\semTm - : (A \lr B) \to \semTy A \, \rho \simeq \semTy B \, \rho
 \]
+We refer the interested reader to our Agda formalization for a
+complete definition of the interpretation of terms. We only emphasize
+the semantics of the trace operator: $\semTm {\trace\,f} =
+\mathsf{semTrace}\,\semTm f$. 
+
+Term equivalences of \Pio\ are modelled as morphism equalities in
+$\Inv\Dapprox$, i.e. proofs of weak bisimilarity between two
+morpshisms. Formally, we define an operation:
+\[
+\semEq - : (f \LR g) \to \semTm f \approx \semTm g
+\]
+Again we refer the interested reader to our Agda formalization for a
+complete definition of the interpretation of term equivalences.
+
 
 \section{Conclusions}
 
