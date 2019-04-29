@@ -30,7 +30,7 @@
 \newcommand{\Set}{\mathsf{Set}}
 \newcommand{\Par}{\mathsf{Par}}
 \newcommand{\comp}{\circ}
-\newcommand{\U}{\mathcal{U}}
+% \newcommand{\U}{\mathcal{U}}
 \newcommand{\copair}[2]{[#1,#2]}
 \newcommand{\pair}[2]{\left< #1,#2 \right>}
 \newcommand{\inl}{\mathsf{inl}}
@@ -279,10 +279,9 @@ axioms notably differs from theirs in that we do not require each term to be
 a total isomorphism, we ask only for the existence of a partial
 inverse. 
 
-Formally, the collection of types of \Pio\ constitutes the free
-dagger-traced rig inverse category with recursive types. \todo{Robin: Does
-  this make any sense? Also, anything to add here? Like some facts
-  about \Pio, like Turing completeness.}
+Formally, the collection of types of \Pio\ correspond to those naturally
+interpreted in dagger traced $\omega$-continuous rig categories (see
+\cite{Karvonen19}).
 
 \subsection{Types}
 
@@ -493,18 +492,17 @@ $\trace\,f$. Remember that we have defined $\dagger\,(\trace\,f)$ to
 be $\trace\,(\dagger \,f)$, so the axiom $\mathsf{tracePIso}$
 is evidence that the trace combinator of \Pio\ is a dagger trace.
 Afterwards we have two equivalences stating that $\unfold$ is the
-total inverse of $\fold$. Finally,... 
-\todo{Robin: a nice description of the last equivalence in Figure 3?
-  Perhaps a citation too?}
+total inverse of $\fold$. 
 
-It is possible to show that every term $f$ has $\dagger\,f$ as its
-partial inverse, therefore proving that the types of \Pio\ possess an
-inverse category structure \todo{Am I right here?}. The proof proceeds by induction on $f$.
+It is possible to show that every term $f$ has $\dagger\,f$ as its partial
+inverse, and since the final equivalence of Figure~\ref{fig:programequivs} is
+equivalent to stating that partial inverses are unique~\cite{Kastl79}, it
+follows that the types and terms of \Pio\ form an inverse category. The proof
+proceeds by induction on $f$.
 \[
 \mathsf{existsPIso} : (f : A \lr B) \to f \bullet \dagger\,f
 \bullet\,f \LR f
 \]
-
 
 \section{Delay Monad}\label{sec:delay}
 
