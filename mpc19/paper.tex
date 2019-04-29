@@ -18,6 +18,7 @@
 \usepackage{amssymb}
 \usepackage{mathtools}
 \usepackage{fancyvrb}
+\usepackage{stmaryrd}
 
 \usepackage{tikzit}
 \input{figures/stringdiagrams.tikzstyles}
@@ -90,6 +91,12 @@
 \renewcommand{\next}{\mathsf{next}}
 \newcommand{\reverseOrbit}{\mathsf{reverseOrb}}
 
+% Semantics
+\newcommand{\semTy}[1]{{\llbracket #1 \rrbracket}_\mathsf{Ty}}
+\newcommand{\semMu}[1]{{\llbracket #1 \rrbracket}_\mu}
+\newcommand{\semTm}[1]{{\llbracket #1 \rrbracket}_\lr}
+
+
 \newcommand{\todo}[1]{\hl{TODO: #1}}
 \newcommand{\todocite}[1]{\hl{[TODO: #1]}}
 
@@ -156,19 +163,7 @@ Robin:
     (more general) categories, e.g. topoi.
   \end{itemize}
 \end{itemize}
-Niccolò: 
-\begin{itemize}
-  \item Fix the syntax to be closer to ordinary presentations (but do describe 
-  how it is realized in Agda).
-  \item Finish the section about trace and iteration.
-  \item Remind the reader about double lines of coinductive definitions.
-  \item Swap types in Elgot iterator.
-\end{itemize}
-Both:
-\begin{itemize}
-  \item \textbf{Important:} Come up with a punnier title! (Something about 
-  delays and daggers).
-\end{itemize}
+
 % section todo (end)
 
 \section{Introduction}\label{sec:intro}
@@ -977,7 +972,30 @@ $\Orb f {(\inl\,a)} {(\inl\,b)}$. There are two possibilities.
 In this section, we provide some details on the interpretation of the
 syntax of \Pio, presented in Section \ref{sec:syntax}, into the
 category $\Inv\Dapprox$. Types of \Pio\ are modelled as objects of
-$\Inv\Dapprox$, which are types of the metatheory. In
+$\Inv\Dapprox$, which are types of the metatheory. In Agda, the
+interpretation of types $\semTy -$ takes in input a \Pio\ type
+$A : \Ty\,n$ and an environment $\rho : \mathsf{Fin}\,n \to \Set$
+giving semantics to each variable in context. The interpretation is
+mutually inductively defined together with the operation $\semMu -$
+giving semantics to the $\mu$ type former.
+\[
+\begin{array}{lll}
+\semTy \Z & \rho & = 0 \\
+\semTy {A \oplus B} & \rho & = \semTy A \,\rho+ \semTy B  \, \rho\\
+\semTy \I & \rho & = 1 \\
+\semTy {A \otimes B} & \rho & = \semTy A \,\rho \times \semTy B \,\rho\\
+\semTy {\Var\,i} & \rho & = \rho\, i \\
+\semTy {\mu A} & \rho & = \semMu A \,\rho
+\end{array}
+\qquad \qquad
+\infer{\mathsf{semFold} \,x : \semMu A\,\rho}{x : \semTy A \, \rho}
+\]
+
+Terms of \Pio\ are modelled as morphism of $\Inv\Dapprox$,
+i.e. partial isomorphisms. Formally, we define an operation:
+\[
+\semTm - : (A \lr B) \to 
+\]
 
 \section{Conclusions}
 
