@@ -148,10 +148,6 @@ with a calculus of certified program equivalences between these programs.
 \label{sec:todo}
 Robin:
 \begin{itemize}
-  \item Make pictures! 
-  \begin{itemize}
-    \item Hasegawa trace from iterator.
-  \end{itemize}
   \item Conclusion
   \begin{itemize}
     \item Related work: Kleisli category of the Delay monad is a join
@@ -840,14 +836,16 @@ $b$, or it converges to a value $c : C$, and in this case we proceed
 by  invoking the iteration of $\mapR f$ on $c$.
 
 It is well-known that a trace operator is obtainable from an iteration
-operator, as shown by Hasegawa  \cite{Hasegawa97}. His construction,
+operator, as shown by Hasegawa~\cite{Hasegawa97}. His construction,
 instantiated to our setting, looks as follows:
 \begin{align*}
 & \traceHD : (A + C \to \Delay (B + C)) \to A \to \Delay B \\
 & \traceHD \,f = \iterD (\Delay (\id + \inr) \comp f) \comp \inl
 \end{align*}
+or graphically
+\ctikzfig{trace_hasegawa}
 
-It is not difficoult to prove that the two possible ways of defining a
+It is not difficult to prove that the two possible ways of defining a
 trace operator from Elgot iteration are equivalent, in the sense that
 $\traceD\,f \approx \traceHD\,f$ for all $f : A + C \to \Delay (B +
 C)$. 
@@ -859,7 +857,6 @@ The trace axioms follow from the Elgot iteration axioms.
 We now move to show that $\traceD$ is a dagger trace operator,
 i.e. if $f$ is a partial isomorphism, then
 $\traceD\,f$ is also a partial isomorphism with partial inverse $\traceD\,(\daggerD\,f)$.
-
 
 This is proved by introducing the notion of \emph{orbit} of an element
 $x : A + C$ wrt. a function $f : A + C \to \Delay (B + C)$. The orbit of
@@ -881,7 +878,7 @@ $a : A$ terminates with value $b : B$.
 \[
 \iterD\,f\,a \dn b \leftrightarrow \Orb {\copairD{\inlD}{f}} {(\inr\,a)} {(\inl\,b)}
 \]
-We refer the intersted reader to our Agda formalization for a complete
+We refer the interested reader to our Agda formalization for a complete
 proof of this logical equivalence.
 Similarly, the orbit can be used to state when 
 the trace of a function $f : A + C \to \Delay (B + C)$ on a input
