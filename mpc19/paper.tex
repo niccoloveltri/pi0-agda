@@ -138,8 +138,8 @@ Carette and Sabry have studied the equivalences of the finitary fragment of \Pio
 
 In this paper, we extend the two-level calculus of finitary \Pio{} to one for
 full \Pio{} (i.e., with both recursive types and iteration by means of a
-\trace{} combinator) using the \Delay{} monad, which can be regarded as a
-``computability-aware'' analogue of the usual $\mathsf{Maybe}$ monad for
+\trace{} combinator) using the delay monad, which can be regarded as a
+``computability-aware'' analogue of the usual maybe monad for
 partiality. This yields a calculus of iterative (and possibly non-terminating)
 reversible programs acting on user-defined dynamic data structures together
 with a calculus of certified program equivalences between these programs.
@@ -169,12 +169,12 @@ typed reversible functional programming language Theseus~\cite{JamesS14}.
 
 In \cite{CaretteS16}, the authors studied the equivalences of isomorphisms in
 the finitary fragment of \Pio{} (i.e., without recursive types and iteration
-via the \trace{} combinator), and showed that these equivalences could be
+via the trace combinator), and showed that these equivalences could be
 adequately described by another combinator calculus of equivalences of
 isomorphisms, in sum yielding a two-level calculus of isomorphisms and
 equivalences of isomorphisms. In this paper, we build on this work to produce a
 (fully formalized) two-level calculus for full \Pio{} (supporting both recursive
-types and iteration) via the \Delay{} monad, using insights gained from the
+types and iteration) via the delay monad, using insights gained from the
 study of its Kleisli category~\cite{UustaluV17,ChapmanUV19,VeltriPhD}, as well
 as of join inverse categories in which reversible iteration may be
 modelled~\cite{KaarsgaardAG17}.
@@ -511,7 +511,7 @@ while the Kleisli extension $\bind$ is corecursively defined as follows:
 The delay monad, like any other monad on $\Set$, has a unique strength
 operation which we denote by $\str : A \times \Delay B \to \Delay (A
 \times B)$. Similarly, it has a unique costrength operation $\costr :
-\Delay A \times B \to \Delay (A \times B)$ definable using $\str$. Moreover, the delay datatype is a commutative monad.
+(\Delay A) \times B \to \Delay (A \times B)$ definable using $\str$. Moreover, the delay datatype is a commutative monad.
 
 The Kleisli category of the delay monad, that we call $\D$, has types
 as objects and functions $f : A \to \Delay B$ as morphisms between $A$
@@ -1047,14 +1047,14 @@ complete definition of the interpretation of term equivalences.
 In this paper, we have extended the work of Carette and Sabry~\cite{CaretteS16}
 to a (fully formalized) two-level calculus of \Pio{} programs and program
 equivalences. Key in this effort was the use of the Kleisli category of the
-$\Delay$ monad on $\Set$ under weak bisimilarity, which turned out to support
+delay monad on $\Set$ under weak bisimilarity, which turned out to support
 iteration via a trace that preserves all partial isomorphisms, in this way
 giving semantics to the dagger trace of \Pio. Further, the work was formalized
 using Agda 2.6.0.
 
 It is natural to wonder if our work can be ported to other monads of partiality
 in Martin-L\"of type theory. As already discussed in the end of Section
-\ref{sec:trace}, the $\Maybe$ monad is not suitable for modelling a
+\ref{sec:trace}, the maybe monad is not suitable for modelling a
 well-behaved trace combinator without the assumption of classical principles
 such as \textsf{LPO}. The partial map classifier \cite{UustaluV17-2,EscardoK17}
 $\mathsf{PMC}\,A = (P : \mathsf{Prop}) \to P \to A$, where $\mathsf{Prop}$ is
@@ -1072,7 +1072,7 @@ monad in homotopy type theory \cite{AltenkirchDK17,ChapmanUV19}, to which the
 quotiented delay monad $\mathsf{Delay}_{\approx}\,A = \Delay A/{\approx}$ is
 isomorphic to under the assumption of countable choice.
 
-Though the Kleisli category of the $\Delay$ monad on $\Set$ is well studied,
+Though the Kleisli category of the delay monad on $\Set$ is well studied,
 comparatively less is known about this monad on other categories. It could be
 interesting to study under which conditions its iterator exist -- e.g., whether
 this is still the case when $\Set$ is replaced with an arbitrary topos. Another
@@ -1082,7 +1082,7 @@ $\Inv\Dapprox$ is not just reversible (in the sense that it preserves partial
 isomorphisms) but in fact time invertible, in the sense that the number of
 computation steps needed to perform $\trace (\dagger f)$ is \emph{precisely}
 the same as what is needed to perform $\trace~f$ on any input. Since the
-$\Delay$ monad conveniently allows the counting of computation steps, we
+delay monad conveniently allows the counting of computation steps, we
 conjecture that this is an ideal setting in which to study such intentional
 semantics of reversible programming languages.
 
