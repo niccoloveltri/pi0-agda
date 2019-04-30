@@ -127,8 +127,34 @@ data _⟺_ : {n : ℕ} {A B : Ty n} → A ⟷ B → A ⟷ B → Set where
     → trace g ⊙ f ⟺ trace (g ⊙ (id⟷ ⊕ f))
   dinaturality : ∀ {n} {A B C D : Ty n} {f : B ⟷ A} {g : A ⊕ C ⟷ B ⊕ D}
     → trace ((f ⊕ id⟷) ⊙ g) ⟺ trace (g ⊙ (f ⊕ id⟷))
+  superposing : ∀ {n} {A B C D : Ty n} {f : A ⊕ B ⟷ A ⊕ C}
+    → trace (α⊕ ⊙ (f ⊕ id⟷) ⊙ α⊕-1) ⟺ trace f ⊕ id⟷ {A = D} 
   vanishingI : ∀ {n} {A B : Ty n} {f : 𝟘 ⊕ A ⟷ 𝟘 ⊕ B} → f ⟺ λ⊕-1 ⊙ trace f ⊙ λ⊕ 
   vanishingII : ∀ {n} {A B C D : Ty n} {f : (A ⊕ B) ⊕ C ⟷ (A ⊕ B) ⊕ D}
     → trace f ⟺ trace (trace (α⊕ ⊙ f ⊙ α⊕-1))
   yanking : ∀ {n} {A : Ty n} → trace s⊕ ⟺ id⟷ {A = A}
 
+{-
+inve' : ∀ {n} {A B : Ty n} {f : A ⟷ B} → f ⊙ dagger f ⊙ f ⟺ f
+inve' {f = id⟷} = {!!}
+inve' {f = λ⊕} = {!!}
+inve' {f = λ⊕-1} = {!!}
+inve' {f = α⊕} = {!!}
+inve' {f = α⊕-1} = {!!}
+inve' {f = s⊕} = {!!}
+inve' {f = λ⊗} = {!!}
+inve' {f = λ⊗-1} = {!!}
+inve' {f = α⊗} = {!!}
+inve' {f = α⊗-1} = {!!}
+inve' {f = s⊗} = {!!}
+inve' {f = κL} = {!!}
+inve' {f = κL-1} = {!!}
+inve' {f = δR} = {!!}
+inve' {f = δR-1} = {!!}
+inve' {f = f ⊙ f₁} = {!!}
+inve' {f = f ⊕ f₁} = {!!}
+inve' {f = f ⊗ f₁} = {!!}
+inve' {f = fold} = {!!}
+inve' {f = unfold} = {!!}
+inve' {f = trace f} = {!!}
+-}

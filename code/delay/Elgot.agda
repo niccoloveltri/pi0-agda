@@ -532,3 +532,26 @@ dinaturality-traceD {f = f}{g} =
   qed
   where
     open Eq∼
+
+superposing-traceD : {A B C D : Set} {f : A ⊎ B → Delay (A ⊎ C)}
+  → traceD (mapD α⊎ ∘ map⊎D f now ∘ α⊎-1) ∼ map⊎D (traceD f) (now {A = D})
+superposing-traceD {A}{B}{C}{D}{f = f} (inj₁ x) =
+  trans≈ (M3 (bindD (λ x₁ → now (inj₁ x₁)) (f (inj₂ x))))
+    (trans≈ (M3 ((f R) x))
+      (trans≈ (cong-app-bindD ((f R) x)
+                (λ { (inj₁ y) → trans≈ (cong-iterD''  (λ a → M3 ((f L) a)) (M3 ((f L) y))) (lem ((f L) y))
+                   ; (inj₂ z) → now }))
+        (sym≈ (M3 ((f R) x)))))
+  where
+    mutual
+      lem : (z : Delay (A ⊎ C))
+        → iterD' (mapD (α⊎ L) ∘ (f L)) (mapD (α⊎ L) z) ≈ mapD inj₁ (iterD' (f L) z)
+      lem (now (inj₁ y)) = later (∞lem (f (inj₁ y)))
+      lem (now (inj₂ y)) = now
+      lem (later y) = later (∞lem (force y))
+
+      ∞lem : (z : Delay (A ⊎ C))
+        → iterD' (mapD (α⊎ L) ∘ (f L)) (mapD (α⊎ L) z) ∞≈ mapD inj₁ (iterD' (f L) z)
+      force (∞lem z) = lem z
+
+superposing-traceD {f = f} (inj₂ y) = now  

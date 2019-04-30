@@ -99,3 +99,7 @@ copair∼ : {A B C : Set} {f f' : A → Delay C} {g g' : B → Delay C}
   → f ∼ f' → g ∼ g' → [ f , g ]′ ∼ [ f' , g' ]′
 copair∼ p q (inj₁ x) = p x
 copair∼ p q (inj₂ y) = q y  
+
+map⊎D : {A B C D : Set} (f : A → Delay C) (g : B → Delay D)
+  → A ⊎ B → Delay (C ⊎ D)
+map⊎D f g = [ mapD inj₁ ∘  f , mapD inj₂ ∘ g ]′

@@ -275,6 +275,11 @@ $\mathsf{Fin}\,n$, the type of natural numbers strictly smaller then
 $n$. Notice that the $\mu$ binds a variable, which, for $A : \Ty\,(n +
 1)$, we consider to be $n + 1$.
 
+It is also necessary to define substitutions. In Agda, given
+types $A : \Ty\,(n+1)$ and $B : \Ty\,n$, we construct
+$\sub\,A\,B : \Ty\,n$ to represent the substituted type $A[B/X]$,
+where $X$ corresponds to the $(n+1)$-th variable in context.
+
 \begin{figure}
 \[
 \arraycolsep=8pt\def\arraystretch{2.8}
@@ -293,12 +298,6 @@ $n$. Notice that the $\mu$ binds a variable, which, for $A : \Ty\,(n +
 \label{fig:types}
 \end{figure}
 
-It is also necessary to define substitutions. In Agda, given
-types $A : \Ty\,(n+1)$ and $B : \Ty\,n$, we construct
-$\sub\,A\,B : \Ty\,n$ to represent the substituted type $A[B/X]$,
-where $X$ corresponds to the $(n+1)$-th variable in context.
-
-
 
 \subsection{Terms}
 
@@ -314,75 +313,7 @@ constructor $\fold$ and destructed with $\unfold$. Finally, we find the
 $\trace$ combinator. 
 
 
-\begin{figure}
-\[
-\arraycolsep=7pt\def\arraystretch{1.8}
-\begin{array}{cc}%{|cc|}
-%\hline 
-\id : A \lr A
-& \infer{g \bullet f : A \lr C}{g : B \lr C & f : A \lr B} \\ [.25cm]
-\infer{f \oplus g : A \oplus B \lr C \oplus D}{f : A \lr C & g : B \lr D} 
-& \infer{f \otimes g : A \otimes B \lr C \otimes D}{f : A \lr C & g : B \lr D} \\
-\lambda_{\oplus} : \Z \oplus A \lr A
-& \lambda_{\oplus}^{-1} : A \lr \Z \oplus A\\
-\lambda_{\otimes} : \I \otimes A \lr A
-& \lambda_{\otimes}^{-1} : A \lr \I \otimes A\\
-\alpha_{\oplus} : (A \oplus B) \oplus C \lr A \oplus (B \oplus C)
-& \alpha_{\oplus}^{-1} : A \oplus (B \oplus C) \lr (A \oplus B) \oplus C \\
-\alpha_{\otimes} : (A \otimes B) \otimes C \lr A \otimes (B \otimes C)
-& \alpha_{\otimes}^{-1} : A \otimes (B \otimes C) \lr (A \otimes B) \otimes C \\
-\sigma_{\oplus} : A \oplus B \lr B \oplus A
-& \sigma_{\otimes} : A \otimes B \lr B \otimes A \\
-\kappa : \Z \otimes A \lr \Z 
-& \delta : (A \oplus B) \otimes C \lr (A \otimes C) \oplus (B \otimes C) \\
-\kappa^{-1} : \Z \lr \Z \otimes A
-& \delta^{-1} : (A \otimes C) \oplus (B \otimes C)  \lr (A \oplus B) \otimes C \\
-\fold : A[\mu X.A/X] \lr \mu X.A
-& \unfold : \mu X.A \lr A[\mu X.A/X] \\[.25cm]
-\multicolumn{2}{c}{\infer{\trace \,f: A \lr B}{f : A \oplus C \lr B \oplus C}} \\
-%\hline
-\end{array}
-\]
-\caption{Terms of \Pio}
-\label{fig:programs}
-\end{figure}
 
-\begin{figure}
-\[
-\arraycolsep=8pt\def\arraystretch{1.8}
-\begin{array}{cc} %{|cc|} \hline 
-\multicolumn{2}{c}{\mathsf{naturality_L} : f \bullet \trace\,g \LR \trace\,((f \oplus
-  \id) \bullet g)} \\ 
-\multicolumn{2}{c}{\mathsf{naturality_R} : \trace\,g \bullet f \LR \trace\,(g \bullet (f 
-  \oplus \id))} \\  
-\multicolumn{2}{c}{\mathsf{dinaturality} : \trace \,((\id \oplus f) \bullet g) \LR \trace
-  \,(g \bullet (\id \oplus f))} \\
-\multicolumn{2}{c}{\mathsf{vanishing_\oplus} : \trace \,f \LR \trace \,(\trace
-  \,(\alpha_\oplus^{-1} \bullet f \bullet \alpha_\oplus))} \\ 
-\mathsf{vanishing_\Z} : f \LR \rho_\oplus^{-1} \bullet \trace \,f
-  \bullet \rho_\oplus 
-&
-\mathsf{yanking} : \trace \sigma_\oplus \LR \id
- \\
-\multicolumn{2}{c}{\mathsf{tracePIso} : \trace\,f \bullet \trace\,(\dagger\,f)
-  \bullet \trace\,f \LR \trace \,f} \\
-%%  \\[.25cm]
-%% \multicolumn{2}{c}{\infer{\mathsf{tracePIso}\,p : \trace\,f \bullet \trace\,(\dagger\,f)
-%%   \bullet \trace\,f \LR \trace \,f}{p : f \bullet \dagger\,f \bullet
-%%   f \LR f}} \\
-\mathsf{foldIso} : \fold \bullet \unfold \LR \id 
-&
-\mathsf{unfoldIso} : \unfold \bullet \fold \LR \id
-\\
-\multicolumn{2}{c}{\mathsf{uniquePIso} : f \bullet \dagger \,f
-  \bullet g \bullet \dagger \, g \LR g \bullet \dagger \,g
-  \bullet f \bullet \dagger \, f}
-%\\ \hline
-\end{array}
-\]
-\caption{Selection of term equivalences of \Pio}
-\label{fig:programequivs}
-\end{figure}
 
 Every \Pio\ program is reversible. The (partial) inverse of a program is given by
 the function $\dagger : (A \lr B) \to (B \lr A)$, recursively defined
@@ -428,6 +359,38 @@ Analogously, we can derive the left distributors $\kappa' : A \otimes \Z
 \lr A$ and $\delta' : A \otimes (B \oplus C) \lr (A \otimes B) \oplus
 (A \otimes C)$.
 
+\begin{figure}
+\[
+\arraycolsep=7pt\def\arraystretch{1.8}
+\begin{array}{cc}%{|cc|}
+%\hline 
+\id : A \lr A
+& \infer{g \bullet f : A \lr C}{g : B \lr C & f : A \lr B} \\ [.25cm]
+\infer{f \oplus g : A \oplus B \lr C \oplus D}{f : A \lr C & g : B \lr D} 
+& \infer{f \otimes g : A \otimes B \lr C \otimes D}{f : A \lr C & g : B \lr D} \\
+\lambda_{\oplus} : \Z \oplus A \lr A
+& \lambda_{\oplus}^{-1} : A \lr \Z \oplus A\\
+\lambda_{\otimes} : \I \otimes A \lr A
+& \lambda_{\otimes}^{-1} : A \lr \I \otimes A\\
+\alpha_{\oplus} : (A \oplus B) \oplus C \lr A \oplus (B \oplus C)
+& \alpha_{\oplus}^{-1} : A \oplus (B \oplus C) \lr (A \oplus B) \oplus C \\
+\alpha_{\otimes} : (A \otimes B) \otimes C \lr A \otimes (B \otimes C)
+& \alpha_{\otimes}^{-1} : A \otimes (B \otimes C) \lr (A \otimes B) \otimes C \\
+\sigma_{\oplus} : A \oplus B \lr B \oplus A
+& \sigma_{\otimes} : A \otimes B \lr B \otimes A \\
+\kappa : \Z \otimes A \lr \Z 
+& \delta : (A \oplus B) \otimes C \lr (A \otimes C) \oplus (B \otimes C) \\
+\kappa^{-1} : \Z \lr \Z \otimes A
+& \delta^{-1} : (A \otimes C) \oplus (B \otimes C)  \lr (A \oplus B) \otimes C \\
+\fold : A[\mu X.A/X] \lr \mu X.A
+& \unfold : \mu X.A \lr A[\mu X.A/X] \\[.25cm]
+\multicolumn{2}{c}{\infer{\trace \,f: A \lr B}{f : A \oplus C \lr B \oplus C}} \\
+%\hline
+\end{array}
+\]
+\caption{Terms of \Pio}
+\label{fig:programs}
+\end{figure}
 
 %% \infer{\lambda_{\oplus} : \Z \oplus A \lr A}{}
 %% & \infer{\lambda_{\oplus}^{-1} : A \lr \Z \oplus A}{} \\
@@ -447,12 +410,51 @@ Analogously, we can derive the left distributors $\kappa' : A \otimes \Z
 %% & \infer{\unfold : \mu\,A \lr \sub \, A \, (\mu \,A)}{} \\
 %% \multicolumn{2}{c}{\infer{\trace \,f: A \lr B}{f : A \oplus C \lr B \oplus C}} \\
 
+\begin{figure}
+\[
+\arraycolsep=8pt\def\arraystretch{1.8}
+\begin{array}{cc} %{|cc|} \hline 
+\multicolumn{2}{c}{\mathsf{naturality_L} : f \bullet \trace\,g \LR \trace\,((f \oplus
+  \id) \bullet g)} \\ 
+\multicolumn{2}{c}{\mathsf{naturality_R} : \trace\,g \bullet f \LR \trace\,(g \bullet (f 
+  \oplus \id))} \\  
+\multicolumn{2}{c}{\mathsf{dinaturality} : \trace \,((\id \oplus f) \bullet g) \LR \trace
+  \,(g \bullet (\id \oplus f))} \\
+\multicolumn{2}{c}{\mathsf{superposing} : \trace \,(\alpha_\oplus^{-1}
+  \bullet (\id \oplus f) \bullet \alpha_\oplus) \LR \id \oplus \trace \,f} \\ 
+\multicolumn{2}{c}{\mathsf{vanishing_\oplus} : \trace \,f \LR \trace \,(\trace
+  \,(\alpha_\oplus^{-1} \bullet f \bullet \alpha_\oplus))} \\ 
+\mathsf{vanishing_\Z} : f \LR \rho_\oplus^{-1} \bullet \trace \,f
+  \bullet \rho_\oplus 
+&
+\mathsf{yanking} : \trace\, \sigma_\oplus \LR \id
+ \\
+\multicolumn{2}{c}{\mathsf{tracePIso} : \trace\,f \bullet \trace\,(\dagger\,f)
+  \bullet \trace\,f \LR \trace \,f} \\
+%%  \\[.25cm]
+%% \multicolumn{2}{c}{\infer{\mathsf{tracePIso}\,p : \trace\,f \bullet \trace\,(\dagger\,f)
+%%   \bullet \trace\,f \LR \trace \,f}{p : f \bullet \dagger\,f \bullet
+%%   f \LR f}} \\
+\mathsf{foldIso} : \fold \bullet \unfold \LR \id 
+&
+\mathsf{unfoldIso} : \unfold \bullet \fold \LR \id
+\\
+\multicolumn{2}{c}{\mathsf{uniquePIso} : f \bullet \dagger \,f
+  \bullet g \bullet \dagger \, g \LR g \bullet \dagger \,g
+  \bullet f \bullet \dagger \, f}
+%\\ \hline
+\end{array}
+\]
+\caption{Selection of term equivalences of \Pio}
+\label{fig:programequivs}
+\end{figure}
+
 \subsection{Term Equivalences}
 
 A selection of term equivalences of \Pio\ is given in Figure
 \ref{fig:programequivs}. We only include the equivalences that either
 differ or have not previously considered by Carette and Sabry in their
-formalization of the finite fragment of \Pio \cite{CaretteS16}. In
+formalization of the finite fragment of \Pio~\cite{CaretteS16}. In
 particular, we leave out the long list of Laplaza's coherence axioms
 expressing that the types of \Pio\ form a rig category \cite{Laplaza}.
 We also omit the equivalences stating that $\lambda_\oplus^{-1}$ is
@@ -462,7 +464,7 @@ structural morphisms.
 The list of term equivalences in Figure \ref{fig:programequivs}
 contains the trace axioms, displaying that the types of \Pio\ form a
 traced monoidal category wrt. the additive monoidal structure
-$(\Z,\oplus)$ \cite{Karvonen19}. Next we ask for
+$(\Z,\oplus)$ \cite{JoyalSV96}. Next we ask for
 $\trace\,(\dagger\,f)$ to be the partial inverse of
 $\trace\,f$. Remember that we have defined $\dagger\,(\trace\,f)$ to
 be $\trace\,(\dagger \,f)$, so the axiom $\mathsf{tracePIso}$
@@ -479,6 +481,7 @@ proceeds by induction on $f$.
 \mathsf{existsPIso} : (f : A \lr B) \to f \bullet \dagger\,f
 \bullet\,f \LR f
 \]
+
 
 \section{Delay Monad}\label{sec:delay}
 

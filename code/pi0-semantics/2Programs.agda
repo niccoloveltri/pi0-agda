@@ -195,6 +195,7 @@ sem-⟺ F XXIV (inj₂ b , tt) = now
 sem-⟺ F (naturalityL {f = f}{g}) = naturalityL-traceD {f = proj₁ (sem-⟷ F f)} {proj₁ (sem-⟷ F g)}
 sem-⟺ F (naturalityR {f = f}) = naturalityR-traceD {f = proj₁ (sem-⟷ F f)}
 sem-⟺ F (dinaturality {f = f}{g}) = dinaturality-traceD {f = proj₁ (sem-⟷ F f)} {proj₁ (sem-⟷ F g)}
+sem-⟺ F (superposing {f = f}) = superposing-traceD {f = proj₁ (sem-⟷ F f)}
 sem-⟺ F (vanishingI {f = f}) = vanishingI-traceD {f = proj₁ (sem-⟷ F f)}
 sem-⟺ F (vanishingII {f = f}) = vanishingII-traceD {f = proj₁ (sem-⟷ F f)}
 sem-⟺ F yanking = refl∼
