@@ -147,24 +147,6 @@ with a calculus of certified program equivalences between these programs.
 \keywords{reversible computation \and iteration \and delay monad}
 \end{abstract}
 
-\section{TODO} % (fold)
-\label{sec:todo}
-Robin:
-\begin{itemize}
-  \item Conclusion
-  \begin{itemize}
-    \item Related work: Kleisli category of the Delay monad is a join
-    restriction category, inverse category of a join restriction category is a
-    join inverse category; already known to be dagger-traced under certain
-    conditions.
-    \item Future work: Semantics of time invertible programming. Extension of
-    the work on the Kleisli category of the Delay monad beyond $\Set$ to other
-    (more general) categories, e.g. topoi.
-  \end{itemize}
-\end{itemize}
-
-% section todo (end)
-
 \section{Introduction}\label{sec:intro}
 Reversible computation is an emerging computation paradigm encompassing
 computations that are not just deterministic when executed the \emph{forward}
@@ -1017,6 +999,12 @@ giving semantics to the $\mu$ type former.
 \infer{\mathsf{semFold} \,x : \semMu A\,\rho}{x : \semTy A \, \rho}
 \]
 
+By abuse of notation, we use here $\cdot \times \cdot$ (respectively $\cdot +
+\cdot$) to refer to the product (respectively coproduct) in $\Dapprox$ even
+though it fails to be a product (respectively coproduct) in $\Inv\Dapprox$.
+However, both of these are symmetric monoidal products in $\Inv\Dapprox$, so
+their use as objects of $\Inv\Dapprox$ in the interpretation above is justified.
+
 Terms of \Pio\ are modelled as morphism of $\Inv\Dapprox$,
 i.e. partial isomorphisms. Formally, we define an operation:
 \[
@@ -1039,7 +1027,38 @@ complete definition of the interpretation of term equivalences.
 
 
 \section{Conclusions}
+In this paper, we have extended the work of Carette and Sabry~\cite{CaretteS16}
+to a (fully formalized) two-level calculus of \Pio{} programs and program
+equivalences. Key in this effort was the use of the Kleisli category of the
+$\Delay$ monad on $\Set$ under weak bisimilarity, which turned out to support
+iteration via a trace that preserves all partial isomorphisms, in this way
+giving semantics to the dagger trace of \Pio. Further, the work was formalized
+using Agda 2.6.0.
 
+The notion of computable partiality offered the $\Delay$ monad and its
+restriction category structure is well
+studied~\cite{VeltriPhD,UustaluV17,ChapmanUV19}. Indeed, though it could be
+established from previous work (see also \cite{KaarsgaardAG17}) that this
+category was traced, it was unclear whether the trace preserved partial
+isomorphisms -- a crucial point in its applicability to interpreting \Pio. The
+presented solution further avoids CPO-enrichment (as otherwise used in both
+\cite{UustaluV17} and \cite{KaarsgaardAG17}), and its issues in relation to
+formalization, in favor of a more direct definition of the trace from the Elgot
+iterator.
+
+Though the Kleisli category of the $\Delay$ monad on $\Set$ is well studied,
+comparatively less is known about this monad on other categories. It could be
+interesting to study under which conditions its iterator exist -- e.g., whether
+this is still the case when $\Set$ is replaced with an arbitrary topos. Another
+avenue concerns the study of \emph{time invertible} programming languages:
+Though not immediately clear in the current presentation, the trace on
+$\Inv\Dapprox$ is not just reversible (in the sense that it preserves partial
+isomorphisms) but in fact time invertible, in the sense that the number of
+computation steps needed to perform $\trace (\dagger f)$ is \emph{precisely}
+the same as what is needed to perform $\trace~f$ on any input. Since the
+$\Delay$ monad conveniently allows the counting of computation steps, we
+conjecture that this is an ideal setting in which to study such intentional
+semantics of reversible programming languages.
 
 %
 %
