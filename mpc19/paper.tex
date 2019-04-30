@@ -79,7 +79,7 @@
 \newcommand{\fstD}{\mathsf{fst}_{\D}}
 \newcommand{\sndD}{\mathsf{snd}_{\D}}
 \newcommand{\piso}{\mathsf{isPartialIso}}
-\newcommand{\pisoalt}{\mathsf{isPartialIso}_2}
+\newcommand{\pisoalt}{\mathsf{isPartialIsoCat}}
 \newcommand{\iterD}{\mathsf{iter}_\D}
 \newcommand{\unfolding}{\mathsf{fixpoint}_\D}
 \newcommand{\refl}{\mathsf{refl}}
@@ -179,17 +179,23 @@ study of its Kleisli category~\cite{UustaluV17,ChapmanUV19,VeltriPhD}, as well
 as of join inverse categories in which reversible iteration may be
 modelled~\cite{KaarsgaardAG17}.
 
-The coinductive delay datatype was introduced by Capretta
-\cite{Capretta05} as a way of defining possibly non-terminating
-functions in Martin-L\"of type theory. It has found a number of
-applications, ranging from operational semantics of functional
-languages \cite{Danielsson12} to formalization of domain theory in
-type theory \cite{BentonKV09} and normalization by evaluation
-\cite{AbelC14}. Here we employ it for giving denotational semantics to
-\Pio. In particular, we show how to endow the delay datatype with a
-dagger trace combinator, whose construction factors through the
-specification of a uniform iteration operator
-\cite{GoncharovSRJ18,GoncharovMR16}.
+The full \Pio\ calculus cannot be modelled in the same framework of
+\cite{CaretteS16}, since Martin-L\"of type theory is a total language
+which in particolar disallow the specification of a trace
+operator. Consequently, it is necessary to move to a setting
+supporting the existence of partial maps, and in type theory this can
+be done by using monads, by considering partiality as an effect. Our
+choice fell on the coinductive delay monad, introduced by Capretta
+\cite{Capretta05} as a way of representing general recursive functions
+in Martin-L\"of type theory. The delay datatype has been employed in a
+large number of applications, ranging from operational semantics of
+functional languages \cite{Danielsson12} to formalization of domain
+theory in type theory \cite{BentonKV09} and normalization by
+evaluation \cite{AbelC14}. Here it is used for giving denotational
+semantics to \Pio. In particular, we show how to endow the delay
+datatype with a trace combinator, whose construction factors
+through the specification of a uniform iteration operator
+\cite{GoncharovSRJ18,GoncharovMR16}. 
 
 Throughout the paper, we reason constructively in Martin-L\"of type
 theory. Classically, the delay monad is isomorphic to the maybe monad
@@ -197,8 +203,8 @@ $\Maybe\,X \equiv X + 1$,
 and thus just a complication of something that can be expressed much
 simpler. Constructively, however, they are very different. In particular,
 it is impossible to define a well-behaved trace combinator for the
-maybe monad without assuming classical principles such as the law of
-excluded middle.
+maybe monad without assuming classical principles such as the limited
+principle of omniscience.
 
 
 We have fully formalized the development of the paper in the
@@ -635,9 +641,9 @@ interaction of partiality (in the sense of restriction categories) and limits
 in general (see \cite[Section 4.4]{CockettL07}). In particular, $1$ is not
 terminal object and $A \times B$ is not the binary product of $A$ and $B$ in
 $\Dapprox$. In fact, $0$ is (also) the terminal object, with $\lambda \_.\,
-\never : A \to \Delay 0$ as the terminal morphism. The
-binary product of $A$ and $B$ in $\Dapprox$ is given by
-$A + B + A \times B$. Nevertheless, it is possible to prove that 1 and
+\never : A \to \Delay 0$ as the terminal morphism. 
+%The binary product of $A$ and $B$ in $\Dapprox$ is given by $A + B + A \times B$. 
+Nevertheless, it is possible to prove that 1 and
 $\times$ are partial terminal object and partial binary products
 respectively, in the sense of Cockett and Lack's restriction
 categories \cite{CockettL02,CockettL07}. Here we refrain from making the latter
