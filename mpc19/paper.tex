@@ -831,14 +831,17 @@ $\mapL f = f \comp \inl : A \to C$ and
 $\mapR f = f \comp \inr : B \to C$, so that $f = [\mapL f , \mapR f]$.
 Graphically:
 \ctikzfig{fL_fR}
- 
-The trace operator in $\Dapprox$ is defined as follows:
+
+The trace operator in $\Dapprox$ is defined in terms of the iterator as follows:
 \begin{align*}
 & \traceD : (A + C \to \Delay (B + C)) \to A \to \Delay B \\
 & \traceD \,f = \copairD{\now}{\iterD \,\mapR f}\diamond \mapL f
 \end{align*}
-The operation $\traceD$ is compatible with weak bisimilarity. 
-Pictorially:
+The operation $\traceD$ is compatible with weak bisimilarity. Graphically, we express the iterator on $f$ as a wire looping back on the input, i.e., as
+
+\ctikzfig{iter}
+
+In this way, the definition of $\traceD$ may be expressed graphically as
 
 \ctikzfig{trace}
 
