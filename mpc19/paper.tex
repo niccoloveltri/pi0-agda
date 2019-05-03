@@ -103,8 +103,8 @@
 
 \begin{document}
 %
-\title{En garde! Unguarded iteration for reversible computation in the
-  Delay monad\thanks{Niccol\`o Veltri was supported by a research
+\title{En Garde! Unguarded Iteration for Reversible Computation in the
+  Delay Monad\thanks{Niccol\`o Veltri was supported by a research
     grant (13156) from VILLUM FONDEN.}}
 %
 \titlerunning{Unguarded iteration for reversible computation in the Delay monad}
@@ -138,7 +138,7 @@ Carette and Sabry have studied the equivalences of the finitary fragment of \Pio
 
 In this paper, we extend the two-level calculus of finitary \Pio{} to one for
 full \Pio{} (i.e., with both recursive types and iteration by means of a
-\trace{} combinator) using the delay monad, which can be regarded as a
+trace combinator) using the delay monad, which can be regarded as a
 ``computability-aware'' analogue of the usual maybe monad for
 partiality. This yields a calculus of iterative (and possibly non-terminating)
 reversible programs acting on user-defined dynamic data structures together
@@ -181,8 +181,8 @@ modelled~\cite{KaarsgaardAG17}.
 
 The full \Pio\ calculus cannot be modelled in the same framework of
 \cite{CaretteS16}, since Martin-L\"of type theory is a total language
-which in particolar disallow the specification of a trace
-operator. Consequently, it is necessary to move to a setting
+which in particolar disallows the specification of a trace
+operator on types. Consequently, it is necessary to move to a setting
 supporting the existence of partial maps, and in type theory this can
 be done by using monads, by considering partiality as an effect. Our
 choice fell on the coinductive delay monad, introduced by Capretta
@@ -227,8 +227,9 @@ copairing. The coproduct injections are denoted $\inl$ and $\inr$.
 Given $h : C \to A$ and $k : C \to B$, we write
 $\pair h k : C \to A \times B$ for their pairing. The product
 projections are denoted $\fst$ and $\snd$. The empty type is 0 and the
-empty type is 1. We write $\Set$ for the category of
-types and functions between them.
+unit type is 1. We write $\Set$ for the category of
+types and functions between them. We also use $\Set$ to denote the
+universe of types.
 We define $A \leftrightarrow B = (A \to B) \times (B \to A)$.
 %We write $\U$ for the universe of (small) types.
 
@@ -278,7 +279,7 @@ realized by the rules in Figure \ref{fig:types}. The type $\Ty\,n$
 represents \Pio\ types containing at most $n$ free
 variables. Variables themselves are encoded as elements of
 $\mathsf{Fin}\,n$, the type of natural numbers strictly smaller then
-$n$. Notice that the $\mu$ binds a variable, which, for $A : \Ty\,(n +
+$n$. The type constructor $\mu$ binds a variable, which, for $A : \Ty\,(n +
 1)$, we consider to be $n + 1$.
 
 It is also necessary to define substitutions. In Agda, given
@@ -462,7 +463,7 @@ A selection of term equivalences of \Pio\ is given in Figure
 differ or have not previously considered by Carette and Sabry in their
 formalization of the finite fragment of \Pio~\cite{CaretteS16}. In
 particular, we leave out the long list of Laplaza's coherence axioms
-expressing that the types of \Pio\ form a rig category \cite{Laplaza}.
+expressing that types and terms of \Pio\ form a rig category \cite{Laplaza}.
 We also omit the equivalences stating that $\lambda_\oplus^{-1}$ is
 the total inverse of $\lambda_\oplus$, similarly for the other
 structural morphisms. 
@@ -533,7 +534,7 @@ the introduced notion of partiality is intensional, in the sense that
 computations terminating with the same value in a different number of
 steps are considered different. To obtain an extensional notion of
 partiality, which in particular allows the specification of a
-well-behaved trace operator, we introduce the notion of termination-sensitive
+well-behaved trace operator, we introduce the notion of (termination-sensitive)
 weak bisimilarity.
 
 Weak bisimilarity is defined in terms of convergence. A computation
@@ -615,8 +616,8 @@ to quotienting is employed, the latter constructions go through
 without the need for additional assumptions. In order to keep an
 agnostic perspective on quotient types and avoid the need for
 disputable semi-classical choice principles, we decided to quotient
-the homsets of $\D$ by (pointwise) weak bisimilarity instead of the
-delay datatype.
+the homsets of $\D$ by (pointwise) weak bisimilarity instead of
+the objects of $\D$.
 
 \subsection{Finite Products and Coproducts}
 \label{sec:prod}
@@ -624,7 +625,7 @@ delay datatype.
 Colimits in $\Dapprox$ are inherited from $\Set$. This means that 0 is
 also the initial object of $\Dapprox$, similarly $A + B$ is the
 binary coproduct of $A$ and $B$ in $\Dapprox$. Given $f : A \to
-\Delay C$ and $g : B \to \Delay C$, we define their copairing as
+\Delay C$ and $g : B \to \Delay C$, their copairing is
 $\copairD f g = \copair f g : A + B \to \Delay C$. The operation
 $\copairD - -$ is compatible with weak bisimilarity, in the sense that
 $\copairD{f_1}{g_1} \approx \copairD{f_2}{g_2}$ whenever $f_1 \approx f_2$
@@ -638,7 +639,8 @@ Just as limits in $\Set$ do not lift to limits in the category $\Par$ of sets
 and partial functions, they do not lift to $\Dapprox$ either. This is not an
 issue with these concrete formulations of partiality, but rather with the
 interaction of partiality (in the sense of restriction categories) and limits
-in general (see \cite[Section 4.4]{CockettL07}). In particular, $1$ is not
+in general (see \cite[Section 4.4]{CockettL07}). In particular, $1$ is
+not the
 terminal object and $A \times B$ is not the binary product of $A$ and $B$ in
 $\Dapprox$. In fact, $0$ is (also) the terminal object, with $\lambda \_.\,
 \never : A \to \Delay 0$ as the terminal morphism. 
@@ -758,9 +760,10 @@ dinaturality axiom, which has recently been discovered to be derivable
 from the other laws \cite{EsikG16,GoncharovMR16}.
 
 The delay monad is an Elgot monad for which the axioms holds up to
-weak bisimilarity, not propositional equality. Its iteration operator
-relies on the definition of an auxiliary function $\iterD'$
-corecursively defined as follows:
+weak bisimilarity, not propositional equality. In other words, the
+category $\Dapprox$ can be endowed with a uniform iteration
+operator. The specification of the iteration operator relies on an
+auxiliary function $\iterD'$ corecursively defined as follows:
 \[ %\arraycolsep=8pt
 \def\arraystretch{1.2}
 \begin{array}{ll}
@@ -804,7 +807,7 @@ that $\iterD\,f_1 \approx \iterD\,f_2$ whenever $f_1 \approx f_2$.
 
 As mentioned above, $\iterD$ satisfies the Elgot iteration axioms only
 up to weak bisimilarity. Here we show the proof of the fixpoint
-axiom. The proof relies on an auxiliary proof $\unfolding'$. 
+axiom, which in turns relies on an auxiliary proof $\unfolding'$. 
 \[
 \def\arraystretch{1.2}
 \begin{array}{ll}
@@ -840,11 +843,9 @@ The trace operator in $\Dapprox$ is defined in terms of the iterator as follows:
 The operation $\traceD$ is compatible with weak bisimilarity. Graphically, we express the iterator on $f$ as a wire looping back on the input, i.e., as
 
 \ctikzfig{iter}
-
 In this way, the definition of $\traceD$ may be expressed graphically as
 
 \ctikzfig{trace}
-
 Intuitively, the function $\mapL f$ initialises the loop. It either
 diverges, so that the trace of $f$ diverges as well, or it terminates. It either terminates with
 an element $b : B$, in which case the loop ends immediately returning
@@ -873,7 +874,7 @@ operator in the Kleisli category of the maybe monad is impossible
 without the assumption of additional classical principles. In fact,
 given a map $f : A + C \to B + C + 1$, let $xs$ be the possibly
 infinite sequence of elements of $B + C + 1$ produced by the iteration
-of $f$ on a given input $A + C$. In order to construct the trace of
+of $f$ on a given input in $A$. In order to construct the trace of
 $f$, we need to decide whether $xs$ is a finite sequence terminating
 with an element of $B + 1$, or $xs$ is an infinite stream of elements
 of $C$. This decision requires the limited principle of omniscience,
@@ -929,8 +930,8 @@ statement instead:
 \[
 \Orb f {(\inl\,a)} {(\inl\,b)} \leftrightarrow \Orb {(\daggerD\,f)} {(\inl\,b)} {(\inl\,a)}
 \]
-We give a proof of the left-to-right direction, the other implication
-is proved in an analogous way.  Notice that a term
+We give a detailed proof of the left-to-right direction, the other implication
+is derived  in an analogous way.  Notice that a term
 $p : \Orb f {(\inl\,a)} {(\inl\,b)}$ can be seen as a finite sequence
 of elements of $C$, precisely the intermediate values produced by
 $\traceD\,f\,a$ before converging to $b$. The orbit of $b$ wrt. the
@@ -983,7 +984,7 @@ The reverse of an orbit is derivable using the auxiliary function $\reverseOrbit
 \reverseOrbit \,i\,(\next\,p\,q) &= \reverseOrbit' \,i\,q \,(\done \,(i\,p))
 \end{array}
 \]
-The proof of $\reverseOrbit$ proceeds bystructural induction on the
+The proof of $\reverseOrbit$ proceeds by structural induction on the
 orbit of type
 $\Orb f {(\inl\,a)} {(\inl\,b)}$. There are two possibilities.
 \begin{itemize}
@@ -1028,11 +1029,12 @@ giving semantics to the $\mu$ type former.
 \infer{\mathsf{semFold} \,x : \semMu A\,\rho}{x : \semTy A \, \rho}
 \]
 
-By abuse of notation, we use here $\cdot \times \cdot$ (respectively $\cdot +
-\cdot$) to refer to the product (respectively coproduct) in $\Dapprox$ even
-though it fails to be a product (respectively coproduct) in $\Inv\Dapprox$.
-However, both of these are symmetric monoidal products in $\Inv\Dapprox$, so
-their use as objects of $\Inv\Dapprox$ in the interpretation above is justified.
+By abuse of notation, we use here $\times$ (respectively $+$) to refer
+to the product (respectively coproduct) in $\Dapprox$ even though it
+fails to be a product (respectively coproduct) in $\Inv\Dapprox$.
+However, both of these are symmetric monoidal products in
+$\Inv\Dapprox$, so their use as objects of $\Inv\Dapprox$ in the
+interpretation above is justified.
 
 Terms of \Pio\ are modelled as morphism of $\Inv\Dapprox$,
 i.e. partial isomorphisms. Formally, we define an operation:
@@ -1082,7 +1084,7 @@ dagger trace combinator, which can be proved following the general strategy in
 \cite{KaarsgaardAG17}. The exact same observations apply to the partiality
 monad in homotopy type theory \cite{AltenkirchDK17,ChapmanUV19}, to which the
 quotiented delay monad $\mathsf{Delay}_{\approx}\,A = \Delay A/{\approx}$ is
-isomorphic to under the assumption of countable choice.
+isomorphic under the assumption of countable choice.
 
 Though the Kleisli category of the delay monad on $\Set$ is well studied,
 comparatively less is known about this monad on other categories. It could be
