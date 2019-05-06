@@ -95,7 +95,7 @@
 \newcommand{\semTy}[1]{{\llbracket #1 \rrbracket}_\mathsf{Ty}}
 \newcommand{\semMu}[1]{{\llbracket #1 \rrbracket}_\mu}
 \newcommand{\semTm}[1]{{\llbracket #1 \rrbracket}_{\lr}}
-\newcommand{\semEq}[1]{{\llbracket #1 \rrbracket}_{\LR}}
+\newcommand{\semEq}[1]{{\llbracket #1 \rrbracket}_{\!\!\LR}}
 \newcommand{\semTrace}{\mathsf{trace}_{\D\simeq}}
 
 \newcommand{\todo}[1]{\hl{TODO: #1}}
@@ -181,7 +181,7 @@ modelled~\cite{KaarsgaardAG17}.
 
 The full \Pio\ calculus cannot be modelled in the same framework of
 \cite{CaretteS16}, since Martin-L\"of type theory is a total language
-which in particolar disallows the specification of a trace
+which in particular disallows the specification of a trace
 operator on types. Consequently, it is necessary to move to a setting
 supporting the existence of partial maps, and in type theory this can
 be done by using monads, by considering partiality as an effect. Our
@@ -212,6 +212,20 @@ dependently typed programming language Agda~\cite{Agda}. The code is
 available online at \\ \texttt{\url{https://github.com/niccoloveltri/pi0-agda}}. The
 formalization uses Agda 2.6.0.
 
+\paragraph{Overview}
+In Section \ref{sec:syntax}, we present the syntax of \Pio\ as
+formalized in Agda, with particular emphasis on recursive types and
+the trace operator. In Section \ref{sec:delay}, we recall the
+definition of Capretta's delay datatype and weak bisimilarity. We
+discuss finite products and coproducts in the Kleisli category of the
+delay monad and we introduce the category of partial isomorphisms that
+serves as the denotational model of \Pio. In Section
+\ref{sec:elgot}, we build a complete Elgot monad structure on the delay
+datatype, that allows the encoding of a dagger trace operator in the
+category of partial isomorphisms. In Section \ref{sec:interpretation},
+we formally describe the interpretation of \Pio\ types, terms and
+terms equivalences. We conclude in Section \ref{sec:conclusions} with
+some final remarks and discussion on future work.
 
 \paragraph{The type-theoretical framework}
 
@@ -253,7 +267,7 @@ we refrain from technical discussions on their implementation.
 \section{Syntax of \Pio}\label{sec:syntax}
 
 In this section, we present the syntax of \Pio. The 1-structure of
-\Pio, i.e. its types and terms, has originaly been introduced by James
+\Pio, i.e. its types and terms, has originally been introduced by James
 and Sabry \cite{JamesS12}. In particular, we include the presence of
 recursive types and a primitive trace combinator.  Following Carette
 and Sabry's formalization of the finitary fragment of \Pio, we
@@ -287,7 +301,7 @@ types $A : \Ty\,(n+1)$ and $B : \Ty\,n$, we construct
 $\sub\,A\,B : \Ty\,n$ to represent the substituted type $A[B/X]$,
 where $X$ corresponds to the $(n+1)$-th variable in context.
 
-\begin{figure}
+\begin{figure}[h]
 \[
 \arraycolsep=8pt\def\arraystretch{2.8}
 \begin{array}{ccc}
@@ -366,7 +380,7 @@ Analogously, we can derive the left distributors $\kappa' : A \otimes \Z
 \lr A$ and $\delta' : A \otimes (B \oplus C) \lr (A \otimes B) \oplus
 (A \otimes C)$.
 
-\begin{figure}
+\begin{figure}[t]
 \[
 \arraycolsep=7pt\def\arraystretch{1.8}
 \begin{array}{cc}%{|cc|}
@@ -417,7 +431,7 @@ Analogously, we can derive the left distributors $\kappa' : A \otimes \Z
 %% & \infer{\unfold : \mu\,A \lr \sub \, A \, (\mu \,A)}{} \\
 %% \multicolumn{2}{c}{\infer{\trace \,f: A \lr B}{f : A \oplus C \lr B \oplus C}} \\
 
-\begin{figure}
+\begin{figure}[t]
 \[
 \arraycolsep=8pt\def\arraystretch{1.8}
 \begin{array}{cc} %{|cc|} \hline 
@@ -690,14 +704,25 @@ $A$ and $B$:
 A \simeq B = (f : A \to \Delay B) \times \piso \,f
 \]
 We call $\Inv \Dapprox$ the subcategory of $\Dapprox$ consisting of
-(equivalence classes of) partial isomorphisms. Note that $\Inv\Dapprox$
-inherits neither partial products nor coproducts of $\Dapprox$, as the
-universal mapping property fails in both cases. However, it can be shown that
-in the category $\Inv\Dapprox$, $0$ is a zero object, $A + B$ is the
-disjointness tensor product of $A$ and $B$ (in the sense of Giles~\cite{Giles})
-with unit $0$, and $A \times B$ a monoidal product of $A$ and $B$ with unit $1$
-(though it is \emph{not} an inverse product in the sense of
-Giles~\cite{Giles}, as that would imply decidable equality on all objects).
+(equivalence classes of) partial isomorphisms. Note that
+$\Inv\Dapprox$ inherits neither partial products nor coproducts of
+$\Dapprox$, as the universal mapping property fails in both
+cases. However, it can be shown that in the category $\Inv\Dapprox$,
+$0$ is a zero object, $A + B$ is the disjointness tensor product of
+$A$ and $B$ (in the sense of Giles~\cite{Giles}) with unit $0$, and
+$A \times B$ a monoidal product of $A$ and $B$ with unit $1$ (though
+it is \emph{not} an inverse product in the sense of
+Giles~\cite{Giles}, as that would imply decidable equality on all
+objects).  In particular, we can derive the following operations,
+modelling the \Pio\ term constructors $\oplus$ and $\otimes$:
+\begin{align*}
+& \times_{\D \simeq} : A \simeq C \to B \simeq D \to A \times B
+  \simeq C \times D \\
+& +_{\D \simeq} : A \simeq C \to B \simeq D \to A + B
+  \simeq C + D
+\end{align*}
+
+
 
 %%  In this work we do not formally construct
 %% the quotients $(A \to \Delay B)/{\approx}$, since we work in a type
@@ -727,11 +752,11 @@ Giles~\cite{Giles}, as that would imply decidable equality on all objects).
 
 \section{Elgot Iteration}\label{sec:elgot}
 
-An Elgot monad \cite{GoncharovMR16,GoncharovSRJ18} is a monad $T$
-whose Kleilsi category supports unguarded uniform iteration. More
-precisely\footnote{Here we give the definition of Elgot monad on
-  $\Set$, but the definition of Elgot monad makes sense in any
-  category with binary coproducts.}, a monad $\T$ is Elgot if there
+A complete Elgot monad \cite{GoncharovMR16,GoncharovSRJ18} is a monad $T$
+whose Kleisli category supports unguarded uniform iteration. More
+precisely\footnote{Here we give the definition of complete Elgot monad on
+  $\Set$, but the definition of complete Elgot monad makes sense in any
+  category with finite coproducts.}, a monad $\T$ is Elgot if there
 exists an operation
 \[
 \iter_\T : (A \to \T \,(B + A)) \to A \to \T\,B
@@ -759,7 +784,7 @@ The standard definition of uniform iteration operator includes the
 dinaturality axiom, which has recently been discovered to be derivable
 from the other laws \cite{EsikG16,GoncharovMR16}.
 
-The delay monad is an Elgot monad for which the axioms holds up to
+The delay monad is a complete Elgot monad for which the axioms holds up to
 weak bisimilarity, not propositional equality. In other words, the
 category $\Dapprox$ can be endowed with a uniform iteration
 operator. The specification of the iteration operator relies on an
@@ -787,11 +812,11 @@ auxiliary function $\iterD'$ corecursively defined as follows:
 %% & \iterD \,f \,a = \iterD' \,f \,(f \,a)
 %% \end{align*}
 The definition above can be given the following intuitive
-explaination. If $f\,a$ does not terminate, then $\iterD\,f\,a$ does
+explanation. If $f\,a$ does not terminate, then $\iterD\,f\,a$ does
 not terminate as well. If $f\,a$ terminates, there are two
 possibilities: either $f\,a$ converges to $\inr\,b$, in which case
 $\iterD\,f\,a$ terminates returning the value $b$; or $f\,a$ converges
-to $\inl\,a'$, in which case we repeat the precedure by replacing $a$
+to $\inl\,a'$, in which case we repeat the procedure by replacing $a$
 with $a'$. Notice that in the latter case we also add one occurrence
 of $\later$ to the total computation time. This addition is necessary
 for ensuring the productivity of the corecursively defined function
@@ -1037,19 +1062,22 @@ $\Inv\Dapprox$, so their use as objects of $\Inv\Dapprox$ in the
 interpretation above is justified.
 
 Terms of \Pio\ are modelled as morphism of $\Inv\Dapprox$,
-i.e. partial isomorphisms. Formally, we define an operation:
+i.e. partial isomorphisms. Here we only display the interpretation of a
+selection of programs, we refer the interested reader to our Agda formalization for a
+complete definition of the interpretation of terms.
 \[
-\semTm - : (A \lr B) \to \semTy A \, \rho \simeq \semTy B \, \rho
+\begin{array}{ll}
+\multicolumn{2}{l}{\semTm - : (A \lr B) \to \semTy A \, \rho \simeq
+  \semTy B \, \rho}  \\
+\semTm {f \oplus g} & = \semTm f +_{\D\simeq} \semTm g \\
+\semTm {f \otimes g} & = \semTm f \times_{\D\simeq} \semTm g \\
+\semTm {\trace\,f} & = \semTrace\,\semTm f
+\end{array}
 \]
-We refer the interested reader to our Agda formalization for a
-complete definition of the interpretation of terms. Here we limit
-ourselves to emphasize
-the semantics of the trace operator: $\semTm {\trace\,f} =
-\semTrace\,\semTm f$.
 
 Term equivalences of \Pio\ are modelled as morphism equalities in
 $\Inv\Dapprox$, i.e. proofs of weak bisimilarity between two
-morpshisms. Formally, we define an operation:
+morphisms. Formally, we define an operation:
 \[
 \semEq - : (f \LR g) \to \semTm f \approx \semTm g
 \]
@@ -1057,7 +1085,7 @@ Again we refer the interested reader to our Agda formalization for a
 complete definition of the interpretation of term equivalences.
 
 
-\section{Conclusions}
+\section{Conclusions}\label{sec:conclusions}
 In this paper, we have extended the work of Carette and Sabry~\cite{CaretteS16}
 to a (fully formalized) two-level calculus of \Pio{} programs and program
 equivalences. Key in this effort was the use of the Kleisli category of the
@@ -1076,7 +1104,7 @@ the type of propositions (types with at most one inhabitant), supports the
 existence of a uniform iteration operator and therefore a trace. Nevertheless,
 the specification of iteration is more complicated then the one presented in
 Section \ref{sec:elgot} for the delay monad, which is a simple corecursive
-definition. The Elgot monad structure of $\mathsf{PMC}$ follows from its
+definition. The complete Elgot monad structure of $\mathsf{PMC}$ follows from its
 Kleisli category being a join restriction category, so iteration is defined in
 terms of least upper bounds of certain chains of morphisms. The subcategory of
 partial isomorphisms of the Kleisli category of $\mathsf{PMC}$ supports a
