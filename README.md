@@ -25,22 +25,22 @@ certified program equivalences between these programs.
 Structure of the code:
 - [Utilities.agda](https://github.com/niccoloveltri/pi0-agda/blob/master/code/Utilities.agda), part of the proof that types form a
 rig groupoid, as in Carette and Sabry ESOP'16
-- code/pi0-syntax/Types.agda, types of Πo (Section 2.1)
-- code/pi0-syntax/1Programs.agda, terms of Πo (Section 2.2)
-- code/pi0-syntax/2Programs.agda, term equivalences of Πo
+- [pi0-syntax/Types.agda](https://github.com/niccoloveltri/pi0-agda/blob/master/code/pi0-syntax/Types.agda), types of Πo (Section 2.1)
+- [pi0-syntax/1Programs.agda](https://github.com/niccoloveltri/pi0-agda/blob/master/code/pi0-syntax/1Programs.agda), terms of Πo (Section 2.2)
+- [pi0-syntax/2Programs.agda](https://github.com/niccoloveltri/pi0-agda/blob/master/code/pi0-syntax/2Programs.agda), term equivalences of Πo
 (Section 2.2)
-- code/delay/Delay.agda, delay datatype and weak bisimilarity (Section
+- [delay/Delay.agda](https://github.com/niccoloveltri/pi0-agda/blob/master/code/delay/Delay.agda), delay datatype and weak bisimilarity (Section
   3) 
-- code/delay/Monad.agda, monad structure (Section 3) 
-- code/delay/Structure.agda, finite products and coproducts
+- [delay/Monad.agda](https://github.com/niccoloveltri/pi0-agda/blob/master/code/delay/Monad.agda), monad structure (Section 3) 
+- [delay/Structure.agda](https://github.com/niccoloveltri/pi0-agda/blob/master/code/delay/Structure.agda), finite products and coproducts
 (Section 3.1)
-- code/delay/PartialInv.agda, partial isomorphisms (Section 3.2)
-- code/delay/Elgot.agda, Elgot iteration and dagger trace (Section 3.3
+- [delay/PartialInv.agda](https://github.com/niccoloveltri/pi0-agda/blob/master/code/delay/PartialInv.agda), partial isomorphisms (Section 3.2)
+- [delay/Elgot.agda](https://github.com/niccoloveltri/pi0-agda/blob/master/code/delay/Elgot.agda), Elgot iteration and dagger trace (Section 3.3
 and 3.4)
-- code/pi0-semantics/Types.agda, interpretation of types (Section 6) 
-- code/pi0-semantics/1Programs.agda, interpretation of terms
+- [pi0-semantics/Types.agda](https://github.com/niccoloveltri/pi0-agda/blob/master/code/pi0-semantics/Types.agda), interpretation of types (Section 6) 
+- [pi0-semantics/1Programs.agda](https://github.com/niccoloveltri/pi0-agda/blob/master/code/pi0-semantics/1Programs.agda), interpretation of terms
   (Section 6) 
-- code/pi0-semantics/2Programs.agda, interpretation of term
+- [pi0-semantics/2Programs.agda](https://github.com/niccoloveltri/pi0-agda/blob/master/code/pi0-semantics/2Programs.agda), interpretation of term
 equivalences (Section 6)
 
 The formalization uses Agda 2.6.0.
