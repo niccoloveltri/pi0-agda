@@ -23,7 +23,7 @@ user-defined dynamic data structures together with a calculus of
 certified program equivalences between these programs.
 
 Structure of the code:
-- [Utilities.agda](https://github.com/niccoloveltri/pi0-agda/code/Utilities.agda), part of the proof that types form a
+- [Utilities.agda](https://github.com/niccoloveltri/pi0-agda/blob/master/code/Utilities.agda), part of the proof that types form a
 rig groupoid, as in Carette and Sabry ESOP'16
 - code/pi0-syntax/Types.agda, types of Πo (Section 2.1)
 - code/pi0-syntax/1Programs.agda, terms of Πo (Section 2.2)
