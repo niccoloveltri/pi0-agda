@@ -9,7 +9,7 @@ open import Function
 open import delay.Delay
 open import delay.Monad
 
--- Products
+-- Partial products
 
 θ : ∀ {A B} → Delay A × Delay B → Delay (A × B)
 θ = costr ∙ str
