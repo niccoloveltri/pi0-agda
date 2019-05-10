@@ -23,8 +23,8 @@ user-defined dynamic data structures together with a calculus of
 certified program equivalences between these programs.
 
 Structure of the code:
-- code/Utilities.agda, contains (part of) the proof that types form a
-rig groupoid, which is part of Carette and Sabry ESOP'16
+- [Utilities.agda](https://github.com/niccoloveltri/pi0-agda/code/Utilities.agda), part of the proof that types form a
+rig groupoid, as in Carette and Sabry ESOP'16
 - code/pi0-syntax/Types.agda, types of Πo (Section 2.1)
 - code/pi0-syntax/1Programs.agda, terms of Πo (Section 2.2)
 - code/pi0-syntax/2Programs.agda, term equivalences of Πo
