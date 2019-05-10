@@ -25,12 +25,10 @@ certified program equivalences between these programs.
 Structure of the code:
 - code/Utilities.agda, contains (part of) the proof that types form a
 rig groupoid, which is part of Carette and Sabry ESOP'16
-
 - code/pi0-syntax/Types.agda, types of Πo (Section 2.1)
 - code/pi0-syntax/1Programs.agda, terms of Πo (Section 2.2)
 - code/pi0-syntax/2Programs.agda, term equivalences of Πo
 (Section 2.2)
-
 - code/delay/Delay.agda, delay datatype and weak bisimilarity (Section
   3) 
 - code/delay/Monad.agda, monad structure (Section 3) 
@@ -39,12 +37,10 @@ rig groupoid, which is part of Carette and Sabry ESOP'16
 - code/delay/PartialInv.agda, partial isomorphisms (Section 3.2)
 - code/delay/Elgot.agda, Elgot iteration and dagger trace (Section 3.3
 and 3.4)
-
 - code/pi0-semantics/Types.agda, interpretation of types (Section 6) 
 - code/pi0-semantics/1Programs.agda, interpretation of terms
   (Section 6) 
 - code/pi0-semantics/2Programs.agda, interpretation of term
 equivalences (Section 6)
 
-
-
+The formalization uses Agda 2.6.0.
