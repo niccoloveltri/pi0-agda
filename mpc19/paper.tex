@@ -163,20 +163,23 @@ metalanguages~\cite{Giles,KaarsgaardAG17,KaarsgaardG18}, and so on.
 
 \Pio{} is a family of reversible combinator calculi comprising structural
 isomorphisms and combinators corresponding to those found in dagger-traced
-$\omega$-continuous rig categories~\cite{Karvonen19}. Though superficially
-simple, \Pio{} is expressive enough as a metalanguage to give semantics to the
-typed reversible functional programming language Theseus~\cite{JamesS14}.
+$\omega$-continuous rig categories~\cite{Karvonen19} (a kind of dagger category
+with a trace, monoidal sums $\oplus$ and products $\oplus$ such that they form
+a rig structure, and fixed points of the functors formed from the rig
+structure). Though superficially simple, \Pio{} is expressive enough as a
+metalanguage to give semantics to the typed reversible functional programming
+language Theseus~\cite{JamesS14}.
 
-In \cite{CaretteS16}, the authors studied the equivalences of isomorphisms in
-the finitary fragment of \Pio{} (i.e., without recursive types and iteration
-via the trace combinator), and showed that these equivalences could be
-adequately described by another combinator calculus of equivalences of
+In \cite{CaretteS16}, Carette and Sabry studied the equivalences of 
+isomorphisms in the finitary fragment of \Pio{} (i.e., without recursive types
+and iteration via the trace combinator), and showed that these equivalences
+could be adequately described by another combinator calculus of equivalences of
 isomorphisms, in sum yielding a two-level calculus of isomorphisms and
 equivalences of isomorphisms. In this paper, we build on this work to produce a
-(fully formalized) two-level calculus for full \Pio{} (supporting both recursive
-types and iteration) via the delay monad, using insights gained from the
-study of its Kleisli category~\cite{UustaluV17,ChapmanUV19,VeltriPhD}, as well
-as of join inverse categories in which reversible iteration may be
+(fully formalized) two-level calculus for full \Pio{} (supporting both
+recursive types and iteration) via the delay monad, using insights gained from
+the study of its Kleisli category~\cite{UustaluV17,ChapmanUV19,VeltriPhD}, as
+well as of join inverse categories in which reversible iteration may be
 modelled~\cite{KaarsgaardAG17}.
 
 The full \Pio\ calculus cannot be modelled in the same framework of
@@ -494,9 +497,17 @@ Afterwards we have two equivalences stating that $\unfold$ is the
 total inverse of $\fold$. 
 
 It is possible to show that every term $f$ has $\dagger\,f$ as its partial
-inverse, and since the final equivalence of Figure~\ref{fig:programequivs} is
-equivalent to stating that partial inverses are unique~\cite{Kastl79}, it
-follows that the types and terms of \Pio\ form an inverse category. The proof
+inverse. The notion of partial inverse used here comes from the study of
+\emph{inverse categories} (see \cite{Kastl79}) and amounts to saying that
+$\dagger\,f$ is the \emph{unique} map that undoes everything which $f$ does
+(unicity of partial inverses follows by the final equivalence of
+Figure~\ref{fig:programequivs}, see~\cite{Kastl79}). Note that this is
+different from requiring that $f$ is an isomorphism in the usual sense, as
+$\dagger\,f \bullet f$ is not going to be the identity when $f$ is only
+partially defined, though it will behave as the identity on all points where
+$f$ is defined.
+
+The proof that every term has $\dagger\,f$ as its partial inverse proof
 proceeds by induction on $f$.
 \[
 \mathsf{existsPIso} : (f : A \lr B) \to f \bullet \dagger\,f
@@ -652,7 +663,8 @@ B)$ and $\inrD = \now \comp \inr : B \to \Delay (A + B)$.
 Just as limits in $\Set$ do not lift to limits in the category $\Par$ of sets
 and partial functions, they do not lift to $\Dapprox$ either. This is not an
 issue with these concrete formulations of partiality, but rather with the
-interaction of partiality (in the sense of restriction categories) and limits
+interaction of partiality (in the sense of restriction categories, a kind of
+categories of partial maps) and limits
 in general (see \cite[Section 4.4]{CockettL07}). In particular, $1$ is
 not the
 terminal object and $A \times B$ is not the binary product of $A$ and $B$ in
@@ -1027,7 +1039,7 @@ Summing up, in this section we have showed that the $\traceD$ operator
 can be restricted to act on partial isomorphisms. That is, the
 following type is inhabited:
 \[
-\semTrace : A + C\simeq B + C \to A \simeq C
+\semTrace : A + C\simeq B + C \to A \simeq B
 \]
 
 \section{Soundness}\label{sec:interpretation}
