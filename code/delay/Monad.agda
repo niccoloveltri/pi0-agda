@@ -17,7 +17,7 @@ mutual
   ∞bindD : ∀ {i A B} → (A → Delay' i B) → ∞Delay' i A → ∞Delay' i B
   force (∞bindD f x) = bindD f (force x)
 
--- Bind and convergence
+-- Properties of bind
 
 bindD↓ : ∀ {A B} (f : A → Delay B) (x : Delay A) {b : B}
   → bindD f x ↓ b → Σ A (λ a → x ↓ a × f a ↓ b)
@@ -119,22 +119,9 @@ cong∙ : ∀ {A B C} {g g' : B → Delay C} {f f' : A → Delay B}
     → g ∼ g' → f ∼ f' → g ∙ f ∼ g' ∙ f'
 cong∙ {f = f} p q x = trans≈ (cong-app-bindD (f x) p) (cong-bindD (q x))
 
-{-
-_∙∼_ : ∀ {A B C} (g : B → Delay C) {f f' : A → Delay B}
-    → f ∼ f' → g ∙ f ∼ g ∙ f'
-(g ∙∼ p) x = cong-bindD (p x)     
-
-_∼∙_ : ∀ {A B C} {g g' : B → Delay C} → g ∼ g'
-  → (f : A → Delay B) → g ∙ f ∼ g' ∙ f
-(p ∼∙ f) x = cong-bindD2 (f x) p
--}
-
 assoc∙ : {A B C D : Set} {f : A → Delay B} {g : B → Delay C} {h : C → Delay D}
   → h ∙ (g ∙ f) ∼ (h ∙ g) ∙ f
 assoc∙ {f = f} x = M3 (f x)
-
-
-
 
 -- Equational reasoning sugar for ≈
 module Eq≈ where

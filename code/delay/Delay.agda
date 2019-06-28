@@ -21,7 +21,7 @@ open ∞Delay' public
 Delay = Delay' ∞
 ∞Delay = ∞Delay' ∞
 
--- Non-termination
+-- Non-terminating computation
 
 mutual
   never : ∀ {i} {A} → Delay' i A

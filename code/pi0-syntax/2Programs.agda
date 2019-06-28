@@ -9,7 +9,7 @@ open import Data.Fin hiding (fold)
 open import pi0-syntax.Types
 open import pi0-syntax.1Programs
 
--- Program equivalences of Π₀
+-- Term equivalences of Π₀
 
 infix 30 _⟺_
 
@@ -17,6 +17,7 @@ data _⟺_ : {n : ℕ} {A B : Ty n} → A ⟷ B → A ⟷ B → Set where
 
 -- Equivalence laws
   id⟺ : ∀ {n} {A B : Ty n} {f : A ⟷ B} → f ⟺ f
+  sym⟺ : ∀ {n} {A B : Ty n} {f g : A ⟷ B} → f ⟺ g → g ⟺ f
   trans⟺ : ∀ {n} {A B : Ty n} {f g h :  A ⟷ B} → g ⟺ h → f ⟺ g → f ⟺ h
 
 -- Congruence laws
@@ -33,9 +34,8 @@ data _⟺_ : {n : ℕ} {A B : Ty n} → A ⟷ B → A ⟷ B → Set where
   ass : ∀ {n} {A B C D : Ty n} {f : A ⟷ B} {g : B ⟷ C} {h : C ⟷ D}
     → h ⊙ (g ⊙ f) ⟺ (h ⊙ g) ⊙ f
 
--- Inverse category laws
-  inve : ∀ {n} {A B : Ty n} {f : A ⟷ B} → f ⊙ dagger f ⊙ f ⟺ f
-  invu : ∀ {n} {A B C : Ty n} {f : A ⟷ B} {g : C ⟷ B}
+-- Uniqueness of inverse
+  uniquePIso : ∀ {n} {A B C : Ty n} {f : A ⟷ B} {g : C ⟷ B}
     → f ⊙ dagger f ⊙ g ⊙ dagger g ⟺ g ⊙ dagger g ⊙ f ⊙ dagger f
   
 -- ⊕ functorial
@@ -50,24 +50,39 @@ data _⟺_ : {n : ℕ} {A B : Ty n} → A ⟷ B → A ⟷ B → Set where
     → {f : A ⟷ B} {g : B ⟷ C} {h : D ⟷ E} {k : E ⟷ F}
     → (g ⊙ f) ⊗ (k ⊙ h) ⟺ (g ⊗ k) ⊙ (f ⊗ h)
 
--- λ⊕, α⊕ and s⊕ natural
+-- λ⊕, α⊕ and s⊕ natural isos
   nλ⊕ : ∀ {n} {A B : Ty n} {f : A ⟷ B} → f ⊙ λ⊕ ⟺ λ⊕ ⊙ (id⟷ ⊕ f)
   nα⊕ : ∀ {n} {A B C D E F : Ty n} {f : A ⟷ B} {g : C ⟷ D} {h : E ⟷ F}
     → (f ⊕ (g ⊕ h)) ⊙ α⊕ ⟺ α⊕ ⊙ ((f ⊕ g) ⊕ h)
   ns⊕ : ∀ {n} {A B C D : Ty n} {f : A ⟷ B} {g : C ⟷ D} 
     → (f ⊕ g) ⊙ s⊕ ⟺ s⊕ ⊙ (g ⊕ f)
-
+  λ⊕Iso : ∀ {n} {A : Ty n} → λ⊕ ⊙ λ⊕-1 ⟺ id⟷ {A = A}
+  λ⊕-1Iso : ∀ {n} {A : Ty n} → λ⊕-1 ⊙ λ⊕ ⟺ id⟷ {A = 𝟘 ⊕ A}
+  α⊕Iso : ∀ {n} {A B C : Ty n} → α⊕ ⊙ α⊕-1 ⟺ id⟷ {A = A ⊕ (B ⊕ C)}
+  α⊕-1Iso : ∀ {n} {A B C : Ty n} → α⊕-1 ⊙ α⊕ ⟺ id⟷ {A = (A ⊕ B) ⊕ C}
+  s⊕Iso : ∀ {n} {A B : Ty n} → s⊕ ⊙ s⊕ ⟺ id⟷ {A = A ⊕ B}
+  
 -- λ⊗, α⊗ and s⊗ natural
   nλ⊗ : ∀ {n} {A B : Ty n} {f : A ⟷ B} → f ⊙ λ⊗ ⟺ λ⊗ ⊙ (id⟷ ⊗ f)
   nα⊗ : ∀ {n} {A B C D E F : Ty n} {f : A ⟷ B} {g : C ⟷ D} {h : E ⟷ F}
     → (f ⊗ (g ⊗ h)) ⊙ α⊗ ⟺ α⊗ ⊙ ((f ⊗ g) ⊗ h)
   ns⊗ : ∀ {n} {A B C D : Ty n} {f : A ⟷ B} {g : C ⟷ D} 
     → (f ⊗ g) ⊙ s⊗ ⟺ s⊗ ⊙ (g ⊗ f)
+  λ⊗Iso : ∀ {n} {A : Ty n} → λ⊗ ⊙ λ⊗-1 ⟺ id⟷ {A = A}
+  λ⊗-1Iso : ∀ {n} {A : Ty n} → λ⊗-1 ⊙ λ⊗ ⟺ id⟷ {A = 𝟙 ⊗ A}
+  α⊗Iso : ∀ {n} {A B C : Ty n} → α⊗ ⊙ α⊗-1 ⟺ id⟷ {A = A ⊗ (B ⊗ C)}
+  α⊗-1Iso : ∀ {n} {A B C : Ty n} → α⊗-1 ⊙ α⊗ ⟺ id⟷ {A = (A ⊗ B) ⊗ C}
+  s⊗Iso : ∀ {n} {A B : Ty n} → s⊗ ⊙ s⊗ ⟺ id⟷ {A = A ⊗ B}
 
--- κL and δR natural
+-- κL and δR natural isos
   nκL : ∀ {n} {A B : Ty n} {f : A ⟷ B} → κL ⊙ (id⟷ ⊗ f) ⟺ κL
   nδR : ∀ {n} {A B C D E F : Ty n} {f : A ⟷ B} {g : C ⟷ D} {h : E ⟷ F}
     → ((f ⊗ h) ⊕ (g ⊗ h)) ⊙ δR ⟺ δR ⊙ ((f ⊕ g) ⊗ h)
+  κLIso : ∀ {n} {A : Ty n} → κL {A = A} ⊙ κL-1 ⟺ id⟷ 
+  κL-1Iso : ∀ {n} {A : Ty n} → κL-1 ⊙ κL ⟺ id⟷ {A = 𝟘 ⊗ A}
+  δRIso : ∀ {n} {A B C : Ty n} → δR ⊙ δR-1 ⟺ id⟷ {A = (A ⊗ C) ⊕ (B ⊗ C)}
+  δR-1Iso : ∀ {n} {A B C : Ty n} → δR-1 ⊙ δR ⟺ id⟷ {A = (A ⊕ B) ⊗ C}
+
 
 -- ⊕ symmetric monoidal
   ραλ⊕ : ∀ {n} {A B : Ty n} →  ρ⊕-1 ⊕ id⟷ ⟺ (id⟷ ⊕ λ⊕) ⊙ α⊕ {A = A} {𝟘} {B}
@@ -133,28 +148,46 @@ data _⟺_ : {n : ℕ} {A B : Ty n} → A ⟷ B → A ⟷ B → Set where
   vanishingII : ∀ {n} {A B C D : Ty n} {f : (A ⊕ B) ⊕ C ⟷ (A ⊕ B) ⊕ D}
     → trace f ⟺ trace (trace (α⊕ ⊙ f ⊙ α⊕-1))
   yanking : ∀ {n} {A : Ty n} → trace s⊕ ⟺ id⟷ {A = A}
+  tracePIso : ∀ {n} {A B C : Ty n} {f : A ⊕ B ⟷ A ⊕ C} → trace f ⊙ trace (dagger f) ⊙ trace f ⟺ trace f
 
-{-
-inve' : ∀ {n} {A B : Ty n} {f : A ⟷ B} → f ⊙ dagger f ⊙ f ⟺ f
-inve' {f = id⟷} = {!!}
-inve' {f = λ⊕} = {!!}
-inve' {f = λ⊕-1} = {!!}
-inve' {f = α⊕} = {!!}
-inve' {f = α⊕-1} = {!!}
-inve' {f = s⊕} = {!!}
-inve' {f = λ⊗} = {!!}
-inve' {f = λ⊗-1} = {!!}
-inve' {f = α⊗} = {!!}
-inve' {f = α⊗-1} = {!!}
-inve' {f = s⊗} = {!!}
-inve' {f = κL} = {!!}
-inve' {f = κL-1} = {!!}
-inve' {f = δR} = {!!}
-inve' {f = δR-1} = {!!}
-inve' {f = f ⊙ f₁} = {!!}
-inve' {f = f ⊕ f₁} = {!!}
-inve' {f = f ⊗ f₁} = {!!}
-inve' {f = fold} = {!!}
-inve' {f = unfold} = {!!}
-inve' {f = trace f} = {!!}
--}
+-- Fold/unfold
+  foldIso : ∀ {n} {A : Ty (suc n)} → fold ⊙ unfold ⟺ id⟷ {A = μ A}
+  unfoldIso : ∀ {n} {A : Ty (suc n)} → unfold {A = A} ⊙ fold ⟺ id⟷ 
+
+-- The existence of the partial inverse is derivable
+
+existsPIso : ∀ {n} {A B : Ty n} {f : A ⟷ B} → f ⊙ dagger f ⊙ f ⟺ f
+existsPIso {f = id⟷} = trans⟺ lid (lid ⊙ id⟺)
+existsPIso {f = λ⊕} = trans⟺ lid (λ⊕Iso ⊙ id⟺)
+existsPIso {f = λ⊕-1} = trans⟺ lid (λ⊕-1Iso ⊙ id⟺)
+existsPIso {f = α⊕} = trans⟺ lid (α⊕Iso ⊙ id⟺)
+existsPIso {f = α⊕-1} = trans⟺ lid (α⊕-1Iso ⊙ id⟺)
+existsPIso {f = s⊕} = trans⟺ lid (s⊕Iso ⊙ id⟺)
+existsPIso {f = λ⊗} = trans⟺ lid (λ⊗Iso ⊙ id⟺)
+existsPIso {f = λ⊗-1} = trans⟺ lid (λ⊗-1Iso ⊙ id⟺)
+existsPIso {f = α⊗} = trans⟺ lid (α⊗Iso ⊙ id⟺)
+existsPIso {f = α⊗-1} = trans⟺ lid (α⊗-1Iso ⊙ id⟺)
+existsPIso {f = s⊗} = trans⟺ lid (s⊗Iso ⊙ id⟺)
+existsPIso {f = κL} = trans⟺ lid (κLIso ⊙ id⟺)
+existsPIso {f = κL-1} = trans⟺ lid (κL-1Iso ⊙ id⟺)
+existsPIso {f = δR} = trans⟺ lid (δRIso ⊙ id⟺)
+existsPIso {f = δR-1} = trans⟺ lid (δR-1Iso ⊙ id⟺)
+existsPIso {f = f ⊙ g} =
+  trans⟺ (existsPIso ⊙ existsPIso)
+    (trans⟺ (trans⟺ lem2 (id⟺ ⊙ (id⟺ ⊙ subst (λ x → x ⟺ f) (sym (daggerInvol f)) id⟺ ⊙ id⟺ ⊙ id⟺) ⊙ id⟺))
+      (trans⟺ (id⟺ ⊙ trans⟺ uniquePIso (id⟺ ⊙ subst (_⟺_ f) (sym (daggerInvol f)) id⟺) ⊙ id⟺) lem))
+  where
+    lem : f ⊙ g ⊙ (dagger g ⊙ dagger f) ⊙ (f ⊙ g) ⟺ f ⊙ (g ⊙ dagger g ⊙ dagger f ⊙ f) ⊙ g
+    lem = trans⟺ (trans⟺ (trans⟺ (id⟺ ⊙ (ass ⊙ id⟺)) (sym⟺ ass)) (sym⟺ ass ⊙ id⟺) ⊙ id⟺) ass
+    lem2 : f ⊙ (dagger f ⊙ f ⊙ g ⊙ dagger g) ⊙ g ⟺ f ⊙ dagger f ⊙ f ⊙ (g ⊙ dagger g ⊙ g)
+    lem2 = trans⟺ (sym⟺ ass) (trans⟺ (sym⟺ ass) (trans⟺ (trans⟺ (ass ⊙ id⟺) ass ⊙ id⟺) ass) ⊙ id⟺)
+existsPIso {f = f ⊕ g} = trans⟺ (existsPIso ⊕ existsPIso) (trans⟺ (sym⟺ fun⊕⊙) (sym⟺ fun⊕⊙ ⊙ id⟺))
+existsPIso {f = f ⊗ g} = trans⟺ (existsPIso ⊗ existsPIso) (trans⟺ (sym⟺ fun⊗⊙) (sym⟺ fun⊗⊙ ⊙ id⟺))
+existsPIso {f = fold} = trans⟺ lid (foldIso ⊙ id⟺)
+existsPIso {f = unfold} = trans⟺ lid (unfoldIso ⊙ id⟺)
+existsPIso {f = trace f} = tracePIso
+
+existsPIso2 : ∀ {n} {A B : Ty n} {f : A ⟷ B} → dagger f ⊙ f ⊙ dagger f ⟺ dagger f
+existsPIso2 {f = f} =
+  trans⟺ existsPIso (id⟺ ⊙ subst (_⟺_ f) (sym (daggerInvol f)) id⟺ ⊙ id⟺)
+

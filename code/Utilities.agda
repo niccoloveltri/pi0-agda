@@ -9,6 +9,8 @@ open import Data.Product renaming (map to map×; swap to swap×)
 open import Relation.Binary.PropositionalEquality hiding (naturality)
 open import Function
 
+-- Total equivalences
+
 record is-total-inv {A B : Set} (f : A → B) : Set where
   constructor tinv
   field
@@ -18,6 +20,8 @@ record is-total-inv {A B : Set} (f : A → B) : Set where
 
 _≅_ : Set → Set → Set
 A ≅ B = Σ (A → B) is-total-inv
+
+-- Equivalence structure on ≅
 
 id≅ : ∀ {A} → A ≅ A
 id≅ = id , tinv id (λ _ → refl) (λ _ → refl)
@@ -29,6 +33,8 @@ _∘≅_ : ∀ {A B C} → B ≅ C → A ≅ B → A ≅ C
 _-1≅ : ∀ {A B} → A ≅ B → B ≅ A
 (f , tinv f-1 p q) -1≅ = f-1 , tinv f q p
 
+-- ≅ is a congruence wrt ⊎ and × 
+
 map⊎≅ : {A B C D : Set} → A ≅ B → C ≅ D → (A ⊎ C) ≅ (B ⊎ D)
 map⊎≅ (f , tinv f-1 p q) (g , tinv g-1 p' q') = (map⊎ f g) , tinv (map⊎ f-1 g-1) (λ { (inj₁ x) → cong inj₁ (p x) ; (inj₂ y) → cong inj₂ (p' y) })
                                                                                  (λ { (inj₁ x) → cong inj₁ (q x) ; (inj₂ y) → cong inj₂ (q' y) })
@@ -36,6 +42,10 @@ map⊎≅ (f , tinv f-1 p q) (g , tinv g-1 p' q') = (map⊎ f g) , tinv (map⊎ 
 map×≅ : {A B C D : Set} → A ≅ B → C ≅ D → (A × C) ≅ (B × D)
 map×≅ (f , tinv f-1 p q) (g , tinv g-1 p' q') = (map× f g) , tinv (map× f-1 g-1) (λ { (x , y) → cong₂ _,_ (p x) (p' y) })
                                                                                  (λ { (x , y) → cong₂ _,_ (q x) (q' y) })
+
+-- Rig structure on types
+
+-- -- Left unitor for ⊎
 
 λ⊎ : {A : Set} → ⊥ ⊎ A → A
 λ⊎ (inj₂ y) = y
@@ -46,9 +56,13 @@ map×≅ (f , tinv f-1 p q) (g , tinv g-1 p' q') = (map× f g) , tinv (map× f-1
 λ⊎≅ : ∀ {A} → (⊥ ⊎ A) ≅ A
 λ⊎≅ = λ⊎ , tinv λ⊎-1 (λ _ → refl) (λ { (inj₂ _) → refl })
 
+-- -- Swap for ⊎
+
 swap⊎≅ : ∀ {A B} → (A ⊎ B) ≅ (B ⊎ A)
 swap⊎≅ = swap⊎ , tinv swap⊎ (λ { (inj₁ x) → refl ; (inj₂ y) → refl }) 
                             (λ { (inj₁ x) → refl ; (inj₂ y) → refl })
+
+-- -- Associator for ⊎
 
 α⊎ : {A B C : Set} → ((A ⊎ B) ⊎ C) → (A ⊎ (B ⊎ C))
 α⊎ (inj₁ (inj₁ x)) = inj₁ x
@@ -64,7 +78,9 @@ swap⊎≅ = swap⊎ , tinv swap⊎ (λ { (inj₁ x) → refl ; (inj₂ y) → r
 α⊎≅ : {A B C : Set} → ((A ⊎ B) ⊎ C) ≅ (A ⊎ (B ⊎ C))
 α⊎≅ = α⊎ , tinv α⊎-1 (λ { (inj₁ x) → refl ; (inj₂ (inj₁ y)) → refl ; (inj₂ (inj₂ y)) → refl })
                      (λ { (inj₁ (inj₁ x)) → refl ; (inj₁ (inj₂ y)) → refl ; (inj₂ y) → refl })
-                     
+
+-- -- Right unitor for ⊎
+
 ρ⊎≅ : {A : Set} → A ≅ (A ⊎ ⊥)
 ρ⊎≅ = swap⊎≅ ∘≅ (λ⊎≅ -1≅)
 
@@ -73,6 +89,8 @@ swap⊎≅ = swap⊎ , tinv swap⊎ (λ { (inj₁ x) → refl ; (inj₂ y) → r
 
 ρ⊎-1 : {A : Set} → A ⊎ ⊥ → A
 ρ⊎-1 = is-total-inv.g (proj₂ ρ⊎≅)
+
+-- -- Left unitor for ×
 
 λ× : {A : Set} → ⊤ × A → A
 λ× (_ , x) = x
@@ -83,8 +101,12 @@ swap⊎≅ = swap⊎ , tinv swap⊎ (λ { (inj₁ x) → refl ; (inj₂ y) → r
 λ×≅ : ∀ {A} → (⊤ × A) ≅ A
 λ×≅ = λ× , tinv λ×-1 (λ _ → refl) (λ { (_ , _) → refl })
 
+-- -- Swap for × 
+
 swap×≅ : ∀ {A B} → (A × B) ≅ (B × A)
 swap×≅ = swap× , tinv swap× (λ { (_ , _) → refl }) (λ { (_ , _) → refl })
+
+-- Associator for × 
 
 α× : {A B C : Set} → ((A × B) × C) → (A × (B × C))
 α× ((x , y) , z) = (x , y , z)
@@ -95,6 +117,8 @@ swap×≅ = swap× , tinv swap× (λ { (_ , _) → refl }) (λ { (_ , _) → ref
 α×≅ : ∀ {A B C} → ((A × B) × C) ≅ (A × (B × C))
 α×≅ = α× , tinv α×-1 (λ { (x , y , z) → refl }) (λ { ((x , y) , z) → refl })
 
+-- -- Right unitor of × 
+
 ρ×≅ : {A : Set} → A ≅ (A × ⊤)
 ρ×≅ = swap×≅ ∘≅ (λ×≅ -1≅)
 
@@ -103,6 +127,8 @@ swap×≅ = swap× , tinv swap× (λ { (_ , _) → refl }) (λ { (_ , _) → ref
 
 ρ×-1 : {A : Set} → A × ⊤ → A
 ρ×-1 = is-total-inv.g (proj₂ ρ×≅)
+
+-- -- Left absorber
 
 κL× : {A : Set} → ⊥ × A → ⊥
 κL× (() , _)
@@ -113,6 +139,8 @@ swap×≅ = swap× , tinv swap× (λ { (_ , _) → refl }) (λ { (_ , _) → ref
 κL×≅ : {A : Set} → (⊥ × A) ≅ ⊥
 κL×≅ = κL× , tinv κL×-1 (λ { () }) (λ { (() , y) })
 
+-- -- Right absorber
+
 κR×≅ : {A : Set} → (A × ⊥) ≅ ⊥
 κR×≅ = κL×≅ ∘≅ swap×≅
 
@@ -121,6 +149,8 @@ swap×≅ = swap× , tinv swap× (λ { (_ , _) → refl }) (λ { (_ , _) → ref
 
 κR×-1 : {A : Set} → ⊥ → A × ⊥
 κR×-1 = is-total-inv.g (proj₂ κR×≅)
+
+-- -- Right distributor
 
 δR×⊎ : {A B C : Set} → ((A ⊎ B) × C) → (A × C ⊎ B × C)
 δR×⊎ (inj₁ x , z) = inj₁ (x , z)
@@ -134,6 +164,8 @@ swap×≅ = swap× , tinv swap× (λ { (_ , _) → refl }) (λ { (_ , _) → ref
 δR×⊎≅ = δR×⊎ , tinv δR×⊎-1 (λ { (inj₁ (x , y)) → refl ; (inj₂ (x , y)) → refl })
                            (λ { (inj₁ x , y) → refl ; (inj₂ x , y) → refl })
 
+-- -- Left distributor
+
 δL×⊎≅ : ∀ {A B C} → (A × (B ⊎ C)) ≅ (A × B ⊎ A × C)
 δL×⊎≅ = (map⊎≅ swap×≅ swap×≅ ∘≅ δR×⊎≅) ∘≅ swap×≅
 
@@ -143,7 +175,4 @@ swap×≅ = swap× , tinv swap× (λ { (_ , _) → refl }) (λ { (_ , _) → ref
 δL×⊎-1 : {A B C : Set} → (A × B ⊎ A × C) → (A × (B ⊎ C)) 
 δL×⊎-1 = is-total-inv.g (proj₂ δL×⊎≅)
 
-I≅ : {A B C : Set} (x : A × (B ⊎ C)) → swap⊎ (δL×⊎ x) ≡ δL×⊎ (map× id swap⊎ x) 
-I≅ (x , inj₁ y) = refl
-I≅ (x , inj₂ y) = refl
 

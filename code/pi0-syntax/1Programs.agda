@@ -42,17 +42,27 @@ data _⟷_ {n : ℕ} : Ty n → Ty n → Set where
 
   trace : ∀ {A B C} → A ⊕ B ⟷ A ⊕ C → B ⟷ C
 
+-- Derivable terms:
+
+-- -- Right unitors
+
 ρ⊕ : ∀ {n} {A : Ty n} → A ⟷ A ⊕ 𝟘
 ρ⊕ = s⊕ ⊙ λ⊕-1
 
 ρ⊗ : ∀ {n} {A : Ty n} → A ⟷ A ⊗ 𝟙
 ρ⊗ = s⊗ ⊙ λ⊗-1
 
+-- -- Right absorber
+
 κR : ∀ {n} {A : Ty n} → A ⊗ 𝟘 ⟷ 𝟘
 κR = κL ⊙ s⊗
 
+-- -- Left distributor
+
 δL : ∀ {n} {A B C : Ty n} → A ⊗ (B ⊕ C) ⟷ (A ⊗ B) ⊕ (A ⊗ C) 
 δL = (s⊗ ⊕ s⊗) ⊙ δR ⊙ s⊗ 
+
+-- The dagger operation, constructing the partial inverse of each program
 
 dagger : ∀ {n} {A B : Ty n} → A ⟷ B → B ⟷ A
 dagger id⟷ = id⟷
@@ -77,6 +87,8 @@ dagger fold = unfold
 dagger unfold = fold
 dagger (trace f) = trace (dagger f)
 
+-- Inverse of derivable terms
+
 ρ⊕-1 : ∀ {n} {A : Ty n} → A ⊕ 𝟘 ⟷ A
 ρ⊕-1 = dagger ρ⊕
 
@@ -89,27 +101,29 @@ dagger (trace f) = trace (dagger f)
 δL-1 : ∀ {n} {A B C : Ty n} → (A ⊗ B) ⊕ (A ⊗ C) ⟷ A ⊗ (B ⊕ C)
 δL-1 = dagger δL
 
-dagger-dagger : ∀ {n} {A B : Ty n} (f : A ⟷ B) → dagger (dagger f) ≡ f
-dagger-dagger id⟷ = refl
-dagger-dagger λ⊕ = refl
-dagger-dagger λ⊕-1 = refl
-dagger-dagger α⊕ = refl
-dagger-dagger α⊕-1 = refl
-dagger-dagger s⊕ = refl
-dagger-dagger λ⊗ = refl
-dagger-dagger λ⊗-1 = refl
-dagger-dagger α⊗ = refl
-dagger-dagger α⊗-1 = refl
-dagger-dagger s⊗ = refl
-dagger-dagger κL = refl
-dagger-dagger κL-1 = refl
-dagger-dagger δR = refl
-dagger-dagger δR-1 = refl
-dagger-dagger (f ⊙ f₁) = cong₂ _⊙_ (dagger-dagger f) (dagger-dagger f₁)
-dagger-dagger (f ⊕ f₁) = cong₂ _⊕_ (dagger-dagger f) (dagger-dagger f₁)
-dagger-dagger (f ⊗ f₁) = cong₂ _⊗_ (dagger-dagger f) (dagger-dagger f₁)
-dagger-dagger fold = refl
-dagger-dagger unfold = refl
-dagger-dagger (trace f) = cong trace (dagger-dagger f)
+-- The dagger operation is involutive (up to propositional equality)
+
+daggerInvol : ∀ {n} {A B : Ty n} (f : A ⟷ B) → dagger (dagger f) ≡ f
+daggerInvol id⟷ = refl
+daggerInvol λ⊕ = refl
+daggerInvol λ⊕-1 = refl
+daggerInvol α⊕ = refl
+daggerInvol α⊕-1 = refl
+daggerInvol s⊕ = refl
+daggerInvol λ⊗ = refl
+daggerInvol λ⊗-1 = refl
+daggerInvol α⊗ = refl
+daggerInvol α⊗-1 = refl
+daggerInvol s⊗ = refl
+daggerInvol κL = refl
+daggerInvol κL-1 = refl
+daggerInvol δR = refl
+daggerInvol δR-1 = refl
+daggerInvol (f ⊙ f₁) = cong₂ _⊙_ (daggerInvol f) (daggerInvol f₁)
+daggerInvol (f ⊕ f₁) = cong₂ _⊕_ (daggerInvol f) (daggerInvol f₁)
+daggerInvol (f ⊗ f₁) = cong₂ _⊗_ (daggerInvol f) (daggerInvol f₁)
+daggerInvol fold = refl
+daggerInvol unfold = refl
+daggerInvol (trace f) = cong trace (daggerInvol f)
 
 

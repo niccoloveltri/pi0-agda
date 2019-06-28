@@ -18,6 +18,8 @@ data Ty : ℕ → Set where
   _⊕_ _⊗_ : ∀ {n} → Ty n → Ty n → Ty n
   μ : ∀ {n} → Ty (suc n) → Ty n
 
+-- Weakening and substitution
+
 wk : ∀ {n} → Ty n → Ty (suc n)
 wk {n} (var i) = var (raise (suc zero) i)
 wk 𝟘 = 𝟘

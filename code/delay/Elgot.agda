@@ -79,96 +79,95 @@ traceD f = bindD [ iterD (f L) , now ]′ ∘ (f R)
 -- We need to prove that traceD is a dagger trace, meaning that dagger
 -- (traceD f) is equal to traceD (dagger f).
 
--- In order to show this, we introduce the notion of reachability.  An
--- element y : U ⊎ B is f-reachable from x : U ⊎ A if y is obtained from
--- x after a finite number of applications of the function f.
+-- In order to show this, we introduce the notion of orbit.  An
+-- element y : U ⊎ B is in the orbit of x : U ⊎ A wrt. f if y is
+-- obtained from x after a finite number of applications of the
+-- function f.
 
-data reach {A B U : Set} (f : U ⊎ A → Delay (U ⊎ B)) : U ⊎ A → U ⊎ B → Set where
-  done : ∀ {x y} → f x ↓ y → reach f x y
-  step : ∀ {x u y} → f x ↓ (inj₁ u) → reach f (inj₁ u) y → reach f x y
+data Orb {A B U : Set} (f : U ⊎ A → Delay (U ⊎ B)) : U ⊎ A → U ⊎ B → Set where
+  done : ∀ {x y} → f x ↓ y → Orb f x y
+  step : ∀ {x u y} → f x ↓ (inj₁ u) → Orb f (inj₁ u) y → Orb f x y
 
--- We can talk about reachability for iteration and for trace.
+-- We can talk about orbit for iteration and for trace.
 
-iter-reach : {A B : Set} (f : A → Delay (A ⊎ B)) → A → B → Set
-iter-reach {A}{B} f a b = reach [ f , (λ z → now (inj₂ z)) ]′ (inj₁ a) (inj₂ b)
+iter-Orb : {A B : Set} (f : A → Delay (A ⊎ B)) → A → B → Set
+iter-Orb {A}{B} f a b = Orb [ f , (λ z → now (inj₂ z)) ]′ (inj₁ a) (inj₂ b)
 
-trace-reach : {A B U : Set} (f : U ⊎ A → Delay (U ⊎ B)) → A → B → Set
-trace-reach f a b = reach f (inj₂ a) (inj₂ b)
+trace-Orb : {A B U : Set} (f : U ⊎ A → Delay (U ⊎ B)) → A → B → Set
+trace-Orb f a b = Orb f (inj₂ a) (inj₂ b)
 
--- The fact that iterD f a converges to b is equivalent to b being
--- f-reachable from a.
+-- The fact that traceD f a converges to b is equivalent to (inj₂ b)
+-- being the last element in the orbit of (inj₂ a) wrt. f
 
-iterD-now-reach : ∀ {A B} (f : A → Delay (A ⊎ B)) {a} {b}
+iterD-now-Orb : ∀ {A B} (f : A → Delay (A ⊎ B)) {a} {b}
   → (x : Delay (A ⊎ B)) (q : f a ≈ x)
-  → (p : iterD' f x ↓ b) → iter-reach f a b 
-iterD-now-reach f (now (inj₁ a')) q (laterL p) =
-  step q (iterD-now-reach f (f a') refl≈ p)
-iterD-now-reach f (now (inj₂ b)) q now = done q
-iterD-now-reach f (later x) q (laterL p) =
-  iterD-now-reach f (force x) (laterR-1 q) p  
+  → (p : iterD' f x ↓ b) → iter-Orb f a b 
+iterD-now-Orb f (now (inj₁ a')) q (laterL p) =
+  step q (iterD-now-Orb f (f a') refl≈ p)
+iterD-now-Orb f (now (inj₂ b)) q now = done q
+iterD-now-Orb f (later x) q (laterL p) =
+  iterD-now-Orb f (force x) (laterR-1 q) p  
 
 iterD-now-equiv₁ : ∀ {A B} (f : A → Delay (A ⊎ B)) {a} {b}
-  → iterD f a ↓ b → iter-reach f a b
-iterD-now-equiv₁ f p = iterD-now-reach f _ refl≈ p
+  → iterD f a ↓ b → iter-Orb f a b
+iterD-now-equiv₁ f p = iterD-now-Orb f _ refl≈ p
 
 iterD-now-equiv₂ : ∀ {A B} (f : A → Delay (A ⊎ B)) {a : A} {b : B}
-  → iter-reach f a b → iterD f a ↓ b
+  → iter-Orb f a b → iterD f a ↓ b
 iterD-now-equiv₂ f (done p) = cong-iterD' f p
 iterD-now-equiv₂ f (step p q) =
   trans≈ (cong-iterD' f p) (laterL (iterD-now-equiv₂ f q))
 
--- Similarly, the fact that traceD f a converges to b is equivalent to
--- b being f-reachable from a.
-
 traceD-now-equiv₁ : ∀ {A B U} (f : U ⊎ A → Delay (U ⊎ B)) {a} {b}
-  → traceD f a ↓ b → trace-reach f a b
+  → traceD f a ↓ b → trace-Orb f a b
 traceD-now-equiv₁ f p with bindD↓ [ iterD (f L) , now ]′ (f (inj₂ _)) p
 traceD-now-equiv₁ f p | inj₂ b , q , now = done q
 traceD-now-equiv₁ f p | inj₁ u , q , r = step q (lem (iterD-now-equiv₁ (f L) r))
   where
-    lem : ∀ {x y} → reach [ (f L) , (λ z → now (inj₂ z)) ]′ (inj₁ x) y → reach f (inj₁ x) y
+    lem : ∀ {x y} → Orb [ (f L) , (λ z → now (inj₂ z)) ]′ (inj₁ x) y → Orb f (inj₁ x) y
     lem (done s) = done s
     lem (step s t) = step s (lem t)
 
 traceD-now-equiv₂ : ∀ {A B U} (f : U ⊎ A → Delay (U ⊎ B)) {a} {b}
-  → trace-reach f a b → traceD f a ↓ b
+  → trace-Orb f a b → traceD f a ↓ b
 traceD-now-equiv₂ f (done p) = cong-bindD p
 traceD-now-equiv₂ f (step p q) =
   trans≈ (cong-bindD p) (iterD-now-equiv₂ (f L) (lem q))
   where
-    lem : ∀ {x y} → reach f (inj₁ x) y → reach [ (f L) , (λ z → now (inj₂ z)) ]′ (inj₁ x) y
+    lem : ∀ {x y} → Orb f (inj₁ x) y → Orb [ (f L) , (λ z → now (inj₂ z)) ]′ (inj₁ x) y
     lem (done s) = done s
     lem (step s t) = step s (lem t)
 
--- If the function f has a left partial inverse g, then b is
--- f-reachable from a implies that a is g-reachable from b.
+-- If the function f has a left partial inverse g, then (inj₂ b) is
+-- the last element of the orbit of (inj₂ a) wrt. f implies that (inj₂
+-- a) is the last element of the orbit of (inj₂ b) wrt. f
 
-reverse-trace-reach' : ∀ {A B U} (f : U ⊎ A → Delay (U ⊎ B)) (g : U ⊎ B → Delay (U ⊎ A))
+reverse-trace-Orb' : ∀ {A B U} (f : U ⊎ A → Delay (U ⊎ B)) (g : U ⊎ B → Delay (U ⊎ A))
   → (∀ x y → f y ↓ x → g x ↓ y)
-  → ∀ {a u b} → reach f (inj₁ u) (inj₂ b) → reach g (inj₁ u) (inj₂ a) → reach g (inj₂ b) (inj₂ a) 
-reverse-trace-reach' f g p (done q) r = step (p _ _ q) r
-reverse-trace-reach' f g p (step q q') r = reverse-trace-reach' f g p q' (step (p _ _ q) r)
+  → ∀ {a u b} → Orb f (inj₁ u) (inj₂ b) → Orb g (inj₁ u) (inj₂ a) → Orb g (inj₂ b) (inj₂ a) 
+reverse-trace-Orb' f g p (done q) r = step (p _ _ q) r
+reverse-trace-Orb' f g p (step q q') r = reverse-trace-Orb' f g p q' (step (p _ _ q) r)
 
-reverse-trace-reach : ∀ {A B U} (f : U ⊎ A → Delay (U ⊎ B)) (g : U ⊎ B → Delay (U ⊎ A))
+reverse-trace-Orb : ∀ {A B U} (f : U ⊎ A → Delay (U ⊎ B)) (g : U ⊎ B → Delay (U ⊎ A))
   → (∀ x y → f y ↓ x → g x ↓ y)
-  → ∀ {a b} → trace-reach f a b → trace-reach g b a
-reverse-trace-reach f g p (done q) = done (p _ _ q)
-reverse-trace-reach f g p (step q r) = reverse-trace-reach' f g p r (done (p _ _ q))
+  → ∀ {a b} → trace-Orb f a b → trace-Orb g b a
+reverse-trace-Orb f g p (done q) = done (p _ _ q)
+reverse-trace-Orb f g p (step q r) = reverse-trace-Orb' f g p r (done (p _ _ q))
 
--- Unfolding axiom
+-- Fixpoint axiom
 
 mutual
-  unfolding' : ∀ {A C} (f : A → Delay (A ⊎ C)) → bindD [ iterD f , now ]′ ∼ iterD' f
-  unfolding' f (now (inj₁ x)) = laterR refl≈
-  unfolding' f (now (inj₂ x)) = refl≈
-  unfolding' f (later x) = later (∞unfolding' f (force x))
+  fixpoint' : ∀ {A C} (f : A → Delay (A ⊎ C)) → bindD [ iterD f , now ]′ ∼ iterD' f
+  fixpoint' f (now (inj₁ x)) = laterR refl≈
+  fixpoint' f (now (inj₂ x)) = refl≈
+  fixpoint' f (later x) = later (∞fixpoint' f (force x))
 
-  ∞unfolding' : ∀ {A C} (f : A → Delay (A ⊎ C)) (x : Delay (A ⊎ C)) → 
+  ∞fixpoint' : ∀ {A C} (f : A → Delay (A ⊎ C)) (x : Delay (A ⊎ C)) → 
              bindD [ iterD f , now ]′ x ∞≈ iterD' f x
-  force (∞unfolding' f x) = unfolding' f x
+  force (∞fixpoint' f x) = fixpoint' f x
 
-unfolding : ∀ {A C} (f : A → Delay (A ⊎ C)) → [ iterD f , now ]′ ∙ f ∼ iterD f
-unfolding f x = unfolding' f (f x) 
+fixpoint : ∀ {A C} (f : A → Delay (A ⊎ C)) → [ iterD f , now ]′ ∙ f ∼ iterD f
+fixpoint f x = fixpoint' f (f x) 
 
 -- Naturality axiom
 
@@ -228,97 +227,32 @@ codiagonal g x = codiagonal' g (g x)
 
 -- Uniformity axiom
 
-{-
-♯iterD : ∀ {A B} (f : A → Delay (A ⊎ B)) (x : Delay (A ⊎ B)) {y : B}
-  → iterD' f x ↓ y → ℕ
-♯iterD f (now (inj₁ x)) (laterL p) = suc (♯iterD f (f x) p)
-♯iterD f (now (inj₂ x)) p = zero 
-♯iterD f (later x) (laterL p) = ♯iterD f (force x) p
-
-♯iterD-≡ : ∀ {A B} (f : A → Delay (A ⊎ B)) {x x' : Delay (A ⊎ B)} {y : B}
-  → (q : iterD' f x ↓ y) (q' : iterD' f x' ↓ y)
-  → x ≈ x' → ♯iterD f x q ≡ ♯iterD f x' q'
-♯iterD-≡ f {now (inj₁ x)} {now (inj₁ .x)} (laterL q) (laterL q') now =
-  cong suc (♯iterD-≡ f q q' refl≈)
-♯iterD-≡ f {now (inj₁ x)} {now (inj₂ x')} p now ()
-♯iterD-≡ f {now (inj₁ x)} {later x'} q (laterL q') (laterR p) = ♯iterD-≡ f q q' p
-♯iterD-≡ f {now (inj₂ x)} {now (inj₁ x')} now q ()
-♯iterD-≡ f {now (inj₂ x)} {now (inj₂ x')} now q' p = refl
-♯iterD-≡ f {now (inj₂ x)} {later x'} q (laterL q') (laterR p) = ♯iterD-≡ f q q' p
-♯iterD-≡ f {later x} {now x'} (laterL q) q' (laterL p) = ♯iterD-≡ f q q' p
-♯iterD-≡ f {later x} {later x'} (laterL q) (laterL q') p = ♯iterD-≡ f q q' (later-1 p)
-
-suc-inj : {n m : ℕ} → suc n ≡ suc m → n ≡ m
-suc-inj refl = refl
-
-uniformity-now : ∀ {A B C}
-  → (f : A → Delay (A ⊎ B)) (g : C → Delay (C ⊎ B)) (h : C → A)
-  → ((x : C) → mapD (map⊎ h id) (g x) ≈ f (h x))
-  → (x : Delay (C ⊎ B)) (y : B)
-  → (q : iterD' f (mapD (map⊎ h id) x) ↓ y)
-  → (n : ℕ) → ♯iterD f (mapD (map⊎ h id) x) q ≡ n
-  → iterD' g x ↓ y
-uniformity-now f g h p (now (inj₁ x)) y (laterL q) zero ()
-uniformity-now f g h p (now (inj₁ x)) y (laterL q) (suc n) r =
-  laterL (uniformity-now f g h p (g x) y
-    (trans≈ (cong-iterD' f (p x)) q) n (trans (♯iterD-≡ f _ _ (p x)) (suc-inj r)))
-uniformity-now f g h p (now (inj₂ y)) .y now n r = now
-uniformity-now f g h p (later x) y (laterL q) n r =
-  laterL (uniformity-now f g h p (force x) y q n r)                 
-
-mutual
-  uniformity' : ∀ {A B C}
-    → (f : A → Delay (A ⊎ B)) (g : C → Delay (C ⊎ B)) (h : C → A)
-    → ((x : C) → mapD (map⊎ h id) (g x) ≈ f (h x))
-    → (x : Delay (C ⊎ B)) (x' : Delay B)
-    → iterD' f (mapD (map⊎ h id) x) ≈ x' → iterD' g x ≈ x'
-  uniformity' f g h p (now (inj₁ x)) (now x') (laterL q) =
-    laterL (uniformity-now f g h p (g x) x' (trans≈ (cong-iterD' f (p x)) q) _ refl)
-  uniformity' f g h p (now (inj₁ x)) (later x') q =
-    later (∞uniformity' f g h p (g x) (force x')
-      (trans≈ (cong-iterD' f (p x)) (later-1 q))) 
-  uniformity' f g h p (now (inj₂ x)) x' q = q
-  uniformity' f g h p (later x) (now x') (laterL q) =
-    laterL (uniformity' f g h p (force x) (now x') q) 
-  uniformity' f g h p (later x) (later x') q =
-    later (∞uniformity' f g h p (force x) (force x') (later-1 q))
-
-  ∞uniformity' : ∀ {A B C}
-    → (f : A → Delay (A ⊎ B)) (g : C → Delay (C ⊎ B)) (h : C → A)
-    → ((x : C) → mapD (map⊎ h id) (g x) ≈ f (h x))
-    → (x : Delay (C ⊎ B)) (x' : Delay B)
-    → iterD' f (mapD (map⊎ h id) x) ≈ x' → iterD' g x ∞≈ x'
-  force (∞uniformity' f g h p x x' q) = uniformity' f g h p x x' q
--}
-
-uniformity-reach₁ : ∀ {A B C}
+uniformity-Orb₁ : ∀ {A B C}
   → (f : A → Delay (A ⊎ B)) (g : C → Delay (C ⊎ B)) (h : C → A)
   → ((x : C) → mapD (map⊎ h id) (g x) ≈ f (h x))
   → (c : C) (b : B)
-  → iter-reach g c b → iter-reach f (h c) b
-uniformity-reach₁ f g h p c b (done q) =
+  → iter-Orb g c b → iter-Orb f (h c) b
+uniformity-Orb₁ f g h p c b (done q) =
   done (trans≈ (sym≈ (p c)) (cong-bindD q))
-uniformity-reach₁ f g h p c b (step q r) =
-  step (trans≈ (sym≈ (p c)) (cong-bindD q)) (uniformity-reach₁ f g h p _ b r)
+uniformity-Orb₁ f g h p c b (step q r) =
+  step (trans≈ (sym≈ (p c)) (cong-bindD q)) (uniformity-Orb₁ f g h p _ b r)
 
-uniformity-reach₂ : ∀ {A B C}
+uniformity-Orb₂ : ∀ {A B C}
   → (f : A → Delay (A ⊎ B)) (g : C → Delay (C ⊎ B)) (h : C → A)
   → ((x : C) → mapD (map⊎ h id) (g x) ≈ f (h x))
   → (c : C) (b : B)
-  → iter-reach f (h c) b → iter-reach g c b
-uniformity-reach₂ f g h p c b (done q) with bindD↓ (λ z → now ((map⊎ h id) z)) (g c) (trans≈ (p c) q)
-uniformity-reach₂ f g h p c b (done q) | inj₂ .b , r , now = done r
-uniformity-reach₂ f g h p c b (step q r) with bindD↓ (λ z → now ((map⊎ h id) z)) (g c) (trans≈ (p c) q)
-uniformity-reach₂ f g h p c b (step q r) | inj₁ c' , s , now = step s (uniformity-reach₂ f g h p _ b r)
+  → iter-Orb f (h c) b → iter-Orb g c b
+uniformity-Orb₂ f g h p c b (done q) with bindD↓ (λ z → now ((map⊎ h id) z)) (g c) (trans≈ (p c) q)
+uniformity-Orb₂ f g h p c b (done q) | inj₂ .b , r , now = done r
+uniformity-Orb₂ f g h p c b (step q r) with bindD↓ (λ z → now ((map⊎ h id) z)) (g c) (trans≈ (p c) q)
+uniformity-Orb₂ f g h p c b (step q r) | inj₁ c' , s , now = step s (uniformity-Orb₂ f g h p _ b r)
 
 uniformity : ∀ {A B C}
   → (f : A → Delay (A ⊎ B)) (g : C → Delay (C ⊎ B)) (h : C → A)
   → mapD (map⊎ h id) ∘ g ∼ f ∘ h → iterD g ∼ iterD f ∘ h
 uniformity f g h p x = ≈-equiv₂
-  ((λ q → iterD-now-equiv₂ f (uniformity-reach₁ f g h p x _ (iterD-now-equiv₁ g q))) ,
-   (λ q → iterD-now-equiv₂ g (uniformity-reach₂ f g h p x _ (iterD-now-equiv₁ f q))))
---uniformity' f g h p (g x) (iterD f (h x)) (cong-iterD' f (p x))
-
+  ((λ q → iterD-now-equiv₂ f (uniformity-Orb₁ f g h p x _ (iterD-now-equiv₁ g q))) ,
+   (λ q → iterD-now-equiv₂ g (uniformity-Orb₂ f g h p x _ (iterD-now-equiv₁ f q))))
 
 -- Dinaturality axiom
 
@@ -336,7 +270,7 @@ mutual
     → iterD' ([ h , (λ z → now (inj₂ z)) ]′ ∙ g) x ↓ b
     → iterD' ([ g , (λ z → now (inj₂ z)) ]′ ∙ h) (bindD [ g , (λ z → now (inj₂ z)) ]′ x) ↓ b 
   dinaturality↓₁' g h (now (inj₁ x)) (laterL p) =
-    trans≈ (sym≈ (unfolding' ([ g , (λ z → now (inj₂ z)) ]′ ∙ h) (g x))) (dinaturality↓₁ g h (g x) p)
+    trans≈ (sym≈ (fixpoint' ([ g , (λ z → now (inj₂ z)) ]′ ∙ h) (g x))) (dinaturality↓₁ g h (g x) p)
   dinaturality↓₁' g h (now (inj₂ y)) p = p
   dinaturality↓₁' g h (later x) (laterL p) = laterL (dinaturality↓₁' g h (force x) p)
 
@@ -363,7 +297,7 @@ dinatural : ∀ {A B C}
     [ (iterD ([ g , (λ z → now (inj₂ z)) ]′ ∙ h)) , now ]′ ∙ g
 dinatural g h x = ≈-equiv₂
   (dinaturality↓₁ g h (g x) ,
-   λ p → dinaturality↓₂ g h (g x) (trans≈ (sym≈ (unfolding' ([ g , (λ z → now (inj₂ z)) ]′ ∙ h) (g x))) p)) 
+   λ p → dinaturality↓₂ g h (g x) (trans≈ (sym≈ (fixpoint' ([ g , (λ z → now (inj₂ z)) ]′ ∙ h) (g x))) p)) 
 
 -- Bekic identity
 
@@ -456,7 +390,7 @@ mutual
 
 traceD-eq : {A B U : Set} (f : U ⊎ A → Delay (U ⊎ B))
   → traceD f ∼ traceD2 f
-traceD-eq f x = trans≈ (unfolding' (f L) ((f R) x)) (iterD-eq f ((f R) x) )  
+traceD-eq f x = trans≈ (fixpoint' (f L) ((f R) x)) (iterD-eq f ((f R) x) )  
 
 -- Trace axioms
 
@@ -523,7 +457,7 @@ dinaturality-traceD {f = f}{g} =
     [ [ iterD (([ g L , (λ z → now (inj₂ z)) ]′ ∙ mapD inj₁) ∘ f) , now ]′ ∙ ((g L) ∙ f) , now ]′ ∙ (g R)
   ∼〈 cong∙ {f = g R} (copair∼ (cong∙ {f = (g L) ∙ f} (copair∼ (cong-iterD (cong∙ {f = now ∘ f} (bind-mapD {f = inj₁}{[ g L , (λ z → now (inj₂ z)) ]′}) refl∼)) refl∼) refl∼) refl∼) refl∼ 〉
     [ [ iterD ((g L) ∙ f) , now ]′ ∙ ((g L) ∙ f) , now ]′ ∙ (g R)
-  ∼〈 cong∙ {f = g R} (copair∼ (unfolding ((g L) ∙ f)) refl∼) refl∼ 〉
+  ∼〈 cong∙ {f = g R} (copair∼ (fixpoint ((g L) ∙ f)) refl∼) refl∼ 〉
     [ iterD ((g L) ∙ f) , now ]′ ∙ (g R)
   ∼〈 cong∙ {f = g R} (copair∼ (cong-iterD (sym∼ (M3 ∘ f))) refl∼) refl∼ 〉
     [ iterD (g ∙ (mapD inj₁ ∘ f)) , now ]′ ∙ (g R)
