@@ -204,7 +204,7 @@ The uniform iteration operator introduces a notion of feedback,
 typically used to model control flow operations such as while
 loops. In the Kleisli category of the delay monad, this operation can
 be intuitively described as follows: We can apply a function
-$f : A \to B + A$ on an input $a$ and either produce an element
+$f : A \to B + A$ on an input $a : A$ and either produce an element
 $b : B$, or produce a new element $a' : A$ which can be fed back to
 $f$. This operation can be iterated, and it either terminates
 returning a value in $B$ or it goes on forever without producing any
