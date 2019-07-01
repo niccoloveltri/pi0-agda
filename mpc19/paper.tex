@@ -164,7 +164,7 @@ metalanguages~\cite{Giles,KaarsgaardAG17,KaarsgaardG18}, and so on.
 \Pio{} is a family of reversible combinator calculi comprising structural
 isomorphisms and combinators corresponding to those found in dagger-traced
 $\omega$-continuous rig categories~\cite{Karvonen19} (a kind of dagger category
-with a trace, monoidal sums $\oplus$ and products $\oplus$ such that they form
+with a trace, monoidal sums $\oplus$ and products $\otimes$ such that they form
 a rig structure, and fixed points of the functors formed from the rig
 structure). Though superficially simple, \Pio{} is expressive enough as a
 metalanguage to give semantics to the typed reversible functional programming
@@ -201,7 +201,9 @@ through the specification of a uniform iteration operator
 \cite{GoncharovSRJ18,GoncharovMR16}. 
 
 Throughout the paper, we reason constructively in Martin-L\"of type
-theory. Classically, the delay monad is isomorphic to the maybe monad
+theory. Classically, the delay monad (quotiented by
+weak bisimilarity)
+is isomorphic to the maybe monad
 $\Maybe\,X \equiv X + 1$,
 and thus just a complication of something that can be expressed much
 simpler. Constructively, however, they are very different. In particular,
@@ -826,9 +828,9 @@ auxiliary function $\iterD'$ corecursively defined as follows:
 The definition above can be given the following intuitive
 explanation. If $f\,a$ does not terminate, then $\iterD\,f\,a$ does
 not terminate as well. If $f\,a$ terminates, there are two
-possibilities: either $f\,a$ converges to $\inr\,b$, in which case
+possibilities: either $f\,a$ converges to $\inl\,b$, in which case
 $\iterD\,f\,a$ terminates returning the value $b$; or $f\,a$ converges
-to $\inl\,a'$, in which case we repeat the procedure by replacing $a$
+to $\inr\,a'$, in which case we repeat the procedure by replacing $a$
 with $a'$. Notice that in the latter case we also add one occurrence
 of $\later$ to the total computation time. This addition is necessary
 for ensuring the productivity of the corecursively defined function
@@ -1052,7 +1054,11 @@ interpretation of types $\semTy -$ takes in input a \Pio\ type
 $A : \Ty\,n$ and an environment $\rho : \mathsf{Fin}\,n \to \Set$
 giving semantics to each variable in context. The interpretation is
 mutually inductively defined together with the operation $\semMu -$
-giving semantics to the $\mu$ type former.
+giving semantics to the $\mu$ type former. Remember that, given $A :
+\Ty\,(n+1)$ and $B : \Ty\,n$, we write $\sub\,A \,B$ for the
+substituted type $A[B/X]$, where $X$ corresponds to the $(n+1)$-th
+variable in context.  
+
 \[
 \begin{array}{lll}
 \semTy \Z & \rho & = 0 \\
@@ -1063,7 +1069,8 @@ giving semantics to the $\mu$ type former.
 \semTy {\mu A} & \rho & = \semMu A \,\rho
 \end{array}
 \qquad \qquad
-\infer{\mathsf{semFold} \,x : \semMu A\,\rho}{x : \semTy A \, \rho}
+\infer{\mathsf{semFold} \,x : \semMu {A}\,\rho}{x : \semTy
+  {\sub\,A\,(\mu A)} \, \rho}
 \]
 
 By abuse of notation, we use here $\times$ (respectively $+$) to refer
