@@ -456,7 +456,8 @@
       quotiented by pointwise weak bisimilarity.
     \item In $\Dapprox$, two morphisms $f$ and $g$ are equal whenever
       $f \, a \approx g \, a$, for all inputs $a$.
-%    \item We write $f \approx g$ also for pointwise weak bisimilarity.
+      %    \item We write $f \approx g$ also for pointwise weak bisimilarity.
+      \pause
       \vspace{\fill}
     \item Notice that we are quotienting the homsets of $\D$, not the objects.
     \item So we avoid problems with semi-classical principles, such as countable choice [Chapman et al. 2015].
@@ -489,9 +490,37 @@
 
 \begin{frame}
 
-  \frametitle{}
+  \frametitle{Partial isomorphisms}
+  
   \begin{itemize}
-  \item 
+  \item We need to restrict to reversible computations in $\Dapprox$.
+  \item A a morphism $f : A \to \Delay B$ is a partial isomorphism if
+    the following type is inhabited:
+    \[
+    \begin{array}{l}
+      \piso \,f = \\
+      \qquad (g : B \to \Delay A) \times \\
+      \qquad \quad \left( (a : A) (b : B) \to  f
+      \,a \approx \now\,b \leftrightarrow g \,b \approx \now\,a  \right)  
+    \end{array}
+    \]
+    \item Our definition of partial iso is equivalent to
+the standard categorical one [Kastl 1979, Cockett and Lack 2002].
+  \item The type of partial isos:
+    \[
+    A \simeq_{\mathsf{p}} B = (f : A \to \Delay B) \times \piso \,f
+    \]
+  \end{itemize}
+  
+  
+\end{frame}
+
+\begin{frame}
+
+  \frametitle{A category of partial isos}
+  \begin{itemize}
+    \item Let $\Inv \Dapprox$ be the subcategory of $\Dapprox$
+      consisting of (equivalence classes of) partial isomorphisms.
   \end{itemize}
   
   
