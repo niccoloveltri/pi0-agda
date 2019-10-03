@@ -39,6 +39,7 @@
 
 
 \newcommand{\N}{\mathbb{N}}
+\newcommand{\C}{\mathbb{C}}
 \newcommand{\Pio}{\ensuremath{\mathsf{\Pi}^{\mathsf{o}}}} 
 \newcommand{\Set}{\mathsf{Set}}
 \newcommand{\Par}{\mathsf{Par}}
@@ -519,13 +520,60 @@ the standard categorical one [Kastl 1979, Cockett and Lack 2002].
 
   \frametitle{A category of partial isos}
   \begin{itemize}
-    \item Let $\Inv \Dapprox$ be the subcategory of $\Dapprox$
-      consisting of (equivalence classes of) partial isomorphisms.
+  \item Let $\Inv \Dapprox$ be the subcategory of $\Dapprox$
+    consisting of (equivalence classes of) partial isomorphisms.
+  \item $\Inv\Dapprox$ inherits neither partial products nor
+    coproducts of $\Dapprox$.
+  \item However, $(\Dapprox,1,\times,0,+)$ is a symmetric rig
+    groupoid.
+  \item That is to say that $\Pi$, the finitary fragment of
+    \Pio, can be modelled in $\Dapprox$.
   \end{itemize}
   
   
 \end{frame}
 
+\begin{frame}
+
+  \frametitle{Trace via unguarded iteration}
+
+  \begin{itemize}
+
+  \item Following [Hasegawa 1997], we can derive a trace operator from
+    an unguarded iteration operator.
+  \item In a category $\C$ with finite coproducts,  iteration is an operation:
+    \[
+    \iter : \C (A ,B + A) \to \C(A , B)
+    \]
+  \end{itemize}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Iteration in $\Dapprox$}
+  \begin{itemize}
+    \item First define:
+    \[ %\arraycolsep=8pt
+    \def\arraystretch{1.2}
+    \begin{array}{ll}
+      \multicolumn{2}{l}{\iterD' : (A \to \Delay (B + A)) \to \Delay (B + A) \to \Delay B} \\
+      \iterD' \,f \,(\now \,(\inl\, b)) &= \now \,b \\
+      \iterD' \,f \,(\now \,(\inr\, a)) &= \later \,(\iterD' \,f \,(f \,a)) \\
+      \iterD' \,f \,(\later \,x) &= \later \,(\iterD' \,f \,x) \\
+    \end{array}
+    \]
+  \item Then take:
+    \[ %\arraycolsep=8pt
+    \def\arraystretch{1.2}
+    \begin{array}{ll}    
+      \multicolumn{2}{l}{\iterD : (A \to \Delay (B + A)) \to A \to \Delay B} \\
+      \multicolumn{2}{l}{\iterD \,f \,a = \iterD' \,f \,(f \,a)}
+    \end{array}
+    \]
+
+    
+  \end{itemize}
+  
+\end{frame}
   
 %% \begin{frame}
 %%   
