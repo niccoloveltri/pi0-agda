@@ -379,6 +379,121 @@
 \begin{frame}
 
   \frametitle{The delay monad [Capretta 2005]}
+  \begin{itemize}
+  \item A type of possiblly non-terminating computations.
+  \item Coinductively defined:
+    \[
+    \infer{\now\,a : \Delay A}{a : A}
+    \quad
+    \infer={\later\,x : \Delay A}{x : \Delay A}
+    \]
+  \item The non-terminating computation:
+    $\never = \later \,\never$.
+  \item The delay datatype is a monad. Its Kleisli extension:
+    \begin{align*}
+      & \bind : (A \to \Delay B) \to \Delay A \to \Delay B \\
+      & \bind \,f \, (\now\,a) = f\,a \\
+      & \bind\,f\,(\later\,x) = \later\,(\bind\,f\,x)
+    \end{align*}
+
+  \end{itemize}
+  
+  
+\end{frame}
+
+\begin{frame}
+
+  \frametitle{The Kleisli category of $\Delay$}
+  \begin{itemize}
+
+  \item Let $\D$ be the Kleisli category of $\Delay$:
+    \begin{itemize}
+    \item objects are types;
+    \item morphisms are functions in $A \to \Delay B$;
+    \item the identity map is $\now$;
+    \item composition of $f : A \to \Delay B$ and $g : B \to \Delay C$
+      is given by:
+      \[f \diamond g = \bind\,f \comp g\]
+    \end{itemize}
+   
+  \end{itemize}
+  
+\end{frame}
+
+\begin{frame}
+
+  \frametitle{Intensional vs. extensional partiality}
+  \begin{itemize}
+  \item In $\D$ we can program with possibly non-terminatings
+    programs, but partiality is intensional.
+  \item Computations terminating with the same value but 
+    different number of steps are different.
+  \item We quotient out finite computation steps using weak
+    bisimilarity:
+    \[
+      \arraycolsep=8pt\def\arraystretch{2.8}
+      \begin{array}{cc}
+        \infer{\now_{\approx}  : \now\,a \approx \now\,a}{}
+        &
+        \infer={\later_{\approx} \,p : \later\,x_1 \approx \later\,x_2}{p : x_1 \approx x_2}
+        \\
+        \infer{\laterL_{\approx} \, p: \later\,x \approx \now\,a}{p : x \approx \now \,a}
+        &
+        \infer{\laterR_{\approx} \, p: \now\,a \approx \later\,x}{p : \now\,a \approx x}
+      \end{array}
+    \]
+    
+  \end{itemize}
+  
+  
+\end{frame}
+
+\begin{frame}
+
+  \frametitle{A category of partial functions}
+  \begin{itemize}
+    \item Let $\Dapprox$ be the category $\D$ with homsets
+      quotiented by pointwise weak bisimilarity.
+    \item In $\Dapprox$, two morphisms $f$ and $g$ are equal whenever
+      $f \, a \approx g \, a$, for all inputs $a$.
+%    \item We write $f \approx g$ also for pointwise weak bisimilarity.
+      \vspace{\fill}
+    \item Notice that we are quotienting the homsets of $\D$, not the objects.
+    \item So we avoid problems with semi-classical principles, such as countable choice [Chapman et al. 2015].
+    \item Alternatively, we could have used the partiality monad in
+      HoTT [Altenkirch et al. 2017].
+
+  \end{itemize}
+  
+  
+\end{frame}
+
+\begin{frame}
+
+  \frametitle{The structure of $\Dapprox$}
+  \begin{itemize}
+  \item Colimits in $\Dapprox$ are inherited from $\Set$.
+  \item But limits in $\Set$ do not lift to limits in $\Dapprox$.
+    \pause
+    \vspace{\fill}
+  \item Nevertheless, 1 and $\times$ are partial terminal object and
+    partial binary products respectively, in the sense of Cockett and
+    Lack's restriction categories.
+  \item In particular, $(\Dapprox,1,\times,0,+)$ is a symmetric rig
+    category.
+    
+  \end{itemize}
+  
+  
+\end{frame}
+
+\begin{frame}
+
+  \frametitle{}
+  \begin{itemize}
+  \item 
+  \end{itemize}
+  
   
 \end{frame}
 
