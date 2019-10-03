@@ -1,0 +1,409 @@
+\documentclass[12pt,t]{beamer}
+
+%% \mode<presentation>
+%% {
+%% %  \usetheme{Goettingen}
+%%   \useoutertheme{default}
+%%   \useinnertheme{rounded}
+%%   \setbeamercovered{transparent}
+%%   \usecolortheme{rose}
+%% }
+
+
+\usepackage{proof}
+
+\usepackage{newlfont}
+
+\usepackage{amssymb}
+\usepackage{latexsym}
+\usepackage{stmaryrd}
+
+%\usepackage[all]{xy}
+
+\usepackage{graphicx}
+\usepackage{color}
+
+\setbeamerfont*{itemize/enumerate body}{size=\normalsize}
+\setbeamerfont*{itemize/enumerate subbody}{parent=itemize/enumerate body}
+\setbeamerfont*{itemize/enumerate subsubbody}{parent=itemize/enumerate body}
+
+
+%% \usepackage{stmaryrd}
+
+%\usepackage{pgfpages}
+%\pgfpagesuselayout{4 on 1}[a4paper,border shrink=5mm,landscape]
+
+
+\newcommand{\red}[1]{\textcolor{red}{#1}}
+\newcommand{\blue}[1]{\textcolor{blue}{#1}}
+
+
+\newcommand{\N}{\mathbb{N}}
+\newcommand{\Pio}{\ensuremath{\mathsf{\Pi}^{\mathsf{o}}}} 
+\newcommand{\Set}{\mathsf{Set}}
+\newcommand{\Par}{\mathsf{Par}}
+\newcommand{\comp}{\circ}
+% \newcommand{\U}{\mathcal{U}}
+\newcommand{\copair}[2]{[#1,#2]}
+\newcommand{\pair}[2]{\left< #1,#2 \right>}
+\newcommand{\inl}{\mathsf{inl}}
+\newcommand{\inr}{\mathsf{inr}}
+\newcommand{\fst}{\mathsf{fst}}
+\newcommand{\snd}{\mathsf{snd}}
+\newcommand{\T}{\mathsf{T}}
+\newcommand{\Inv}{\mathsf{Inv}}
+\newcommand{\iter}{\mathsf{iter}}
+\newcommand{\mapL}[1]{#1_{\mathsf{L}}}
+\newcommand{\mapR}[1]{#1_{\mathsf{R}}}
+
+% Syntax Pi0
+\newcommand{\Ty}{\mathsf{Ty}}
+\newcommand{\Var}{\mathsf{Var}}
+\newcommand{\id}{\mathsf{id}}
+\newcommand{\lr}{\longleftrightarrow}
+\newcommand{\fold}{\mathsf{fold}}
+\newcommand{\unfold}{\mathsf{unfold}}
+\newcommand{\sub}{\mathsf{sub}}
+\newcommand{\trace}{\ensuremath{\mathsf{trace}}}
+\newcommand{\Z}{\mathsf{Z}}
+\newcommand{\I}{\mathsf{I}}
+\newcommand{\LR}{\iff}
+\renewcommand{\dagger}{\mathsf{dagger}}
+
+% Delay macros
+\newcommand{\Delay}{\ensuremath{\mathsf{Delay}\,}}
+\newcommand{\Maybe}{\mathsf{Maybe}}
+\newcommand{\now}{\mathsf{now}}
+\newcommand{\later}{\mathsf{later}}
+\newcommand{\laterR}{\mathsf{laterR}}
+\newcommand{\laterL}{\mathsf{laterL}}
+\newcommand{\never}{\mathsf{never}}
+\newcommand{\dn}{\downarrow}
+\newcommand{\bind}{\mathsf{bind}}
+\newcommand{\str}{\mathsf{str}}
+\newcommand{\costr}{\mathsf{costr}}
+\newcommand{\D}{\mathbb{D}}
+\newcommand{\Dapprox}{\mathbb{D}_{\approx}}
+\newcommand{\copairD}[2]{[#1,#2]_{\D}}
+\newcommand{\pairD}[2]{\left< #1,#2 \right>_{\D}}
+\newcommand{\inlD}{\mathsf{inl}_{\D}}
+\newcommand{\inrD}{\mathsf{inr}_{\D}}
+\newcommand{\fstD}{\mathsf{fst}_{\D}}
+\newcommand{\sndD}{\mathsf{snd}_{\D}}
+\newcommand{\piso}{\mathsf{isPartialIso}}
+\newcommand{\pisoalt}{\mathsf{isPartialIsoCat}}
+\newcommand{\iterD}{\mathsf{iter}_\D}
+\newcommand{\unfolding}{\mathsf{fixpoint}_\D}
+\newcommand{\refl}{\mathsf{refl}}
+\newcommand{\traceD}{\mathsf{trace}_\D}
+\newcommand{\traceHD}{\mathsf{traceH}_\D}
+\newcommand{\daggerD}{\mathsf{dagger}_\D}
+\newcommand{\Orb}[3]{\mathsf{Orb}\,#1\,#2\,#3}
+\newcommand{\done}{\mathsf{done}}
+\newcommand{\next}{\mathsf{next}}
+\newcommand{\reverseOrbit}{\mathsf{reverseOrb}}
+
+% Semantics
+\newcommand{\semTy}[1]{{\llbracket #1 \rrbracket}_\mathsf{Ty}}
+\newcommand{\semMu}[1]{{\llbracket #1 \rrbracket}_\mu}
+\newcommand{\semTm}[1]{{\llbracket #1 \rrbracket}_{\lr}}
+\newcommand{\semEq}[1]{{\llbracket #1 \rrbracket}_{\!\!\LR}}
+\newcommand{\semTrace}{\mathsf{trace}_{\D\simeq}}
+
+\newcommand{\todo}[1]{\hl{TODO: #1}}
+\newcommand{\todocite}[1]{\hl{[TODO: #1]}}
+
+% =======================================================================
+
+
+\begin{document}
+
+% frontmatter
+
+\title{En Garde! Unguarded Iteration for Reversible Computation in the
+  Delay Monad}
+
+
+\author{Robin Kaarsgaard \and \underline{Niccol\`o Veltri}}
+\date{MPC'19, Porto, 09 October 2019}
+
+\begin{frame}
+
+\maketitle
+
+\end{frame}
+
+
+\begin{frame}
+
+  \frametitle{Reversible computation}
+
+  \begin{itemize}
+
+  \item Reversible computation: programs are not just deterministic when
+    executed the forward direction, but also in the
+    backward direction.
+  \item It forms the basis for quantum computing.
+  \item Applications in different areas: low-power computing, robotics,
+    discrete event simulation, etc.
+
+    \pause
+    \vspace{\fill}
+    
+  \item \Pio, a reversible combinator calculus [James and Sabry 2012].
+  \item Simple yet expressive: semantics of typed reversible
+    functional programming language Theseus.    
+  \end{itemize}
+
+\end{frame}
+
+\begin{frame}
+
+  \frametitle{\Pio: language overview}
+
+  \begin{itemize}
+
+  \item Types:
+    \[
+    A ::= \Z \, | \,A \oplus A \, | \,\I \,| \,A \otimes A \,| \,X \,|
+    \,\mu X.A
+    \]
+  \item Terms $t : A \lr B$, reversible comptations between types $A$
+    and $B$.
+  \item Trace combinator for iteration:
+    \[
+    \infer{\trace \,f: A \lr B}{f : A \oplus C \lr B \oplus C}
+    \]
+  \item Inversion operation:
+    \[
+    \dagger : A \lr B \to B \lr A
+    \]
+  \end{itemize}
+  
+\end{frame}
+
+
+\begin{frame}
+
+  \frametitle{$\Pi$: a finitary subcalculus [Carette and Sabry 2016]}
+
+  \begin{itemize}
+
+  \item $\Pi$, the finitary fragment of $\Pio$ : no recursive types,
+    no trace combinator.
+
+  \item $\Pi$ includes higher reversible computations: term
+    equivalences $e : t \LR u$
+  \item E.g., associativity of sequential composition:
+    \[
+    (t \bullet u) \bullet v \LR t \bullet (u \bullet v)
+    \]
+  \item Term equivalences correspond to the coherence laws of
+    symmetric rig groupoids.
+    
+  \end{itemize}
+  
+\end{frame}
+
+\begin{frame}
+  \frametitle{$\Pi$ in type theory [Carette and Sabry
+      2016]}
+
+  \begin{itemize}
+
+  \item Agda formalization of syntax and
+    %denotational
+    semantics of $\Pi$.
+  \item Types are interpreted in $\Set$, the universe of small types:
+    \[
+    \semTy A : \Set
+    \]
+  \item Terms are interpreted as equivalences of types:
+    \[
+    \semTm {t : A \lr B} : \semTy A \simeq \semTy B
+    \]
+  \item Term equivalences are interpreted as equivalences of
+    equivalences of types.
+    % Existence of homotopies betweeb the functions underlying the
+    % equivalences of types
+  \end{itemize}
+  
+  
+\end{frame}
+
+\begin{frame}
+  
+  \frametitle{In this work: \Pio\ in type theory}
+
+  \begin{itemize}
+  \item Extending Carette and Sabry's work: syntax and semantics of
+    the full \Pio\ calculus in type theory.
+  \item Type theory is a total language, no way of specifying a trace
+    operator on types.
+  \item Carette and Sabry's semantic domain is not good for our
+    purpouse.
+    \pause
+    \vspace{\fill}
+  \item Need a framework supporting possibly non-terminating
+    computations: use Capretta's coinductive delay monad.
+   \item Semantic trace operator obtained via unguarded iteration in
+     the sense of Elgot.
+%%     \vspace{\fill}
+%%   \item Development fully formalized in Agda.
+%%     
+%%     \begin{center}
+%%       \url{https://github.com/niccoloveltri/pi0-agda}
+%%     \end{center}
+  \end{itemize}
+  
+\end{frame}
+
+\begin{frame}
+
+  \frametitle{\Pio\ syntax: types}
+  \begin{itemize}
+    \item We use de Bruijn indexes to deal with type variables.
+  \end{itemize}
+  \[
+  \arraycolsep=6pt\def\arraystretch{2.8}
+  \begin{array}{ccc}
+    %\hline 
+    \infer{\Z : \Ty\,n}{} 
+    & \infer{\I : \Ty\,n}{}
+    & \infer{\Var\,i : \Ty\,n}{i : \mathsf{Fin}\,n}  \\
+    \infer{A \oplus B : \Ty\,n}{A : \Ty\,n & B : \Ty\,n}
+    & \infer{A \otimes B : \Ty\,n}{A : \Ty\,n & B : \Ty\,n}
+    & \infer{\mu A : \Ty\,n}{A : \Ty\,(n+1)}
+    %\\ \hline
+  \end{array}
+  \]
+  
+\end{frame}
+
+\begin{frame}
+
+  \frametitle{\Pio\ syntax: terms}
+  \begin{itemize}
+  \item Terms of $\Pi$ [Carette and Sabry 2016]:
+
+  \end{itemize}
+  \small
+  \[
+  \arraycolsep=-10pt\def\arraystretch{1.6}
+  \begin{array}{lr}%{|cc|}
+    %\hline 
+    \id : A \lr A
+    & \infer{g \bullet f : A \lr C}{g : B \lr C & f : A \lr B} \\ [.25cm]
+    \infer{f \oplus g : A \oplus B \lr C \oplus D}{f : A \lr C & g : B \lr D} 
+    & \infer{f \otimes g : A \otimes B \lr C \otimes D}{f : A \lr C & g : B \lr D} \\
+    \lambda_{\oplus} : \Z \oplus A \lr A : \lambda_{\oplus}^{-1}
+    & \lambda_{\otimes} : \I \otimes A \lr A : \lambda_{\otimes}^{-1} \\
+    %\multicolumn{2}{c}{
+      \alpha_{\oplus} : (A \oplus B) \oplus C \lr A \oplus (B \oplus C) : \alpha_{\oplus}^{-1} \\
+      %\multicolumn{2}{c}{
+      \alpha_{\otimes} : (A \otimes B) \otimes C \lr A \otimes (B \otimes C) : \alpha_{\otimes}^{-1} \\
+    \sigma_{\oplus} : A \oplus B \lr B \oplus A
+    & \sigma_{\otimes} : A \otimes B \lr B \otimes A \\
+    \kappa : \Z \otimes A \lr \Z : \kappa^{-1}  \\
+     \delta : (A \oplus B) \otimes C \lr (A \otimes C) \oplus (B \otimes C) : \delta^{-1}
+%%     \fold : A[\mu X.A/X] \lr \mu X.A
+%%     & \unfold : \mu X.A \lr A[\mu X.A/X] \\[.25cm]
+%%     \multicolumn{2}{c}{\infer{\trace \,f: A \lr B}{f : A \oplus C \lr B \oplus C}} \\
+    %\hline
+  \end{array}
+  \]
+\end{frame}
+  
+\begin{frame}
+
+  \frametitle{\Pio\ syntax: terms (cont'd)}
+  \begin{itemize}
+  \item Terms of full \Pio\ also include:
+    \[
+    \def\arraystretch{1.6}  
+    \begin{array}{c}
+      \fold : A[\mu X.A/X] \lr \mu X.A : \unfold \\[.25cm]
+      \infer{\trace \,f: A \lr B}{f : A \oplus C \lr B \oplus C}
+      %\hline
+    \end{array}
+    \]
+  \item The partial inverse of a term is defined by recursion:
+    \[
+    \dagger : A \lr B \to B \lr A    
+    \]
+  \item Inversion is involutive:
+    \[
+    \mathsf{daggerInvol} : (f : A \lr B) \to \dagger \,(\dagger\,f) \equiv f
+    \]
+  \end{itemize}
+\end{frame}
+
+\begin{frame}
+  \frametitle{\Pio\ syntax: term equivalences}
+  \begin{itemize}    
+  \item Big list of Laplaza's coherence laws of symmetric rig categories (already
+    in [Carette and Sabry 2016]).
+  \item We add term equivalences stating that:
+    \begin{itemize}
+    \item $(\Z,\oplus)$ is a traced monoidal structure;
+    \item $\unfold$ is the total inverse of $\fold$;
+    \item $\trace\,(\dagger \,t)$ is the partial inverse of $\trace\,t$;
+    \item uniqueness of the partial inverses.
+    \end{itemize}
+
+    \vspace{\fill}
+  \item Altogether, the term equivalences correpond to the axioms of
+    dagger-traced $\omega$- continuous rig categories [Karvonen 2019].
+    \end{itemize}
+\end{frame}
+
+\begin{frame}
+  \frametitle{\Pio\ syntax: partial inverses}
+  \begin{itemize}
+  \item Here we mean ``partial inverse'' in the sense of inverse
+    categories [Kastl 1979].
+  \item Intuitively, the partial inverse of $f$ the unique map that
+    undoes everything which $f$ does.
+  \item We can prove by inducton that a term $f$ has $\dagger\,f$ as
+    its partial inverse:
+    \[
+    \mathsf{existsPIso} : (f : A \lr B) \to f \bullet \dagger\,f
+    \bullet\,f \LR f
+    \]
+    \vspace{\fill}
+  \item Note that $\dagger \,f \bullet f$ is not always the identity,
+    since generally $f$ is only a partially defined computation.
+  \end{itemize}
+\end{frame}
+
+\begin{frame}
+
+  \frametitle{The delay monad [Capretta 2005]}
+  
+\end{frame}
+
+  
+%% \begin{frame}
+%%   
+%%   \frametitle{Denotational semantics of \Pio}
+%% 
+%%   \begin{itemize}
+%% 
+%%   \item Categorical semantics:
+%% 
+%%     \begin{itemize}
+%%     \item In join inverse categories [Kaarsgaard et al. 2016]
+%%     \item In dagger-traced $\omega$-continuous rig categories [Bowman et al. 2011, Karvonen 2019]
+%%     \end{itemize}
+%% 
+%%   \item Type-theoretical semantics:
+%%     \begin{itemize}
+%%       \item Finitary fragment of 
+%%     \end{itemize}
+%%   \end{itemize}
+%%   
+%% \end{frame}
+
+
+
+\end{document}
