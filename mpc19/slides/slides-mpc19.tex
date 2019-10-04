@@ -418,7 +418,7 @@
       is given by:
       \[f \diamond g = \bind\,f \comp g\]
     \end{itemize}
-   
+\item Homsets in $\D$ are written: $A \to_\D B$   
   \end{itemize}
   
 \end{frame}
@@ -435,18 +435,18 @@
     bisimilarity:
     %\red{perhaps also introduce $\dn$, used in the orbit}
     \[
-      \arraycolsep=8pt\def\arraystretch{2.8}
+      \arraycolsep=10pt\def\arraystretch{2.8}
       \begin{array}{cc}
-        \infer{\now_{\approx}  : \now\,a \approx \now\,a}{}
+        \infer{\now\,a \approx \now\,a}{}
         &
-        \infer={\later_{\approx} \,p : \later\,x_1 \approx \later\,x_2}{p : x_1 \approx x_2}
+        \infer={\later\,x_1 \approx \later\,x_2}{x_1 \approx x_2}
         \\
-        \infer{\laterL_{\approx} \, p: \later\,x \approx \now\,a}{p : x \approx \now \,a}
+        \infer{\later\,x \approx \now\,a}{x \approx \now \,a}
         &
-        \infer{\laterR_{\approx} \, p: \now\,a \approx \later\,x}{p : \now\,a \approx x}
+        \infer{\now\,a \approx \later\,x}{\now\,a \approx x}
       \end{array}
     \]
-    
+    \item Convergence: $x \dn a = x \approx \now\,a$.
   \end{itemize}
   
   
@@ -460,10 +460,11 @@
       quotiented by pointwise weak bisimilarity.
     \item In $\Dapprox$, two morphisms $f$ and $g$ are equal whenever
       $f \, a \approx g \, a$, for all inputs $a$.
+    \item Homsets in $\Dapprox$ are written: $A \to_{\Dapprox} B$   
       %    \item We write $f \approx g$ also for pointwise weak bisimilarity.
       \pause
       \vspace{\fill}
-    \item Notice that we are quotienting the homsets of $\D$, not the objects.
+    \item We are quotienting the homsets of $\D$, not the objects!
     \item So we avoid problems with semi-classical principles, such as countable choice [Chapman et al.'15].
     \item Alternatively, we could have used the partiality monad in
       HoTT [Altenkirch et al.'17].
@@ -498,22 +499,23 @@
   
   \begin{itemize}
   \item We need to restrict to reversible computations in $\Dapprox$.
-  \item A a morphism $f : A \to \Delay B$ is a partial isomorphism if
-    the following type is inhabited: (\red{Kleene equality})
+  \item A morphism $f : A \to_\D B$ is a partial isomorphism if
+    the following type is inhabited: %(\red{Kleene equality})
     \[
     \begin{array}{l}
       \piso \,f = \\
-      \qquad (g : B \to \Delay A) \times \\
+      \qquad (g : B \to_\D A) \times \\
       \qquad \quad \left( (a : A) (b : B) \to  f
-      \,a \approx \now\,b \leftrightarrow g \,b \approx \now\,a  \right)  
+      \,a \dn b \leftrightarrow g \,b \dn a  \right)  
     \end{array}
     \]
-    \item Our definition of partial iso is equivalent to
-the one in inverse categories [Kastl'79, Cockett and Lack'02].
-  \item The type of partial isos:
-    \[
-    A \simeq_{\mathsf{p}} B = (f : A \to \Delay B) \times \piso \,f
-    \]
+    \item Our definition of partial iso is equivalent to the one in
+      inverse categories [Kastl'79, Cockett and Lack'02].
+    \item The type of partial isos:
+      \[
+      A \simeq_{\mathsf{p}} B = (f : A \to_\D B) \times \piso \,f
+      \]
+    \item We denote $\daggerD\,f$ the partial inverse of a partial iso $f$.
   \end{itemize}
   
   
@@ -573,13 +575,13 @@ the one in inverse categories [Kastl'79, Cockett and Lack'02].
     \[ %\arraycolsep=8pt
     \def\arraystretch{1.2}
     \begin{array}{ll}    
-      \multicolumn{2}{l}{\iterD : (A \to \Delay (B + A)) \to A \to \Delay B} \\
+      \multicolumn{2}{l}{\iterD : (A \to_\D B + A) \to (A \to_\D B)} \\
       \multicolumn{2}{l}{\iterD \,f \,a = \iterD' \,f \,(f \,a)}
     \end{array}
     \]
   \item The function $\iterD$ is compatible with weak bisimilarity,
     and satisfies the iteration axioms up to ${\approx}$. It lifts to
-    an iterator $\iterDapprox$ in $\Dapprox$.
+    an iterator in $\Dapprox$.
     
   \end{itemize}
   
@@ -593,7 +595,15 @@ the one in inverse categories [Kastl'79, Cockett and Lack'02].
       we get a trace:
       \ctikzfig{trace}
       where $f = \copair {\mapL f}{\mapR f}$.
-    \item Construction equivalent to the one in [Hasegawa'97].
+    \item Formally:
+      \begin{align*}
+        & \traceD : (A + C \to_\D B + C) \to (A \to_\D B) \\
+        & \traceD \,f = \copair{\now}{\iterD \,\mapR f}\diamond \mapL f
+      \end{align*}
+%      \vspace{\fill}
+  \item $\traceD$ respects weak bisimilarity and satisfies the trace
+    axioms up to ${\approx}$. It lifts to an trace in $\Dapprox$.
+      %Construction equivalent to the one in [Hasegawa'97].      
       %This construction is impossible in the maybe monad
   \end{itemize}
 \end{frame}
@@ -603,27 +613,33 @@ the one in inverse categories [Kastl'79, Cockett and Lack'02].
   \begin{itemize}
   \item It remains to show that the trace of $\Dapprox$ restricts to
     $\Inv\Dapprox$.
-  \item If $f : A + C \to \Delay \,(B + C)$ (\red{wrong type here, introduce notation for morphisms in $\Dapprox$}) is a partial isomorphism
-    with partial inverse $g$, then the trace of $f$ is also a partial
-    isomorphism with the trace of $g$ as partial inverse.
+  \item If $f : A + C \to_\D B + C$ is a partial isomorphism, then the
+    $\traceD\,f$ is also a partial isomorphism with
+    $\traceD\,(\daggerD\,f)$ as partial inverse.
+  \item In the end, we want an operation:
+    \[
+    \semTrace : A + C\simeq_{\mathsf{p}} B + C \to A \simeq_{\mathsf{p}} B
+    \]
+    modelling the trace of \Pio.
+   
   \end{itemize}
 \end{frame}
 
 \begin{frame}
-  \frametitle{The orbit}
+  \frametitle{Dagger trace via orbit}
   \begin{itemize}
   \item The orbit of $x : A + C$ wrt. $f : A + C \to \Delay \,(B + C)$
     is the following inductively defined type family:
     \[
-    \infer{\done\,p : \Orb f x y}{p : f \,x \approx \now \,y} \quad
-    \infer{\mynext\,p \,q : \Orb f x y}{p : f \,x \approx \now
-      \,(\inr\,c) & q : \Orb f {(\inr\,c)} y}
+    \infer{\done\,p : \Orb f x y}{p : f \,x \dn y} \quad
+    \infer{\mynext\,p \,q : \Orb f x y}{p : f \,x \dn (\inr\,c) & q :
+      \Orb f {(\inr\,c)} y}
     \]
-  \item Therefore: (\red{introduce $\traceD$ before})
+  \item Therefore: %(\red{introduce $\traceD$ before})
     \[
-    \traceD\,f\,a \approx \now\,b \leftrightarrow \Orb f{(\inl\,a)} {(\inl\,b)}
+    \traceD\,f\,a \dn b \leftrightarrow \Orb f{(\inl\,a)} {(\inl\,b)}
     \]
-  \item Proof of dagger trace reduces to: (\red{introduce $\daggerD$ before})
+  \item Proof of dagger trace reduces to: 
     \[
     \Orb f {(\inl\,a)} {(\inl\,b)} \leftrightarrow \Orb
          {(\daggerD\,f)} {(\inl\,b)} {(\inl\,a)}
@@ -659,7 +675,19 @@ i.e. partial isomorphisms:
 
 \begin{frame}
   \frametitle{Conclusions}
-  
+  \begin{itemize}
+  \item We have extended the work of [Carette and Sabry'16] to a
+    two-level calculus of \Pio\ programs and program equivalences.
+    \item This required a change of semantic domains, taking into
+      account possibly non-terminating reversible computations.
+    \item Alternative type-theoretical models can be constructed using
+      the partiality monad [Altenkirch et al.'17] or the partial map
+      classifier [Escardó and Knapp'17].
+    \item The (unquotiented) delay monad can also be used for
+      semantics of time-reversible computations.
+      
+      
+  \end{itemize}
 \end{frame}
 
 %% \begin{frame}
