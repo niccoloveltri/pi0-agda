@@ -17,6 +17,8 @@
 \usepackage{amssymb}
 \usepackage{latexsym}
 \usepackage{stmaryrd}
+\usepackage{tikzit}
+\input{figures/stringdiagrams.tikzstyles}
 
 %\usepackage[all]{xy}
 
@@ -94,6 +96,7 @@
 \newcommand{\piso}{\mathsf{isPartialIso}}
 \newcommand{\pisoalt}{\mathsf{isPartialIsoCat}}
 \newcommand{\iterD}{\mathsf{iter}_\D}
+\newcommand{\iterDapprox}{\mathsf{iter}_{\Dapprox}}
 \newcommand{\unfolding}{\mathsf{fixpoint}_\D}
 \newcommand{\refl}{\mathsf{refl}}
 \newcommand{\traceD}{\mathsf{trace}_\D}
@@ -101,7 +104,7 @@
 \newcommand{\daggerD}{\mathsf{dagger}_\D}
 \newcommand{\Orb}[3]{\mathsf{Orb}\,#1\,#2\,#3}
 \newcommand{\done}{\mathsf{done}}
-\newcommand{\next}{\mathsf{next}}
+\newcommand{\mynext}{\mathsf{next}}
 \newcommand{\reverseOrbit}{\mathsf{reverseOrb}}
 
 % Semantics
@@ -151,7 +154,7 @@
     \pause
     \vspace{\fill}
     
-  \item \Pio, a reversible combinator calculus [James and Sabry 2012].
+  \item \Pio, a reversible combinator calculus [James and Sabry'12].
   \item Simple yet expressive: semantics of typed reversible
     functional programming language Theseus.    
   \end{itemize}
@@ -186,7 +189,7 @@
 
 \begin{frame}
 
-  \frametitle{$\Pi$: a finitary subcalculus [Carette and Sabry 2016]}
+  \frametitle{$\Pi$: a finitary subcalculus [Carette and Sabry'16]}
 
   \begin{itemize}
 
@@ -207,8 +210,7 @@
 \end{frame}
 
 \begin{frame}
-  \frametitle{$\Pi$ in type theory [Carette and Sabry
-      2016]}
+  \frametitle{$\Pi$ in type theory [Carette and Sabry'16]}
 
   \begin{itemize}
 
@@ -285,7 +287,7 @@
 
   \frametitle{\Pio\ syntax: terms}
   \begin{itemize}
-  \item Terms of $\Pi$ [Carette and Sabry 2016]:
+  \item Terms of $\Pi$ [Carette and Sabry'16]:
 
   \end{itemize}
   \small
@@ -343,7 +345,7 @@
   \frametitle{\Pio\ syntax: term equivalences}
   \begin{itemize}    
   \item Big list of Laplaza's coherence laws of symmetric rig categories (already
-    in [Carette and Sabry 2016]).
+    in [Carette and Sabry'16]).
   \item We add term equivalences stating that:
     \begin{itemize}
     \item $(\Z,\oplus)$ is a traced monoidal structure;
@@ -354,7 +356,7 @@
 
     \vspace{\fill}
   \item Altogether, the term equivalences correpond to the axioms of
-    dagger-traced $\omega$- continuous rig categories [Karvonen 2019].
+    dagger-traced $\omega$- continuous rig categories [Karvonen'19].
     \end{itemize}
 \end{frame}
 
@@ -362,7 +364,7 @@
   \frametitle{\Pio\ syntax: partial inverses}
   \begin{itemize}
   \item Here we mean ``partial inverse'' in the sense of inverse
-    categories [Kastl 1979].
+    categories [Kastl'79].
   \item Intuitively, the partial inverse of $f$ the unique map that
     undoes everything which $f$ does.
   \item We can prove by inducton that a term $f$ has $\dagger\,f$ as
@@ -379,7 +381,7 @@
 
 \begin{frame}
 
-  \frametitle{The delay monad [Capretta 2005]}
+  \frametitle{The delay monad [Capretta'05]}
   \begin{itemize}
   \item A type of possiblly non-terminating computations.
   \item Coinductively defined:
@@ -431,6 +433,7 @@
     different number of steps are different.
   \item We quotient out finite computation steps using weak
     bisimilarity:
+    %\red{perhaps also introduce $\dn$, used in the orbit}
     \[
       \arraycolsep=8pt\def\arraystretch{2.8}
       \begin{array}{cc}
@@ -461,9 +464,9 @@
       \pause
       \vspace{\fill}
     \item Notice that we are quotienting the homsets of $\D$, not the objects.
-    \item So we avoid problems with semi-classical principles, such as countable choice [Chapman et al. 2015].
+    \item So we avoid problems with semi-classical principles, such as countable choice [Chapman et al.'15].
     \item Alternatively, we could have used the partiality monad in
-      HoTT [Altenkirch et al. 2017].
+      HoTT [Altenkirch et al.'17].
 
   \end{itemize}
   
@@ -496,7 +499,7 @@
   \begin{itemize}
   \item We need to restrict to reversible computations in $\Dapprox$.
   \item A a morphism $f : A \to \Delay B$ is a partial isomorphism if
-    the following type is inhabited:
+    the following type is inhabited: (\red{Kleene equality})
     \[
     \begin{array}{l}
       \piso \,f = \\
@@ -506,7 +509,7 @@
     \end{array}
     \]
     \item Our definition of partial iso is equivalent to
-the standard categorical one [Kastl 1979, Cockett and Lack 2002].
+the one in inverse categories [Kastl'79, Cockett and Lack'02].
   \item The type of partial isos:
     \[
     A \simeq_{\mathsf{p}} B = (f : A \to \Delay B) \times \piso \,f
@@ -539,17 +542,22 @@ the standard categorical one [Kastl 1979, Cockett and Lack 2002].
 
   \begin{itemize}
 
-  \item Following [Hasegawa 1997], we can derive a trace operator from
+  \item Following [Hasegawa'97], we can derive a trace operator from
     an unguarded iteration operator.
   \item In a category $\C$ with finite coproducts,  iteration is an operation:
     \[
     \iter : \C (A ,B + A) \to \C(A , B)
     \]
+    satisfying some axioms, in particular the fixpoint equality:
+    \[
+    \iter\,f = \copair {\id} {\iter \,f} \circ f
+    \]
   \end{itemize}
+  
 \end{frame}
 
 \begin{frame}
-  \frametitle{Iteration in $\Dapprox$}
+  \frametitle{The iterator in $\Dapprox$}
   \begin{itemize}
     \item First define:
     \[ %\arraycolsep=8pt
@@ -569,12 +577,91 @@ the standard categorical one [Kastl 1979, Cockett and Lack 2002].
       \multicolumn{2}{l}{\iterD \,f \,a = \iterD' \,f \,(f \,a)}
     \end{array}
     \]
-
+  \item The function $\iterD$ is compatible with weak bisimilarity,
+    and satisfies the iteration axioms up to ${\approx}$. It lifts to
+    an iterator $\iterDapprox$ in $\Dapprox$.
     
   \end{itemize}
   
 \end{frame}
+
+\begin{frame}
+  \frametitle{The trace in $\Dapprox$}
+  \begin{itemize}
+    \item From an iterator:
+      \ctikzfig{iter}
+      we get a trace:
+      \ctikzfig{trace}
+      where $f = \copair {\mapL f}{\mapR f}$.
+    \item Construction equivalent to the one in [Hasegawa'97].
+      %This construction is impossible in the maybe monad
+  \end{itemize}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Dagger trace in $\Inv\Dapprox$}
+  \begin{itemize}
+  \item It remains to show that the trace of $\Dapprox$ restricts to
+    $\Inv\Dapprox$.
+  \item If $f : A + C \to \Delay \,(B + C)$ (\red{wrong type here, introduce notation for morphisms in $\Dapprox$}) is a partial isomorphism
+    with partial inverse $g$, then the trace of $f$ is also a partial
+    isomorphism with the trace of $g$ as partial inverse.
+  \end{itemize}
+\end{frame}
+
+\begin{frame}
+  \frametitle{The orbit}
+  \begin{itemize}
+  \item The orbit of $x : A + C$ wrt. $f : A + C \to \Delay \,(B + C)$
+    is the following inductively defined type family:
+    \[
+    \infer{\done\,p : \Orb f x y}{p : f \,x \approx \now \,y} \quad
+    \infer{\mynext\,p \,q : \Orb f x y}{p : f \,x \approx \now
+      \,(\inr\,c) & q : \Orb f {(\inr\,c)} y}
+    \]
+  \item Therefore: (\red{introduce $\traceD$ before})
+    \[
+    \traceD\,f\,a \approx \now\,b \leftrightarrow \Orb f{(\inl\,a)} {(\inl\,b)}
+    \]
+  \item Proof of dagger trace reduces to: (\red{introduce $\daggerD$ before})
+    \[
+    \Orb f {(\inl\,a)} {(\inl\,b)} \leftrightarrow \Orb
+         {(\daggerD\,f)} {(\inl\,b)} {(\inl\,a)}
+    \]
+    \vspace{\fill}
+  \item Strong resemblance between reversing an orbit and
+    reversing a vector.
+  \end{itemize}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Summing up: the interpretation}
+  \begin{itemize}
+  \item Types of \Pio\ are interpreted as objects of $\Inv\Dapprox$, i.e. types
+    of the metatheory:
+    \[
+    \semTy A : \Set
+    \]
+  \item Terms of \Pio\ are modelled as morphism of $\Inv\Dapprox$,
+i.e. partial isomorphisms:
+    \[
+    \semTm {t : A \lr B} : \semTy A \simeq_{\mathsf{p}} \semTy B
+    \]
+  \item Term equivalences of \Pio\ are modelled as morphism equalities
+    in $\Inv\Dapprox$, i.e. proofs of weak bisimilarity between two
+    morphisms:
+    \[
+    \semEq {e : f \LR g} : \semTm f \approx \semTm g
+    \]
+  \end{itemize}
   
+\end{frame}
+
+\begin{frame}
+  \frametitle{Conclusions}
+  
+\end{frame}
+
 %% \begin{frame}
 %%   
 %%   \frametitle{Denotational semantics of \Pio}
