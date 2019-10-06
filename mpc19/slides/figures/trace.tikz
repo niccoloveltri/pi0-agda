@@ -16,7 +16,7 @@
 		\node [style=object] (13) at (1, 0.25) {$A$};
 		\node [style=object] (14) at (3, 0.25) {$B$};
 		\node [style=none] (15) at (5, 1) {$=$};
-		\node [style=large box] (16) at (7.5, 0.5) {$f_\mathsf{L}$};
+		\node [style=large box] (16) at (7.5, 0.5) {$f_A$};
 		\node [style=none] (17) at (7, 0.5) {};
 		\node [style=none] (18) at (8, -0.25) {};
 		\node [style=none] (19) at (8, 1.25) {};
@@ -24,7 +24,7 @@
 		\node [style=object] (21) at (8.5, 1.5) {$C$};
 		\node [style=object] (22) at (6.5, 0.75) {$A$};
 		\node [style=object] (23) at (8.5, 0) {$B$};
-		\node [style=large box] (24) at (10.25, 1.25) {$f_\mathsf{R}$};
+		\node [style=large box] (24) at (10.25, 1.25) {$f_C$};
 		\node [style=none] (25) at (9.75, 1.25) {};
 		\node [style=none] (26) at (10.75, 0.75) {};
 		\node [style=none] (27) at (10.75, 1.75) {};

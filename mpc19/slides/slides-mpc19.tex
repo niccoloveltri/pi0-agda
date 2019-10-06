@@ -156,7 +156,8 @@
     
   \item \Pio, a reversible combinator calculus [James and Sabry'12].
   \item Simple yet expressive: semantics of typed reversible
-    functional programming language Theseus.    
+    functional programming language Theseus.
+    % Turing-complete reversible programming language
   \end{itemize}
 
 \end{frame}
@@ -172,16 +173,20 @@
     A ::= \Z \, | \,A \oplus A \, | \,\I \,| \,A \otimes A \,| \,X \,|
     \,\mu X.A
     \]
-  \item Terms $t : A \lr B$, reversible comptations between types $A$
+  \item Terms $t : A \lr B$, reversible computations between types $A$
     and $B$.
-  \item Trace combinator for iteration:
-    \[
-    \infer{\trace \,f: A \lr B}{f : A \oplus C \lr B \oplus C}
-    \]
-  \item Inversion operation:
-    \[
-    \dagger : A \lr B \to B \lr A
-    \]
+  \item Crucially among those:
+    \begin{itemize}          
+    \item Inversion operation:
+      \[
+      \infer{\dagger \,f : B \lr A}{f : A \lr B}
+      \]
+    \item Trace combinator:
+      \[
+      \infer{\trace \,f: A \lr B}{f : A \oplus C \lr B \oplus C}
+      \]
+      % For iteration, 
+    \end{itemize}    
   \end{itemize}
   
 \end{frame}
@@ -198,12 +203,16 @@
 
   \item $\Pi$ includes higher reversible computations: term
     equivalences $e : t \LR u$
-  \item E.g., associativity of sequential composition:
+  \item Formally, term equivalences correspond to the coherence laws of
+    symmetric rig groupoids [Laplaza'72].
+  \item E.g., there is a term $\alpha_{\otimes} : A \otimes (B \otimes
+    C) \lr (A \otimes B) \otimes C$ with a term equivalence
+    corresponding to MacLane's pentagon:
     \[
-    (t \bullet u) \bullet v \LR t \bullet (u \bullet v)
+    \mathsf{pentagon} : \alpha_{\otimes} \circ \alpha_{\otimes} \LR (\id \otimes
+    \alpha_{\otimes}) \circ \alpha_{\otimes} \circ (\alpha_{\otimes}
+    \otimes \id)
     \]
-  \item Term equivalences correspond to the coherence laws of
-    symmetric rig groupoids.
     
   \end{itemize}
   
@@ -227,7 +236,7 @@
     \]
   \item Term equivalences are interpreted as equivalences of
     equivalences of types.
-    % Existence of homotopies betweeb the functions underlying the
+    % Existence of homotopies between the functions underlying the
     % equivalences of types
   \end{itemize}
   
@@ -261,8 +270,15 @@
   
 \end{frame}
 
-\begin{frame}
+%\setbeamertemplate{section in toc}[ball unnumbered]
+\begin{frame}{Overview}
 
+\end{frame}
+
+
+%\section{\Pio\ syntax}
+\begin{frame}
+  
   \frametitle{\Pio\ syntax: types}
   \begin{itemize}
     \item We use de Bruijn indexes to deal with type variables.
@@ -296,7 +312,7 @@
   \begin{array}{lr}%{|cc|}
     %\hline 
     \id : A \lr A
-    & \infer{g \bullet f : A \lr C}{g : B \lr C & f : A \lr B} \\ [.25cm]
+    & \infer{g \circ f : A \lr C}{g : B \lr C & f : A \lr B} \\ [.25cm]
     \infer{f \oplus g : A \oplus B \lr C \oplus D}{f : A \lr C & g : B \lr D} 
     & \infer{f \otimes g : A \otimes B \lr C \otimes D}{f : A \lr C & g : B \lr D} \\
     \lambda_{\oplus} : \Z \oplus A \lr A : \lambda_{\oplus}^{-1}
@@ -332,8 +348,9 @@
     \]
   \item The partial inverse of a term is defined by recursion:
     \[
-    \dagger : A \lr B \to B \lr A    
+    \dagger : (A \lr B) \to (B \lr A)
     \]
+  \item In particular, $\dagger \,(\trace\,f) = \trace \,(\dagger \,f)$.
   \item Inversion is involutive:
     \[
     \mathsf{daggerInvol} : (f : A \lr B) \to \dagger \,(\dagger\,f) \equiv f
@@ -344,8 +361,8 @@
 \begin{frame}
   \frametitle{\Pio\ syntax: term equivalences}
   \begin{itemize}    
-  \item Big list of Laplaza's coherence laws of symmetric rig categories (already
-    in [Carette and Sabry'16]).
+  \item Big list of Laplaza's coherence laws of symmetric rig
+    categories (already in $\Pi$ [Carette and Sabry'16]).
   \item We add term equivalences stating that:
     \begin{itemize}
     \item $(\Z,\oplus)$ is a traced monoidal structure;
@@ -356,7 +373,7 @@
 
     \vspace{\fill}
   \item Altogether, the term equivalences correpond to the axioms of
-    dagger-traced $\omega$- continuous rig categories [Karvonen'19].
+    dagger-traced $\omega$-continuous rig categories [Karvonen'19].
     \end{itemize}
 \end{frame}
 
@@ -370,20 +387,21 @@
   \item We can prove by inducton that a term $f$ has $\dagger\,f$ as
     its partial inverse:
     \[
-    \mathsf{existsPIso} : (f : A \lr B) \to f \bullet \dagger\,f
-    \bullet\,f \LR f
+    \mathsf{existsPIso} : (f : A \lr B) \to f \circ \dagger\,f
+    \circ\,f \LR f
     \]
     \vspace{\fill}
-  \item Note that $\dagger \,f \bullet f$ is not always the identity,
+  \item Note that $\dagger \,f \circ f$ is not always the identity,
     since generally $f$ is only a partially defined computation.
   \end{itemize}
 \end{frame}
+
 
 \begin{frame}
 
   \frametitle{The delay monad [Capretta'05]}
   \begin{itemize}
-  \item A type of possiblly non-terminating computations.
+  \item A type of possibly non-terminating computations.
   \item Coinductively defined:
     \[
     \infer{\now\,a : \Delay A}{a : A}
@@ -411,7 +429,7 @@
 
   \item Let $\D$ be the Kleisli category of $\Delay$:
     \begin{itemize}
-    \item objects are types;
+    \item objects are types (of the metatheory);
     \item morphisms are functions in $A \to \Delay B$;
     \item the identity map is $\now$;
     \item composition of $f : A \to \Delay B$ and $g : B \to \Delay C$
@@ -427,7 +445,7 @@
 
   \frametitle{Intensional vs. extensional partiality}
   \begin{itemize}
-  \item In $\D$ we can program with possibly non-terminatings
+  \item In $\D$ we can program with possibly non-terminating
     programs, but partiality is intensional.
   \item Computations terminating with the same value but 
     different number of steps are different.
@@ -458,13 +476,13 @@
   \begin{itemize}
     \item Let $\Dapprox$ be the category $\D$ with homsets
       quotiented by pointwise weak bisimilarity.
-    \item In $\Dapprox$, two morphisms $f$ and $g$ are equal whenever
+    \item In $\Dapprox$, two equivalence classes of morphisms $[f]$ and $[g]$ are equal whenever
       $f \, a \approx g \, a$, for all inputs $a$.
     \item Homsets in $\Dapprox$ are written: $A \to_{\Dapprox} B$   
       %    \item We write $f \approx g$ also for pointwise weak bisimilarity.
       \pause
       \vspace{\fill}
-    \item We are quotienting the homsets of $\D$, not the objects!
+    \item We are quotienting the homsets of $\D$, not the delay datatype!
     \item So we avoid problems with semi-classical principles, such as countable choice [Chapman et al.'15].
     \item Alternatively, we could have used the partiality monad in
       HoTT [Altenkirch et al.'17].
@@ -554,6 +572,8 @@
     \[
     \iter\,f = \copair {\id} {\iter \,f} \circ f
     \]
+  \item Pictorially:
+      \ctikzfig{iter}    
   \end{itemize}
   
 \end{frame}
@@ -579,7 +599,7 @@
       \multicolumn{2}{l}{\iterD \,f \,a = \iterD' \,f \,(f \,a)}
     \end{array}
     \]
-  \item The function $\iterD$ is compatible with weak bisimilarity,
+  \item $\iterD$ respects weak bisimilarity
     and satisfies the iteration axioms up to ${\approx}$. It lifts to
     an iterator in $\Dapprox$.
     
@@ -590,15 +610,15 @@
 \begin{frame}
   \frametitle{The trace in $\Dapprox$}
   \begin{itemize}
-    \item From an iterator:
-      \ctikzfig{iter}
-      we get a trace:
+    \item %% From an iterator:
+      %%\ctikzfig{iter}
+      We get a trace:
       \ctikzfig{trace}
-      where $f = \copair {\mapL f}{\mapR f}$.
+      where $f = \copair {f_A}{f_C}$.
     \item Formally:
       \begin{align*}
         & \traceD : (A + C \to_\D B + C) \to (A \to_\D B) \\
-        & \traceD \,f = \copair{\now}{\iterD \,\mapR f}\diamond \mapL f
+        & \traceD \,f = \copair{\now}{\iterD \,f_C}\diamond f_A
       \end{align*}
 %      \vspace{\fill}
   \item $\traceD$ respects weak bisimilarity and satisfies the trace
@@ -628,7 +648,7 @@
 \begin{frame}
   \frametitle{Dagger trace via orbit}
   \begin{itemize}
-  \item The orbit of $x : A + C$ wrt. $f : A + C \to \Delay \,(B + C)$
+  \item The orbit of $x : A + C$ wrt. $f : A + C \to_{\D} B + C$
     is the following inductively defined type family:
     \[
     \infer{\done\,p : \Orb f x y}{p : f \,x \dn y} \quad
@@ -664,11 +684,12 @@ i.e. partial isomorphisms:
     \semTm {t : A \lr B} : \semTy A \simeq_{\mathsf{p}} \semTy B
     \]
   \item Term equivalences of \Pio\ are modelled as morphism equalities
-    in $\Inv\Dapprox$, i.e. proofs of weak bisimilarity between two
-    morphisms:
-    \[
-    \semEq {e : f \LR g} : \semTm f \approx \semTm g
-    \]
+    in $\Inv\Dapprox$.
+%%     i.e. proofs of weak bisimilarity between two
+%%     morphisms:
+%%     \[
+%%     \semEq {e : f \LR g} : \semTm f \approx \semTm g
+%%     \]
   \end{itemize}
   
 \end{frame}
@@ -678,12 +699,12 @@ i.e. partial isomorphisms:
   \begin{itemize}
   \item We have extended the work of [Carette and Sabry'16] to a
     two-level calculus of \Pio\ programs and program equivalences.
-    \item This required a change of semantic domains, taking into
+    \item This required a change of semantic domain, taking into
       account possibly non-terminating reversible computations.
     \item Alternative type-theoretical models can be constructed using
       the partiality monad [Altenkirch et al.'17] or the partial map
       classifier [Escardó and Knapp'17].
-    \item The (unquotiented) delay monad can also be used for
+    \item Future work: The (unquotiented) delay monad can also be used for
       semantics of time-reversible computations.
       
       
