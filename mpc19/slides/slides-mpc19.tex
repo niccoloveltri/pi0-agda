@@ -165,7 +165,7 @@
 
 \begin{frame}
 
-  \frametitle{\Pio: language overview}
+  \frametitle{\Pio: language overview [James and Sabry'12]}
 
   \begin{itemize}
 
@@ -259,6 +259,9 @@
     \vspace{\fill}
   \item Need a framework supporting possibly non-terminating
     computations: use Capretta's coinductive delay monad.
+    \\
+    (The maybe monad is not good, does not support trace
+    operator.)
    \item Semantic trace operator obtained via unguarded iteration in
      the sense of Elgot.
 %%     \vspace{\fill}
@@ -442,7 +445,7 @@
     \item the identity map is $\now$;
     \item composition of $f : A \to \Delay B$ and $g : B \to \Delay C$
       is given by:
-      \[f \diamond g = \bind\,f \comp g\]
+      \[g \diamond f = \bind\,g \comp f\]
     \end{itemize}
 \item Homsets in $\D$ are written: $A \to_\D B$   
   \end{itemize}
@@ -458,7 +461,7 @@
   \item Computations terminating with the same value but 
     different number of steps are different.
   \item We quotient out finite computation steps using weak
-    bisimilarity:
+    bisimilarity [Danielsson'18]:
     %\red{perhaps also introduce $\dn$, used in the orbit}
     \[
       \arraycolsep=10pt\def\arraystretch{2.8}
@@ -553,10 +556,11 @@
   \begin{itemize}
   \item Let $\Inv \Dapprox$ be the subcategory of $\Dapprox$
     consisting of (equivalence classes of) partial isomorphisms.
+  \item We write $A \simeq_{\mathsf{p}\approx} B$ for the homsets of
+    $\Inv \Dapprox$.
   \item $\Inv\Dapprox$ inherits neither partial products nor
     coproducts of $\Dapprox$.
-  \item However, $(\Dapprox,1,\times,0,+)$ is a symmetric rig
-    groupoid.
+  \item However, $(\Dapprox,1,\times,0,+)$ is a symmetric rig inverse category.
   \item That is to say that $\Pi$, the finitary fragment of
     \Pio, can be modelled in $\Dapprox$.
   \end{itemize}
@@ -652,7 +656,7 @@
     $\traceD\,(\daggerD\,f)$ as partial inverse.
   \item In the end, we want an operation:
     \[
-    \semTrace : A + C\simeq_{\mathsf{p}} B + C \to A \simeq_{\mathsf{p}} B
+    \semTrace : A + C\simeq_{\mathsf{p}\approx} B + C \to A \simeq_{\mathsf{p}\approx} B
     \]
     modelling the trace of \Pio.
    
@@ -690,12 +694,12 @@
   \item Types of \Pio\ are interpreted as objects of $\Inv\Dapprox$, i.e. types
     of the metatheory:
     \[
-    \semTy A : \Set
+    \semTy A : (\mathsf{Fin}\,n \to \Set) \to \Set
     \]
   \item Terms of \Pio\ are modelled as morphism of $\Inv\Dapprox$,
 i.e. partial isomorphisms:
     \[
-    \semTm {t : A \lr B} : \semTy A \simeq_{\mathsf{p}} \semTy B
+    \semTm {t : A \lr B} : (\rho : \mathsf{Fin}\,n \to \Set) \to \semTy A \rho \simeq_{\mathsf{p}\approx} \semTy B \rho
     \]
   \item Term equivalences of \Pio\ are modelled as morphism equalities
     in $\Inv\Dapprox$.
