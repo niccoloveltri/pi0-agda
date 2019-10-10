@@ -40,7 +40,7 @@
 \newcommand{\blue}[1]{\textcolor{blue}{#1}}
 
 
-\newcommand{\N}{\mathbb{N}}
+\newcommand{\Nat}{\mathsf{Nat}}
 \newcommand{\C}{\mathbb{C}}
 \newcommand{\Pio}{\ensuremath{\mathsf{\Pi}^{\mathsf{o}}}} 
 \newcommand{\Set}{\mathsf{Set}}
@@ -165,7 +165,7 @@
 
 \begin{frame}
 
-  \frametitle{\Pio: language overview [James and Sabry'12]}
+  \frametitle{\Pio\ [James and Sabry'12]}
 
   \begin{itemize}
 
@@ -176,38 +176,40 @@
     \]
   \item Programs $t : A \lr B$, reversible computations between types $A$
     and $B$.
-  \item Crucially among those:
-    \begin{itemize}          
-    \item Inversion operation:
-      \[
-      \infer{\dagger \,f : B \lr A}{f : A \lr B}
-      \]
-    \item Trace combinator for iteration:
-      \[
-      \infer{\trace \,f: A \lr B}{f : A \oplus C \lr B \oplus C}
-      \]
-      % For iteration, 
-    \end{itemize}    
-  \end{itemize}
-  
-\end{frame}
-
-
-\begin{frame}
-
-  \frametitle{$\Pi$: a finitary subcalculus [Carette and Sabry'16]}
-
-  \begin{itemize}
-
+%%   \item Crucially among those:
+%%     \begin{itemize}          
+%%     \item Inversion operation:
+%%       \[
+%%       \infer{\dagger \,f : B \lr A}{f : A \lr B}
+%%       \]
+%%     \item Trace combinator for iteration:
+%%       \[
+%%       \infer{\trace \,f: A \lr B}{f : A \oplus C \lr B \oplus C}
+%%       \]
+%%       % For iteration, 
+%%     \end{itemize}    
+%%   \end{itemize}
+%%   
+%% \end{frame}
+%% 
+%% 
+%% \begin{frame}
+%% 
+%%   \frametitle{$\Pi$: a finitary subcalculus [Carette and Sabry'16]}
+%% 
+%%   \begin{itemize}
+    \pause
+    \vspace{\fill}
   \item $\Pi$, the finitary fragment of $\Pio$ : no recursive types,
     no trace combinator.
 
   \item $\Pi$ includes higher reversible computations: program
-    equivalences $e : t \LR u$
-    \vspace{\fill}
-  \item (Formally, program equivalences correspond to the coherence laws of
-    symmetric rig groupoids [Laplaza'72]).
-%%  \item E.g., there is a term $\alpha_{\otimes} : A \otimes (B \otimes
+    equivalences $e : t \LR u$ [Carette and Sabry'16].
+%%     \vspace{\fill}
+%%   \item (Formally, program equivalences correspond to the coherence laws of
+%%     symmetric rig groupoids [Laplaza'72]).
+
+    %%  \item E.g., there is a term $\alpha_{\otimes} : A \otimes (B \otimes
 %%    C) \lr (A \otimes B) \otimes C$ with a term equivalence
 %%    corresponding to MacLane's pentagon:
 %%    \[
@@ -250,10 +252,10 @@
   \frametitle{In this work: \Pio\ in Agda}
 
   \begin{itemize}
-  \item Extending Carette and Sabry's work: Agda formalization of
+  \item We extended Carette and Sabry's work: Agda formalization of
     syntax and denotational semantics of the full \Pio\ calculus.
     \vspace{\fill}
-  \item  Agda formalization at 
+  \item  Full Agda development at 
     \begin{center}
       \url{https://github.com/niccoloveltri/pi0-agda}
     \end{center}    
@@ -289,52 +291,60 @@
 %\section{\Pio\ syntax}
 \begin{frame}
   
-  \frametitle{\Pio\ syntax: types}
-  \begin{itemize}
-    \item We use de Bruijn indexes to deal with type variables.
-  \end{itemize}
-  \[
-  \arraycolsep=6pt\def\arraystretch{2.8}
-  \begin{array}{cc}
-    %\hline 
-    \infer{\Z : \Ty\,n}{} 
-    & \infer{A \oplus B : \Ty\,n}{A : \Ty\,n & B : \Ty\,n}
-    \\
-    \infer{\I : \Ty\,n}{}
-    & \infer{A \otimes B : \Ty\,n}{A : \Ty\,n & B : \Ty\,n}
-    \\
-    \infer{\Var\,i : \Ty\,n}{i : \mathsf{Fin}\,n}
-    & \infer{\mu A : \Ty\,n}{A : \Ty\,(n+1)}
-    %\\ \hline
-  \end{array}
-  \]
-  
-\end{frame}
-
-\begin{frame}
-
-  \frametitle{\Pio\ syntax: programs}
-  \begin{itemize}
+  \frametitle{\Pio\ syntax: types and programs}
+%%   \begin{itemize}
+%%     \item We use de Bruijn indexes to deal with type variables.
+%%   \end{itemize}
+%%   \[
+%%   \arraycolsep=6pt\def\arraystretch{2.8}
+%%   \begin{array}{cc}
+%%     %\hline 
+%%     \infer{\Z : \Ty\,n}{} 
+%%     & \infer{A \oplus B : \Ty\,n}{A : \Ty\,n & B : \Ty\,n}
+%%     \\
+%%     \infer{\I : \Ty\,n}{}
+%%     & \infer{A \otimes B : \Ty\,n}{A : \Ty\,n & B : \Ty\,n}
+%%     \\
+%%     \infer{\Var\,i : \Ty\,n}{i : \mathsf{Fin}\,n}
+%%     & \infer{\mu A : \Ty\,n}{A : \Ty\,(n+1)}
+%%     %\\ \hline
+%%   \end{array}
+%%   \]
+%%   
+%% \end{frame}
+%% 
+%% \begin{frame}
+%% 
+%%   \frametitle{\Pio\ syntax: programs}
+    \begin{itemize}
+    \item Types:
+    \[
+    A ::= \Z \, | \,A \oplus A \, | \,\I \,| \,A \otimes A \,| \,X \,|
+    \,\mu X.A
+    \]
+    \pause
   \item Programs of $\Pi$ [Carette and Sabry'16]:
 
   \end{itemize}
   \small
   \[
-  \arraycolsep=-10pt\def\arraystretch{1.6}
+  \arraycolsep=-10pt\def\arraystretch{1.2}
   \begin{array}{lr}%{|cc|}
     %\hline 
     \id : A \lr A
-    & \infer{g \circ f : A \lr C}{g : B \lr C & f : A \lr B} \\ [.25cm]
+    & \infer{g \circ f : A \lr C}{g : B \lr C & f : A \lr B} \\ [.2cm]
     \infer{f \oplus g : A \oplus B \lr C \oplus D}{f : A \lr C & g : B \lr D} 
-    & \infer{f \otimes g : A \otimes B \lr C \otimes D}{f : A \lr C & g : B \lr D} \\
+    \\[.2cm] % \infer{f \otimes g : A \otimes B \lr C \otimes D}{f : A \lr C & g : B \lr D} \\
     \lambda_{\oplus} : \Z \oplus A \lr A : \lambda_{\oplus}^{-1}
-    & \lambda_{\otimes} : \I \otimes A \lr A : \lambda_{\otimes}^{-1} \\
+    & \sigma_{\oplus} : A \oplus B \lr B \oplus A \\    
+    %\lambda_{\otimes} : \I \otimes A \lr A : \lambda_{\otimes}^{-1} \\
     %\multicolumn{2}{c}{
-      \alpha_{\oplus} : (A \oplus B) \oplus C \lr A \oplus (B \oplus C) : \alpha_{\oplus}^{-1} \\
+    \alpha_{\oplus} : (A \oplus B) \oplus C \lr A \oplus (B \oplus C) : \alpha_{\oplus}^{-1} \\[.2cm]
+    (\text{similar combinators for $(\I,\otimes)$}) \\[.2cm]
       %\multicolumn{2}{c}{
-      \alpha_{\otimes} : (A \otimes B) \otimes C \lr A \otimes (B \otimes C) : \alpha_{\otimes}^{-1} \\
-    \sigma_{\oplus} : A \oplus B \lr B \oplus A
-    & \sigma_{\otimes} : A \otimes B \lr B \otimes A \\
+     % \alpha_{\otimes} : (A \otimes B) \otimes C \lr A \otimes (B \otimes C) : \alpha_{\otimes}^{-1} \\
+  %  \sigma_{\oplus} : A \oplus B \lr B \oplus A
+  %  & \sigma_{\otimes} : A \otimes B \lr B \otimes A \\
     \kappa : \Z \otimes A \lr \Z : \kappa^{-1}  \\
      \delta : (A \oplus B) \otimes C \lr (A \otimes C) \oplus (B \otimes C) : \delta^{-1}
 %%     \fold : A[\mu X.A/X] \lr \mu X.A
@@ -354,64 +364,105 @@
     \def\arraystretch{1.6}  
     \begin{array}{c}
       \fold : A[\mu X.A/X] \lr \mu X.A : \unfold \\[.25cm]
-      \infer{\trace \,f: A \lr B}{f : A \oplus C \lr B \oplus C}
+      \infer{\trace_C \,f: A \lr B}{f : A \oplus C \lr B \oplus C}
       %\hline
     \end{array}
     \]
-  \item The partial inverse of a programs is defined by recursion:
+  \item The partial inverse of a program is defined by recursion:
     \[
     \dagger : (A \lr B) \to (B \lr A)
     \]
 %  \item In particular, $\dagger \,(\trace\,f) = \trace \,(\dagger \,f)$.
   \item Inversion is involutive:
     \[
-    \mathsf{daggerInvol} : (f : A \lr B) \to \dagger \,(\dagger\,f) \equiv f
+    %\mathsf{daggerInvol} :
+    (f : A \lr B) \to \dagger \,(\dagger\,f) \equiv f
     \]
   \end{itemize}
 \end{frame}
 
 \begin{frame}
-  \frametitle{\Pio\ syntax: program equivalences}
-  \begin{itemize}    
-  \item Big list of Laplaza's coherence laws of symmetric rig
-    categories (already in $\Pi$ [Carette and Sabry'16]).
-  \item We add program equivalences stating that:
-    \begin{itemize}
-    \item $(\Z,\oplus)$ is a traced monoidal structure;
-    \item $\unfold$ is the total inverse of $\fold$;
-    \item $\trace\,(\dagger \,t)$ is the partial inverse of $\trace\,t$;
-    \item uniqueness of the partial inverses.
-    \end{itemize}
+  \frametitle{Non-termination in \Pio}
+  \begin{itemize}
+  \item Natural numbers: $\Nat = \mu X. \I \oplus X$
+  \item A non-terminating program:
+    \begin{align*}
+      & f : A \oplus \I \lr A \\
+      & f = \trace_\Nat\,f' \\
+      & \quad \mathsf{where} \\
+      & \quad \quad  f' : (A \oplus \I) \oplus \Nat \lr A \oplus \Nat \\
+      & \quad \quad f' = \id \oplus \fold \, \circ \, \alpha_{\oplus}
+    \end{align*}
+    \item Under James and Sabry's operational semantics, evaluation of
+      $f$ on value $\inr\,\mathsf{tt}$ diverges.
+%    \item Denotationally, \Pio\ programs are partial invertible functions.
+  \end{itemize}
+  
+\end{frame}
+
+\begin{frame}
+  \frametitle{\Pio\ syntax: program equivalences $e : t \LR u$}
+  \begin{itemize}
+  \item \Pio\ extends and modify the program equivalences $\Pi$ [Carette and Sabry'16].
+  \item In $\Pi$, every program is an isomorphism up-to ${\LR}$.
+  \item In \Pio, every program is a partial isomorphism up-to ${\LR}$.
+
+%%   \item Big list of Laplaza's coherence laws of symmetric rig
+%%     categories (already in $\Pi$ [Carette and Sabry'16]).
+%%   \item We add program equivalences stating that:
+%%     \begin{itemize}
+%%     \item $(\Z,\oplus)$ is a traced monoidal structure;
+%%     \item $\unfold$ is the total inverse of $\fold$;
+%%     \item $\trace\,(\dagger \,t)$ is the partial inverse of $\trace\,t$;
+%%     \item uniqueness of the partial inverses.
+%%     \end{itemize}
 
     \vspace{\fill}
-  \item (Altogether, the program equivalences correpond to the axioms of
+  \item (Program equivalences correpond to the axioms of
     dagger-traced $\omega$-continuous rig inverse categories [Karvonen'19].)
     \end{itemize}
 \end{frame}
 
-\begin{frame}
-  \frametitle{\Pio\ syntax: partial inverses}
-  \begin{itemize}
-  \item Here we mean ``partial inverse'' in the sense of inverse
-    categories [Kastl'79].
-  \item Intuitively, the partial inverse of $f$ the unique map that
-    undoes everything which $f$ does.
-  \item We can prove by inducton that a term $f$ has $\dagger\,f$ as
-    its partial inverse:
-    \[
-    \mathsf{existsPIso} : (f : A \lr B) \to f \circ \dagger\,f
-    \circ\,f \LR f
-    \]
-    \vspace{\fill}
-  \item Note that $\dagger \,f \circ f$ is not always the identity,
-    since generally $f$ is only a partially defined computation.
-  \end{itemize}
-\end{frame}
+%% \begin{frame}
+%%   \frametitle{\Pio\ syntax: partial inverses}
+%%   \begin{itemize}
+%%   \item Here we mean ``partial inverse'' in the sense of inverse
+%%     categories [Kastl'79].
+%%   \item Intuitively, the partial inverse of $f$ the unique map that
+%%     undoes everything which $f$ does.
+%%   \item We can prove by inducton that a term $f$ has $\dagger\,f$ as
+%%     its partial inverse:
+%%     \[
+%%     \mathsf{existsPIso} : (f : A \lr B) \to f \circ \dagger\,f
+%%     \circ\,f \LR f
+%%     \]
+%%     \vspace{\fill}
+%%   \item Note that $\dagger \,f \circ f$ is not always the identity,
+%%     since generally $f$ is only a partially defined computation.
+%%   \end{itemize}
+%% \end{frame}
 
 \begin{frame}[c]
   \begin{center}
-    \Huge The delay datatype
+    \Huge Non-termination in Agda: \\ The delay datatype
   \end{center}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Partiality in type theory}
+  \begin{itemize}
+  \item Agda is an implementation of Martin-L\"of dependent type theory.
+  \item It is a total language: every program is terminating.
+  \item Possible non-termination can be introduced as an effect using a monad
+    [Moggi'91].
+    \pause
+    \vspace{\fill}
+    \item The maybe monad $\Maybe \,X = X + 1$ models
+      failure, not possible non-termination.
+     \item Reducing possible non-termination to failure is equivalent
+       to decidability of the Halting problem.
+  \end{itemize}
+  
 \end{frame}
 
 \begin{frame}
@@ -441,7 +492,38 @@
 
 \begin{frame}
 
-  \frametitle{The Kleisli category of $\Delay$}
+  \frametitle{Intensional vs. extensional partiality}
+  \begin{itemize}
+  \item Now we can program with possibly non-terminating
+    programs, but partiality is intensional.
+  \item Computations terminating with the same value but 
+    different number of steps are different.
+  \item We quotient out finite computation steps using weak
+    bisimilarity:
+    %\red{perhaps also introduce $\dn$, used in the orbit}
+    \[
+      \arraycolsep=15pt\def\arraystretch{2}
+      \begin{array}{cc}
+        \infer{\now\,a \approx \now\,a}{}
+        &
+        \infer={\later\,x_1 \approx \later\,x_2}{x_1 \approx x_2}
+        \\
+        \infer{\later\,x \approx \now\,a}{x \approx \now \,a}
+        &
+        \infer{\now\,a \approx \later\,x}{\now\,a \approx x}
+      \end{array}
+      \]
+      \item E.g. $\later^n (\now\,a) \approx \later^m (\now\,a)$, for
+        all $n,m : \mathbb{N}$
+    \item Convergence: $x \dn a = x \approx \now\,a$.
+  \end{itemize}
+  
+  
+\end{frame}
+
+\begin{frame}
+
+  \frametitle{A category of partial functions}
   \begin{itemize}
 
   \item Let $\D$ be the Kleisli category of $\Delay$:
@@ -453,87 +535,59 @@
       is given by:
       \[g \diamond f = \bind\,g \comp f\]
     \end{itemize}
-\item Homsets in $\D$ are written: $A \to_\D B$   
+  \item Homsets in $\D$ are written: $A \to_\D B$
+    \item Our notion of equality is weak bisimilarity.
   \end{itemize}
   
 \end{frame}
 
-\begin{frame}
-
-  \frametitle{Intensional vs. extensional partiality}
-  \begin{itemize}
-  \item In $\D$ we can program with possibly non-terminating
-    programs, but partiality is intensional.
-  \item Computations terminating with the same value but 
-    different number of steps are different.
-  \item We quotient out finite computation steps using weak
-    bisimilarity [Danielsson'18]:
-    %\red{perhaps also introduce $\dn$, used in the orbit}
-    \[
-      \arraycolsep=10pt\def\arraystretch{2.8}
-      \begin{array}{cc}
-        \infer{\now\,a \approx \now\,a}{}
-        &
-        \infer={\later\,x_1 \approx \later\,x_2}{x_1 \approx x_2}
-        \\
-        \infer{\later\,x \approx \now\,a}{x \approx \now \,a}
-        &
-        \infer{\now\,a \approx \later\,x}{\now\,a \approx x}
-      \end{array}
-    \]
-    \item Convergence: $x \dn a = x \approx \now\,a$.
-  \end{itemize}
+%% \begin{frame}
+%% 
+%%   \frametitle{A category of partial functions}
+%%   \begin{itemize}
+%%     \item Let $\Dapprox$ be the category $\D$ with homsets
+%%       quotiented by pointwise weak bisimilarity.
+%%     \item In $\Dapprox$, two equivalence classes of morphisms $[f]$ and $[g]$ are equal whenever
+%%       $f \, a \approx g \, a$, for all inputs $a$.
+%%     \item Homsets in $\Dapprox$ are written: $A \to_{\Dapprox} B$   
+%%       %    \item We write $f \approx g$ also for pointwise weak bisimilarity.
+%%       \pause
+%%       \vspace{\fill}
+%%     \item We are quotienting the homsets of $\D$, not the delay datatype!
+%%     \item So we avoid problems with semi-classical principles, such as countable choice [Chapman et al.'15].
+%%     \item Alternatively, we could have used the partiality monad in
+%%       HoTT [Altenkirch et al.'17].
+%% 
+%%   \end{itemize}
   
   
-\end{frame}
-
-\begin{frame}
-
-  \frametitle{A category of partial functions}
-  \begin{itemize}
-    \item Let $\Dapprox$ be the category $\D$ with homsets
-      quotiented by pointwise weak bisimilarity.
-    \item In $\Dapprox$, two equivalence classes of morphisms $[f]$ and $[g]$ are equal whenever
-      $f \, a \approx g \, a$, for all inputs $a$.
-    \item Homsets in $\Dapprox$ are written: $A \to_{\Dapprox} B$   
-      %    \item We write $f \approx g$ also for pointwise weak bisimilarity.
-      \pause
-      \vspace{\fill}
-    \item We are quotienting the homsets of $\D$, not the delay datatype!
-    \item So we avoid problems with semi-classical principles, such as countable choice [Chapman et al.'15].
-    \item Alternatively, we could have used the partiality monad in
-      HoTT [Altenkirch et al.'17].
-
-  \end{itemize}
-  
-  
-\end{frame}
-
-\begin{frame}
-
-  \frametitle{The structure of $\Dapprox$}
-  \begin{itemize}
-  \item Colimits in $\Dapprox$ are inherited from $\Set$.
-  \item But limits in $\Set$ do not lift to limits in $\Dapprox$.
-    \pause
-    \vspace{\fill}
-  \item Nevertheless, 1 and $\times$ are partial terminal object and
-    partial binary products respectively, in the sense of Cockett and
-    Lack's restriction categories.
-  \item In particular, $(\Dapprox,1,\times,0,+)$ is a symmetric rig
-    category.
-    
-  \end{itemize}
-  
-  
-\end{frame}
+%% \end{frame}
+%% 
+%% \begin{frame}
+%% 
+%%   \frametitle{The structure of $\Dapprox$}
+%%   \begin{itemize}
+%%   \item Colimits in $\Dapprox$ are inherited from $\Set$.
+%%   \item But limits in $\Set$ do not lift to limits in $\Dapprox$.
+%%     \pause
+%%     \vspace{\fill}
+%%   \item Nevertheless, 1 and $\times$ are partial terminal object and
+%%     partial binary products respectively, in the sense of Cockett and
+%%     Lack's restriction categories.
+%%   \item In particular, $(\Dapprox,1,\times,0,+)$ is a symmetric rig
+%%     category.
+%%     
+%%   \end{itemize}
+%%   
+%%   
+%% \end{frame}
 
 \begin{frame}
 
   \frametitle{Partial isomorphisms}
   
   \begin{itemize}
-  \item We need to restrict to reversible computations in $\Dapprox$.
+  \item We need to restrict to reversible computations.
   \item A morphism $f : A \to_\D B$ is a partial isomorphism if
     the following type is inhabited: %(\red{Kleene equality})
     \[
@@ -544,39 +598,41 @@
       \,a \dn b \leftrightarrow g \,b \dn a  \right)  
     \end{array}
     \]
-    \item Our definition of partial iso is equivalent to the one in
-      inverse categories [Kastl'79, Cockett and Lack'02].
-    \item The type of partial isos:
-      \[
-      A \simeq_{\mathsf{p}} B = (f : A \to_\D B) \times \piso \,f
-      \]
+%%     \item Our definition of partial iso is equivalent to the one in
+%%       inverse categories [Kastl'79, Cockett and Lack'02].
+%%     \item The type of partial isos:
+%%       \[
+%%       A \simeq_{\mathsf{p}} B = (f : A \to_\D B) \times \piso \,f
+%%       \]
     \item We denote $\daggerD\,f$ the partial inverse of a partial iso $f$.
+%%   \item Let $\Inv \D$ be the subcategory of $\D$
+%%     consisting of (equivalence classes of) partial isomorphisms.
   \end{itemize}
   
   
 \end{frame}
 
-\begin{frame}
-
-  \frametitle{A category of partial isos}
-  \begin{itemize}
-  \item Let $\Inv \Dapprox$ be the subcategory of $\Dapprox$
-    consisting of (equivalence classes of) partial isomorphisms.
-  \item We write $A \simeq_{\mathsf{p}\approx} B$ for the homsets of
-    $\Inv \Dapprox$.
-  \item $\Inv\Dapprox$ inherits neither partial products nor
-    coproducts of $\Dapprox$.
-  \item However, $(\Dapprox,1,\times,0,+)$ is a symmetric rig inverse category.
-  \item That is to say that $\Pi$, the finitary fragment of
-    \Pio, can be modelled in $\Dapprox$.
-  \end{itemize}
-  
-  
-\end{frame}
+%% \begin{frame}
+%% 
+%%   \frametitle{A category of partial isos}
+%%   \begin{itemize}
+%%   \item Let $\Inv \Dapprox$ be the subcategory of $\Dapprox$
+%%     consisting of (equivalence classes of) partial isomorphisms.
+%%   \item We write $A \simeq_{\mathsf{p}\approx} B$ for the homsets of
+%%     $\Inv \Dapprox$.
+%%   \item $\Inv\Dapprox$ inherits neither partial products nor
+%%     coproducts of $\Dapprox$.
+%%   \item However, $(\Dapprox,1,\times,0,+)$ is a symmetric rig inverse category.
+%%   \item That is to say that $\Pi$, the finitary fragment of
+%%     \Pio, can be modelled in $\Dapprox$.
+%%   \end{itemize}
+%%   
+%%   
+%% \end{frame}
 
 \begin{frame}[c]
   \begin{center}
-    \Huge Dagger trace in $\Inv\Dapprox$ 
+    \Huge Semantic trace operator
   \end{center}
 \end{frame}
 
@@ -588,51 +644,60 @@
 
   \item Following [Hasegawa'97], we can derive a trace operator from
     an unguarded iteration operator.
-  \item In a category $\C$ with finite coproducts,  iteration is an operation:
-    \[
-    \iter : \C (A ,B + A) \to \C(A , B)
-    \]
-    satisfying some axioms, in particular the fixpoint equality:
-    \[
-    \iter\,f = \copair {\id} {\iter \,f} \circ f
-    \]
-  \item Pictorially:
-      \ctikzfig{iter}    
   \end{itemize}
-  
-\end{frame}
-
-\begin{frame}
-  \frametitle{The iterator in $\Dapprox$}
-  \begin{itemize}
-    \item First define:
-    \[ %\arraycolsep=8pt
-    \def\arraystretch{1.2}
-    \begin{array}{ll}
-      \multicolumn{2}{l}{\iterD' : (A \to \Delay (B + A)) \to \Delay (B + A) \to \Delay B} \\
-      \iterD' \,f \,(\now \,(\inl\, b)) &= \now \,b \\
-      \iterD' \,f \,(\now \,(\inr\, a)) &= \later \,(\iterD' \,f \,(f \,a)) \\
-      \iterD' \,f \,(\later \,x) &= \later \,(\iterD' \,f \,x) \\
-    \end{array}
-    \]
-  \item Then take:
-    \[ %\arraycolsep=8pt
-    \def\arraystretch{1.2}
-    \begin{array}{ll}    
-      \multicolumn{2}{l}{\iterD : (A \to_\D B + A) \to (A \to_\D B)} \\
-      \multicolumn{2}{l}{\iterD \,f \,a = \iterD' \,f \,(f \,a)}
-    \end{array}
-    \]
-  \item $\iterD$ respects weak bisimilarity
-    and satisfies the iteration axioms up to ${\approx}$. It lifts to
-    an iterator in $\Dapprox$.
+       \ctikzfig{iter}    
+%%   \item In a category $\C$ with finite coproducts,  iteration is an operation:
+%%     \[
+%%     \iter : \C (A ,B + A) \to \C(A , B)
+%%     \]
+%%     satisfying some axioms, in particular the fixpoint equality:
+%%     \[
+%%     \iter\,f = \copair {\id} {\iter \,f} \circ f
+%%     \]
+%%   \item Pictorially:
+%%       \ctikzfig{iter}    
+%%   \end{itemize}
+%%   
+%% \end{frame}
+%% 
+%% \begin{frame}
+%%   \frametitle{The iterator in $\Dapprox$}
+  %%   \begin{itemize}
+  \[
+  \begin{array}{llll} \\
+    \multicolumn{4}{l}{\iterD : (A \to_\D B + A) \to (A \to_\D B)} \\
+    \multicolumn{4}{l}{\iterD \,f \,a = \iterD' \,f \,(f \,a)} \\
+    & \multicolumn{3}{l}{\mathsf{where}} \\
+    & & \multicolumn{2}{l}{\iterD' : \Delay (B + A) \to \Delay B} \\
+    & & \iterD' \,(\now \,(\inl\, b)) & = \now \,b \\
+    & & \iterD' \,(\now \,(\inr\, a')) & = \later\,(\iterD'\,(f \,a')) \\ 
+    & & \iterD' \,(\later \,x) & = \later \,(\iterD' \,x)    
+  \end{array}
+  \]
+%%     \[ %\arraycolsep=8pt
+%%     \def\arraystretch{1.2}
+%%     \begin{array}{ll}
+%%       \multicolumn{2}{l}{\iterD' : (A \to \Delay (B + A)) \to \Delay (B + A) \to \Delay B} \\
+%%       \iterD' \,f \,(\now \,(\inl\, b)) &= \now \,b \\
+%%       \iterD' \,f \,(\now \,(\inr\, a)) &= \later \,(\iterD' \,f \,(f \,a)) \\
+%%       \iterD' \,f \,(\later \,x) &= \later \,(\iterD' \,f \,x) \\
+%%     \end{array}
+%%     \]
+%%     \[ %\arraycolsep=8pt
+%%     \def\arraystretch{1.2}
+%%     \begin{array}{ll}    
+%%       \multicolumn{2}{l}{\iterD : (A \to_\D B + A) \to (A \to_\D B)} \\
+%%       \multicolumn{2}{l}{\iterD \,f \,a = \iterD' \,f \,(f \,a)}
+%%     \end{array}
+%%     \]
+%%   \item $\iterD$ respects weak bisimilarity
+%%     and satisfies the iteration axioms up to ${\approx}$. It lifts to
+%%     an iterator in $\Dapprox$.
     
-  \end{itemize}
-  
 \end{frame}
 
 \begin{frame}
-  \frametitle{The trace in $\Dapprox$}
+  \frametitle{The trace in $\D$}
   \begin{itemize}
     \item %% From an iterator:
       %%\ctikzfig{iter}
@@ -645,78 +710,82 @@
         & \traceD \,f = \copair{\now}{\iterD \,f_C}\diamond f_A
       \end{align*}
 %      \vspace{\fill}
-  \item $\traceD$ respects weak bisimilarity and satisfies the trace
-    axioms up to ${\approx}$. It lifts to an trace in $\Dapprox$.
+    \item Theorem: If $f : A + C \to_\D B + C$ is a partial
+      isomorphism, then the $\traceD\,f$ is also a partial isomorphism
+      with $\traceD\,(\daggerD\,f)$ as partial inverse.
+%%       
+%%       $\traceD$ respects weak bisimilarity and satisfies the trace
+%%     axioms up to ${\approx}$. It lifts to an trace in $\Dapprox$.
       %Construction equivalent to the one in [Hasegawa'97].      
       %This construction is impossible in the maybe monad
   \end{itemize}
 \end{frame}
 
-\begin{frame}
-  \frametitle{Dagger trace in $\Inv\Dapprox$}
-  \begin{itemize}
-  \item It remains to show that the trace of $\Dapprox$ restricts to
-    $\Inv\Dapprox$.
-  \item If $f : A + C \to_\D B + C$ is a partial isomorphism, then the
-    $\traceD\,f$ is also a partial isomorphism with
-    $\traceD\,(\daggerD\,f)$ as partial inverse.
-  \item In the end, we want an operation:
-    \[
-    \semTrace : A + C\simeq_{\mathsf{p}\approx} B + C \to A \simeq_{\mathsf{p}\approx} B
-    \]
-    modelling the trace of \Pio.
-   
-  \end{itemize}
-\end{frame}
-
-\begin{frame}
-  \frametitle{Dagger trace via orbit}
-  \begin{itemize}
-  \item The orbit of $x : A + C$ wrt. $f : A + C \to_{\D} B + C$
-    is the following inductively defined type family:
-    \[
-    \infer{\done\,p : \Orb f x y}{p : f \,x \dn y} \quad
-    \infer{\mynext\,p \,q : \Orb f x y}{p : f \,x \dn (\inr\,c) & q :
-      \Orb f {(\inr\,c)} y}
-    \]
-  \item Therefore: %(\red{introduce $\traceD$ before})
-    \[
-    \traceD\,f\,a \dn b \leftrightarrow \Orb f{(\inl\,a)} {(\inl\,b)}
-    \]
-  \item Proof of dagger trace reduces to: 
-    \[
-    \Orb f {(\inl\,a)} {(\inl\,b)} \leftrightarrow \Orb
-         {(\daggerD\,f)} {(\inl\,b)} {(\inl\,a)}
-    \]
-    \vspace{\fill}
-  \item Strong resemblance between reversing an orbit and
-    reversing a vector.
-  \end{itemize}
-\end{frame}
-
-\begin{frame}
-  \frametitle{Summing up: the interpretation}
-  \begin{itemize}
-  \item Types of \Pio\ are interpreted as objects of $\Inv\Dapprox$, i.e. types
-    of the metatheory:
-    \[
-    \semTy A : (\mathsf{Fin}\,n \to \Set) \to \Set
-    \]
-  \item Terms of \Pio\ are modelled as morphism of $\Inv\Dapprox$,
-i.e. partial isomorphisms:
-    \[
-    \semTm {t : A \lr B} : (\rho : \mathsf{Fin}\,n \to \Set) \to \semTy A \rho \simeq_{\mathsf{p}\approx} \semTy B \rho
-    \]
-  \item Term equivalences of \Pio\ are modelled as morphism equalities
-    in $\Inv\Dapprox$.
-%%     i.e. proofs of weak bisimilarity between two
-%%     morphisms:
+%% \begin{frame}
+%%   \frametitle{Dagger trace in $\Inv\Dapprox$}
+%%   \begin{itemize}
+%%   \item It remains to show that the trace of $\Dapprox$ restricts to
+%%     $\Inv\Dapprox$.
+%%   \item If $f : A + C \to_\D B + C$ is a partial isomorphism, then the
+%%     $\traceD\,f$ is also a partial isomorphism with
+%%     $\traceD\,(\daggerD\,f)$ as partial inverse.
+%%   \item In the end, we want an operation:
 %%     \[
-%%     \semEq {e : f \LR g} : \semTm f \approx \semTm g
+%%     \semTrace : A + C\simeq_{\mathsf{p}\approx} B + C \to A \simeq_{\mathsf{p}\approx} B
 %%     \]
-  \end{itemize}
-  
-\end{frame}
+%%     modelling the trace of \Pio.
+%%    
+%%   \end{itemize}
+%% \end{frame}
+%% 
+%% \begin{frame}
+%%   \frametitle{Dagger trace via orbit}
+%%   \begin{itemize}
+%%   \item The orbit of $x : A + C$ wrt. $f : A + C \to_{\D} B + C$
+%%     is the following inductively defined type family:
+%%     \[
+%%     \infer{\done\,p : \Orb f x y}{p : f \,x \dn y} \quad
+%%     \infer{\mynext\,p \,q : \Orb f x y}{p : f \,x \dn (\inr\,c) & q :
+%%       \Orb f {(\inr\,c)} y}
+%%     \]
+%%   \item Therefore: %(\red{introduce $\traceD$ before})
+%%     \[
+%%     \traceD\,f\,a \dn b \leftrightarrow \Orb f{(\inl\,a)} {(\inl\,b)}
+%%     \]
+%%   \item Proof of dagger trace reduces to: 
+%%     \[
+%%     \Orb f {(\inl\,a)} {(\inl\,b)} \leftrightarrow \Orb
+%%          {(\daggerD\,f)} {(\inl\,b)} {(\inl\,a)}
+%%     \]
+%%     \vspace{\fill}
+%%   \item Strong resemblance between reversing an orbit and
+%%     reversing a vector.
+%%   \end{itemize}
+%% \end{frame}
+%% 
+%% \begin{frame}
+%%   \frametitle{Summing up: the interpretation}
+%%   \begin{itemize}
+%%   \item Types of \Pio\ are interpreted as objects of $\Inv\Dapprox$, i.e. types
+%%     of the metatheory:
+%%     \[
+%%     \semTy A : (\mathsf{Fin}\,n \to \Set) \to \Set
+%%     \]
+%%   \item Terms of \Pio\ are modelled as morphism of $\Inv\Dapprox$,
+%% i.e. partial isomorphisms:
+%%     \[
+%%     \semTm {t : A \lr B} : (\rho : \mathsf{Fin}\,n \to \Set) \to \semTy A \rho \simeq_{\mathsf{p}\approx} \semTy B \rho
+%%     \]
+%%   \item Term equivalences of \Pio\ are modelled as morphism equalities
+%%     in $\Inv\Dapprox$.
+%% %%     i.e. proofs of weak bisimilarity between two
+%% %%     morphisms:
+%% %%     \[
+%% %%     \semEq {e : f \LR g} : \semTm f \approx \semTm g
+%% %%     \]
+%%   \end{itemize}
+%%   
+%% \end{frame}
 
 \begin{frame}
   \frametitle{Conclusions}
@@ -728,10 +797,11 @@ i.e. partial isomorphisms:
     \item Alternative type-theoretical models can be constructed using
       the partiality monad [Altenkirch et al.'17] or the partial map
       classifier [Escardo and Knapp'17].
-    \item Conjecture: a model for each $\omega$-continuous
-      monad on $\Set$, that can hopefully be ported to other categories [Goncharov et.al'16]. 
-    \item Future work: The (unquotiented) delay monad can also be used for
-      semantics of time-reversible computations.
+%%     \item Conjecture: a model for each $\omega$-continuous
+%%       monad on $\Set$, that can hopefully be ported to other categories [Goncharov et.al'16]. 
+    \item Future work: The (unquotiented) delay monad and its
+      generalizations can be used for semantics of
+      time-reversible computations.
       
       
   \end{itemize}
