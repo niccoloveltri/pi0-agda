@@ -124,13 +124,13 @@
 
 % frontmatter
 
-\title{En Garde! Unguarded Iteration for Reversible Computation in the
+\title{Unguarded Iteration for Reversible Computation in the
   Delay Monad}
 
 
 \author{Robin Kaarsgaard \inst{1} \and \underline{Niccol\`o Veltri} \inst{2}}
 \institute{\inst{1} University of Copenhagen \and \inst{2} Tallinn University of Technology}
-\date{MPC'19, Porto, 09 October 2019}
+\date{Estonian-Latvian Theory Days'19, P\"arnu, 11 October 2019}
 
 \begin{frame}
 
@@ -174,7 +174,7 @@
     A ::= \Z \, | \,A \oplus A \, | \,\I \,| \,A \otimes A \,| \,X \,|
     \,\mu X.A
     \]
-  \item Terms $t : A \lr B$, reversible computations between types $A$
+  \item Programs $t : A \lr B$, reversible computations between types $A$
     and $B$.
   \item Crucially among those:
     \begin{itemize}          
@@ -182,7 +182,7 @@
       \[
       \infer{\dagger \,f : B \lr A}{f : A \lr B}
       \]
-    \item Trace combinator:
+    \item Trace combinator for iteration:
       \[
       \infer{\trace \,f: A \lr B}{f : A \oplus C \lr B \oplus C}
       \]
@@ -202,41 +202,42 @@
   \item $\Pi$, the finitary fragment of $\Pio$ : no recursive types,
     no trace combinator.
 
-  \item $\Pi$ includes higher reversible computations: term
+  \item $\Pi$ includes higher reversible computations: program
     equivalences $e : t \LR u$
-  \item Formally, term equivalences correspond to the coherence laws of
-    symmetric rig groupoids [Laplaza'72].
-  \item E.g., there is a term $\alpha_{\otimes} : A \otimes (B \otimes
-    C) \lr (A \otimes B) \otimes C$ with a term equivalence
-    corresponding to MacLane's pentagon:
-    \[
-    \mathsf{pentagon} : \alpha_{\otimes} \circ \alpha_{\otimes} \LR (\id \otimes
-    \alpha_{\otimes}) \circ \alpha_{\otimes} \circ (\alpha_{\otimes}
-    \otimes \id)
-    \]
+    \vspace{\fill}
+  \item (Formally, program equivalences correspond to the coherence laws of
+    symmetric rig groupoids [Laplaza'72]).
+%%  \item E.g., there is a term $\alpha_{\otimes} : A \otimes (B \otimes
+%%    C) \lr (A \otimes B) \otimes C$ with a term equivalence
+%%    corresponding to MacLane's pentagon:
+%%    \[
+%%    \mathsf{pentagon} : \alpha_{\otimes} \circ \alpha_{\otimes} \LR (\id \otimes
+%%    \alpha_{\otimes}) \circ \alpha_{\otimes} \circ (\alpha_{\otimes}
+%%    \otimes \id)
+%%    \]
     
   \end{itemize}
   
 \end{frame}
 
 \begin{frame}
-  \frametitle{$\Pi$ in type theory [Carette and Sabry'16]}
+  \frametitle{$\Pi$ in Agda [Carette and Sabry'16]}
 
   \begin{itemize}
 
   \item Agda formalization of syntax and
-    %denotational
+    denotational
     semantics of $\Pi$.
   \item Types are interpreted in $\Set$, the universe of small types:
     \[
     \semTy A : \Set
     \]
-  \item Terms are interpreted as equivalences of types:
+  \item Programs are interpreted as type isomorphisms:
     \[
     \semTm {t : A \lr B} : \semTy A \simeq \semTy B
     \]
-  \item Term equivalences are interpreted as equivalences of
-    equivalences of types.
+  \item Program equivalences are interpreted as equivalences of
+    type isomorphisms.
     % Existence of homotopies between the functions underlying the
     % equivalences of types
   \end{itemize}
@@ -246,30 +247,33 @@
 
 \begin{frame}
   
-  \frametitle{In this work: \Pio\ in type theory}
+  \frametitle{In this work: \Pio\ in Agda}
 
   \begin{itemize}
-  \item Extending Carette and Sabry's work: syntax and semantics of
-    the full \Pio\ calculus in type theory.
-  \item Type theory is a total language, no way of specifying a trace
-    operator on types.
-  \item Carette and Sabry's semantic domain is not good for our
-    purpouse.
-    \pause
+  \item Extending Carette and Sabry's work: Agda formalization of
+    syntax and denotational semantics of the full \Pio\ calculus.
     \vspace{\fill}
-  \item Need a framework supporting possibly non-terminating
-    computations: use Capretta's coinductive delay monad.
-    \\
-    (The maybe monad is not good, does not support trace
-    operator.)
-   \item Semantic trace operator obtained via unguarded iteration in
-     the sense of Elgot.
-%%     \vspace{\fill}
-%%   \item Development fully formalized in Agda.
-%%     
-%%     \begin{center}
-%%       \url{https://github.com/niccoloveltri/pi0-agda}
-%%     \end{center}
+  \item  Agda formalization at 
+    \begin{center}
+      \url{https://github.com/niccoloveltri/pi0-agda}
+    \end{center}    
+  \item Paper presented last Wednesday at MPC'19 in Porto (part of
+    FM'19).
+
+    
+%%  \item Type theory is a total language, no way of specifying a trace
+%%    operator on types.
+%%  \item Carette and Sabry's semantic domain is not good for our
+%%    purpouse.
+%%    \pause
+%%    \vspace{\fill}
+%%  \item Need a framework supporting possibly non-terminating
+%%    computations: use Capretta's coinductive delay monad.
+%%    \\
+%%    (The maybe monad is not good, does not support trace
+%%    operator.)
+%%   \item Semantic trace operator obtained via unguarded iteration in
+%%     the sense of Elgot.
   \end{itemize}
   
 \end{frame}
@@ -291,13 +295,15 @@
   \end{itemize}
   \[
   \arraycolsep=6pt\def\arraystretch{2.8}
-  \begin{array}{ccc}
+  \begin{array}{cc}
     %\hline 
     \infer{\Z : \Ty\,n}{} 
-    & \infer{\I : \Ty\,n}{}
-    & \infer{\Var\,i : \Ty\,n}{i : \mathsf{Fin}\,n}  \\
-    \infer{A \oplus B : \Ty\,n}{A : \Ty\,n & B : \Ty\,n}
+    & \infer{A \oplus B : \Ty\,n}{A : \Ty\,n & B : \Ty\,n}
+    \\
+    \infer{\I : \Ty\,n}{}
     & \infer{A \otimes B : \Ty\,n}{A : \Ty\,n & B : \Ty\,n}
+    \\
+    \infer{\Var\,i : \Ty\,n}{i : \mathsf{Fin}\,n}
     & \infer{\mu A : \Ty\,n}{A : \Ty\,(n+1)}
     %\\ \hline
   \end{array}
@@ -307,9 +313,9 @@
 
 \begin{frame}
 
-  \frametitle{\Pio\ syntax: terms}
+  \frametitle{\Pio\ syntax: programs}
   \begin{itemize}
-  \item Terms of $\Pi$ [Carette and Sabry'16]:
+  \item Programs of $\Pi$ [Carette and Sabry'16]:
 
   \end{itemize}
   \small
@@ -341,9 +347,9 @@
   
 \begin{frame}
 
-  \frametitle{\Pio\ syntax: terms (cont'd)}
+  \frametitle{\Pio\ syntax: programs (cont'd)}
   \begin{itemize}
-  \item Terms of full \Pio\ also include:
+  \item Programs of full \Pio\ also include:
     \[
     \def\arraystretch{1.6}  
     \begin{array}{c}
@@ -352,11 +358,11 @@
       %\hline
     \end{array}
     \]
-  \item The partial inverse of a term is defined by recursion:
+  \item The partial inverse of a programs is defined by recursion:
     \[
     \dagger : (A \lr B) \to (B \lr A)
     \]
-  \item In particular, $\dagger \,(\trace\,f) = \trace \,(\dagger \,f)$.
+%  \item In particular, $\dagger \,(\trace\,f) = \trace \,(\dagger \,f)$.
   \item Inversion is involutive:
     \[
     \mathsf{daggerInvol} : (f : A \lr B) \to \dagger \,(\dagger\,f) \equiv f
@@ -365,11 +371,11 @@
 \end{frame}
 
 \begin{frame}
-  \frametitle{\Pio\ syntax: term equivalences}
+  \frametitle{\Pio\ syntax: program equivalences}
   \begin{itemize}    
   \item Big list of Laplaza's coherence laws of symmetric rig
     categories (already in $\Pi$ [Carette and Sabry'16]).
-  \item We add term equivalences stating that:
+  \item We add program equivalences stating that:
     \begin{itemize}
     \item $(\Z,\oplus)$ is a traced monoidal structure;
     \item $\unfold$ is the total inverse of $\fold$;
@@ -378,8 +384,8 @@
     \end{itemize}
 
     \vspace{\fill}
-  \item Altogether, the term equivalences correpond to the axioms of
-    dagger-traced $\omega$-continuous rig inverse categories [Karvonen'19].
+  \item (Altogether, the program equivalences correpond to the axioms of
+    dagger-traced $\omega$-continuous rig inverse categories [Karvonen'19].)
     \end{itemize}
 \end{frame}
 
