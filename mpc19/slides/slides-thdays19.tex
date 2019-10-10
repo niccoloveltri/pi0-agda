@@ -792,16 +792,23 @@
   \begin{itemize}
   \item We have extended the work of [Carette and Sabry'16] to a
     two-level calculus of \Pio\ programs and program equivalences.
-    \item This required a change of semantic domain, taking into
-      account possibly non-terminating reversible computations.
-    \item Alternative type-theoretical models can be constructed using
-      the partiality monad [Altenkirch et al.'17] or the partial map
-      classifier [Escardo and Knapp'17].
+%%     \item This required a change of semantic domain, taking into
+%%       account possibly non-terminating reversible computations.
+%%     \item Alternative type-theoretical models can be constructed using
+%%       the partiality monad [Altenkirch et al.'17] or the partial map
+%%       classifier [Escardo and Knapp'17].
 %%     \item Conjecture: a model for each $\omega$-continuous
-%%       monad on $\Set$, that can hopefully be ported to other categories [Goncharov et.al'16]. 
-    \item Future work: The (unquotiented) delay monad and its
-      generalizations can be used for semantics of
+    %%       monad on $\Set$, that can hopefully be ported to other categories [Goncharov et.al'16].
+    \vspace{\fill}
+    \item Future work:
+      \begin{itemize}
+    \item Adequacy and full abstraction wrt. James and
+      Sabry's operational semantics.
+    \item Prove \Pio\ Turing complete for reversible computations,
+      e.g. by proving it is a reversible variant of a Turing category.
+    \item Use the (unquotiented) delay monad for semantics of
       time-reversible computations.
+      \end{itemize}
       
       
   \end{itemize}
